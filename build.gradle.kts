@@ -76,9 +76,16 @@ spotless {
 
 val moshiVersion = "1.10.0"
 val retrofitVersion = "2.9.0"
+val okhttpVersion = "4.9.0"
+val coroutinesVersion = "1.3.9"
 dependencies {
   implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
 
+  testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+  testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
+  testImplementation("com.squareup.retrofit2:converter-scalars:$retrofitVersion")
+  testImplementation("com.squareup.okhttp3:okhttp:$okhttpVersion")
+  testImplementation("com.squareup.okhttp3:mockwebserver:$okhttpVersion")
   testImplementation("com.squareup.moshi:moshi:$moshiVersion")
   testImplementation("com.squareup.moshi:moshi-kotlin:$moshiVersion")
   testImplementation("junit:junit:4.13")
