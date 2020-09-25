@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 import io.gitlab.arturbosch.detekt.Detekt
+import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.net.URL
 
 plugins {
   kotlin("jvm") version "1.4.10"
@@ -48,6 +50,16 @@ tasks.withType<KotlinCompile>().configureEach {
 
 tasks.withType<Detekt>().configureEach {
   jvmTarget = "1.8"
+}
+
+tasks.named<DokkaTask>("dokkaHtml") {
+  outputDirectory.set(rootDir.resolve("docs/0.x"))
+  dokkaSourceSets.configureEach {
+    skipDeprecated.set(true)
+    externalDocumentationLink {
+      url.set(URL("https://square.github.io/retrofit/2.x/retrofit/"))
+    }
+  }
 }
 
 spotless {
