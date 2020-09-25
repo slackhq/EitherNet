@@ -134,7 +134,12 @@ internal object ApiResultConverterFactory : Converter.Factory() {
  * that return [ApiResult]. This facilitates returning all error types through the possible [ApiResult] subtypes.
  */
 internal object ApiResultCallAdapterFactory : CallAdapter.Factory() {
-  override fun get(returnType: Type, annotations: Array<out Annotation>, retrofit: Retrofit): CallAdapter<*, *>? {
+  @Suppress("ReturnCount")
+  override fun get(
+    returnType: Type,
+    annotations: Array<out Annotation>,
+    retrofit: Retrofit
+  ): CallAdapter<*, *>? {
     if (getRawType(returnType) != Call::class.java) {
       return null
     }
@@ -146,7 +151,9 @@ internal object ApiResultCallAdapterFactory : CallAdapter.Factory() {
     return ApiResultCallAdapter(upperBound)
   }
 
-  private class ApiResultCallAdapter(private val responseType: Type) : CallAdapter<ApiResult<*, *>, Call<ApiResult<*, *>>> {
+  private class ApiResultCallAdapter(
+    private val responseType: Type
+  ) : CallAdapter<ApiResult<*, *>, Call<ApiResult<*, *>>> {
     override fun adapt(call: Call<ApiResult<*, *>>): Call<ApiResult<*, *>> {
       return object : Call<ApiResult<*, *>> by call {
         override fun enqueue(callback: Callback<ApiResult<*, *>>) {
