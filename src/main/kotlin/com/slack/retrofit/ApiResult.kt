@@ -43,19 +43,19 @@ import java.lang.reflect.Type
  * Usually, user code for this would just simply show a generic error message for either [Failure] case, but a sealed
  * class is exposed for more specific error messaging.
  */
-sealed class ApiResult<out T, out E> {
+public sealed class ApiResult<out T, out E> {
 
   /** A successful result with the data available in [response]. */
-  data class Success<T : Any>(val response: T) : ApiResult<T, Nothing>()
+  public data class Success<T : Any>(public val response: T) : ApiResult<T, Nothing>()
 
-  sealed class Failure<out E> : ApiResult<Nothing, E>() {
+  public sealed class Failure<out E> : ApiResult<Nothing, E>() {
 
     /**
      * A network failure cause by a given [error]. This error is opaque, as the actual type could be from a number of
      * sources (connectivity, serialization issues, etc). This event is generally considered to be a non-recoverable and
      * should be used as signal or logging before attempting to gracefully degrade or retry.
      */
-    data class NetworkFailure(val error: Throwable) : Failure<Nothing>()
+    public data class NetworkFailure(public val error: Throwable) : Failure<Nothing>()
 
     /**
      * An API failure. This indicates a non-2xx response *OR* a 200 response with an `ok` property whose' value is
@@ -65,20 +65,23 @@ sealed class ApiResult<out T, out E> {
      * value of the `error` property in JSON. Note that this error is just the key and _not_ a human-readable
      * description of the problem.
      */
-    data class ApiFailure<out E> internal constructor(val code: Int, val error: E?) : Failure<E>() {
+    public data class ApiFailure<out E> internal constructor(
+      public val code: Int,
+      public val error: E?,
+    ) : Failure<E>() {
 
       /** Returns whether or not this is an http failure (i.e. non-2xx response). */
-      val isHttpFailure: Boolean get() = code !in HTTP_SUCCESS_RANGE
+      public val isHttpFailure: Boolean get() = code !in HTTP_SUCCESS_RANGE
 
       /** Returns whether or not this is an API failure (i.e. 200 response with error). */
-      val isApiFailure: Boolean get() = code !in HTTP_SUCCESS_RANGE
+      public val isApiFailure: Boolean get() = code !in HTTP_SUCCESS_RANGE
 
-      companion object {
+      public companion object {
         private const val OK = 200
         private val HTTP_SUCCESS_RANGE = OK..299
 
         @JvmStatic
-        fun httpFailure(code: Int): ApiFailure<Nothing> {
+        public fun httpFailure(code: Int): ApiFailure<Nothing> {
           require(code !in HTTP_SUCCESS_RANGE) {
             "Status code '$code' is a successful HTTP response. If you mean to use a $OK code + error string to " +
               "indicate an API error, use the apiFailure() factory."
@@ -88,7 +91,7 @@ sealed class ApiResult<out T, out E> {
 
         @Suppress("MemberNameEqualsClassName")
         @JvmStatic
-        fun <E> apiFailure(error: E? = null): ApiFailure<E> {
+        public fun <E> apiFailure(error: E? = null): ApiFailure<E> {
           return ApiFailure(OK, error)
         }
       }
@@ -100,7 +103,7 @@ sealed class ApiResult<out T, out E> {
  * A custom [Converter.Factory] for [ApiResult] responses. This creates a delegating adapter for the underlying type
  * of the result, and wraps successful results in a new [ApiResult].
  */
-internal object ApiResultConverterFactory : Converter.Factory() {
+public object ApiResultConverterFactory : Converter.Factory() {
 
   override fun responseBodyConverter(
     type: Type,
@@ -133,7 +136,7 @@ internal object ApiResultConverterFactory : Converter.Factory() {
  * A custom [CallAdapter.Factory] for [ApiResult] calls. This creates a delegating adapter for suspend function calls
  * that return [ApiResult]. This facilitates returning all error types through the possible [ApiResult] subtypes.
  */
-internal object ApiResultCallAdapterFactory : CallAdapter.Factory() {
+public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
   @Suppress("ReturnCount")
   override fun get(
     returnType: Type,

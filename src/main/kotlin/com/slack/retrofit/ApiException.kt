@@ -20,4 +20,4 @@ package com.slack.retrofit
  *
  * @see [ApiResult.Failure.ApiFailure] for full documentation for how this [error] property is used and its caveats.
  */
-internal class ApiException(val error: Any?) : Exception()
+public class ApiException(public val error: Any?) : Exception()

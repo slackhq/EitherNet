@@ -42,12 +42,17 @@ java {
 tasks.withType<KotlinCompile>().configureEach {
   kotlinOptions {
     jvmTarget = "1.8"
-    freeCompilerArgs = listOf("-progressive")
+    @Suppress("SuspiciousCollectionReassignment")
+    freeCompilerArgs += listOf("-progressive")
   }
 }
 
 tasks.withType<Detekt>().configureEach {
   jvmTarget = "1.8"
+}
+
+kotlin {
+  explicitApi()
 }
 
 spotless {
