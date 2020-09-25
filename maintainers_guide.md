@@ -33,7 +33,7 @@ this project. If you use this package within your own software as is but don't p
 ### Branches
 
 > Describe any specific branching workflow. For example:
-> `master` is where active development occurs.
+> `main` is where active development occurs.
 > Long running branches named feature branches are occasionally created for collaboration on a feature that has a large scope (because everyone cannot push commits to another person's open Pull Request)
 > At some point in the future after a major version increment, there may be maintenance branches
 > for older major versions.
