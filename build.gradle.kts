@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 import io.gitlab.arturbosch.detekt.Detekt
+import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.net.URL
 
 plugins {
   kotlin("jvm") version "1.4.10"
@@ -26,11 +28,19 @@ plugins {
 
 repositories {
   mavenCentral()
-  jcenter().mavenContent {
-    // Required for Dokka
-    includeModule("org.jetbrains.kotlinx", "kotlinx-html-jvm")
-    includeGroup("org.jetbrains.dokka")
-    includeModule("org.jetbrains", "markdown")
+  exclusiveContent {
+    forRepository {
+      maven {
+        name = "JCenter"
+        setUrl("https://jcenter.bintray.com/")
+      }
+    }
+    filter {
+      // Required for Dokka
+      includeModule("org.jetbrains.kotlinx", "kotlinx-html-jvm")
+      includeGroup("org.jetbrains.dokka")
+      includeModule("org.jetbrains", "markdown")
+    }
   }
 }
 
@@ -53,6 +63,16 @@ tasks.withType<Detekt>().configureEach {
 
 kotlin {
   explicitApi()
+}
+
+tasks.named<DokkaTask>("dokkaHtml") {
+  outputDirectory.set(rootDir.resolve("docs/0.x"))
+  dokkaSourceSets.configureEach {
+    skipDeprecated.set(true)
+    externalDocumentationLink {
+      url.set(URL("https://square.github.io/retrofit/2.x/retrofit/"))
+    }
+  }
 }
 
 spotless {
