@@ -164,9 +164,9 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
               override fun onFailure(call: Call<ApiResult<*, *>>, t: Throwable) {
                 if (t is ApiException) {
                   callback.onResponse(call, Response.success(ApiResult.Failure.ApiFailure.apiFailure(t.error)))
-                  return
+                } else {
+                  callback.onResponse(call, Response.success(ApiResult.Failure.NetworkFailure(t)))
                 }
-                callback.onResponse(call, Response.success(ApiResult.Failure.NetworkFailure(t)))
               }
 
               override fun onResponse(call: Call<ApiResult<*, *>>, response: Response<ApiResult<*, *>>) {
