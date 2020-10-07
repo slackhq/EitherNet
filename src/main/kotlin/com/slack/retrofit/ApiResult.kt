@@ -58,12 +58,11 @@ public sealed class ApiResult<out T, out E> {
     public data class NetworkFailure(public val error: Throwable) : Failure<Nothing>()
 
     /**
-     * An API failure. This indicates a non-2xx response *OR* a 200 response with an `ok` property whose value is
-     * `false`. The [code] is available for reference.
+     * An API failure. This indicates a non-2xx response *OR* a 200 response where and [ApiException] was thrown
+     * during response body conversion. The [code] is available for reference.
      *
-     * If this is a 200 response from a Slack API endpoint, the [error] property will be best-effort populated with the
-     * value of the `error` property in JSON. Note that this error is just the key and _not_ a human-readable
-     * description of the problem.
+     * If this is a 200 response with an [ApiException], the [error] property will be best-effort populated with the
+     * value of the [ApiException.error] property.
      */
     public data class ApiFailure<out E> internal constructor(
       public val code: Int,
