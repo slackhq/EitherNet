@@ -26,7 +26,7 @@ import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
 /**
- * Represents a result from a Slack API results. These are represented by 3 distinct types: a typed [Success] and two
+ * Represents a result from a traditional HTTP API. These are represented by 3 distinct types: a typed [Success] and two
  * untyped [Failure] types [Failure.NetworkFailure] and [Failure.ApiFailure]. This allows for simple handling of
  * results through a consistent, non-exceptional flow.
  *
