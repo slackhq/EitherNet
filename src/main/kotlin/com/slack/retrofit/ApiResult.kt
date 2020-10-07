@@ -72,8 +72,8 @@ public sealed class ApiResult<out T, out E> {
       /** Returns whether or not this is an http failure (i.e. non-2xx response). */
       public val isHttpFailure: Boolean get() = code !in HTTP_SUCCESS_RANGE
 
-      /** Returns whether or not this is an API failure (i.e. 200 response with error). */
-      public val isApiFailure: Boolean get() = error != null || code !in HTTP_SUCCESS_RANGE
+      /** Returns whether or not this is an API failure (i.e. 2xx response with error). */
+      public val isApiFailure: Boolean get() = error != null || code in HTTP_SUCCESS_RANGE
 
       public companion object {
         private const val OK = 200
