@@ -81,7 +81,7 @@ spotless {
     trimTrailingWhitespace()
     endWithNewline()
   }
-  val ktlintVersion = "0.38.1"
+  val ktlintVersion = "0.39.0"
   val ktlintUserData = mapOf("indent_size" to "2", "continuation_indent_size" to "2")
   kotlin {
     target("**/*.kt")
