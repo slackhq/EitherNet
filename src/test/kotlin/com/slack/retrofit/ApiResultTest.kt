@@ -16,6 +16,7 @@
 package com.slack.retrofit
 
 import com.google.common.truth.Truth.assertThat
+import com.slack.retrofit.ApiResult.Failure.ApiFailure
 import kotlinx.coroutines.runBlocking
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -46,8 +47,9 @@ class ApiResultTest {
       .baseUrl(server.url("/"))
       .addConverterFactory(ApiResultConverterFactory)
       .addCallAdapterFactory(ApiResultCallAdapterFactory)
-      .addConverterFactory(ScalarsConverterFactory.create())
       .addConverterFactory(UnitConverterFactory)
+      .addConverterFactory(ErrorConverterFactory)
+      .addConverterFactory(ScalarsConverterFactory.create())
       .validateEagerly(true)
       .build()
 
@@ -84,7 +86,7 @@ class ApiResultTest {
 
     server.enqueue(response)
     val result = runBlocking { service.unitEndpoint() }
-    assertThat(result).isEqualTo(ApiResult.Failure.ApiFailure<String>(404, null))
+    assertThat(result).isEqualTo(ApiFailure<String>(404, null))
   }
 
   @Test
@@ -95,7 +97,25 @@ class ApiResultTest {
 
     server.enqueue(response)
     val result = runBlocking { service.testEndpoint() }
-    assertThat(result).isEqualTo(ApiResult.Failure.ApiFailure.httpFailure(404))
+    check(result is ApiFailure)
+    assertThat(result).isEqualTo(ApiFailure.httpFailure(404))
+    assertThat(result.isApiFailure).isFalse()
+    assertThat(result.isHttpFailure).isTrue()
+  }
+
+  @Test
+  fun apiFailure() {
+    val errorMessage = "${ErrorConverterFactory.ERROR_MARKER}This is an error message."
+    val response = MockResponse()
+      .setResponseCode(200)
+      .setBody(errorMessage)
+
+    server.enqueue(response)
+    val result = runBlocking { service.testEndpoint() }
+    check(result is ApiFailure)
+    assertThat(result).isEqualTo(ApiFailure.apiFailure(errorMessage))
+    assertThat(result.isApiFailure).isTrue()
+    assertThat(result.isHttpFailure).isFalse()
   }
 
   @Test
@@ -129,7 +149,11 @@ class ApiResultTest {
       annotations: Array<out Annotation>,
       retrofit: Retrofit
     ): Converter<ResponseBody, *>? {
-      return ResponseBodyConverter
+      return if (getRawType(type) == Unit::class.java) {
+        ResponseBodyConverter
+      } else {
+        null
+      }
     }
 
     override fun requestBodyConverter(
@@ -144,6 +168,39 @@ class ApiResultTest {
     object ResponseBodyConverter : Converter<ResponseBody, Unit> {
       override fun convert(value: ResponseBody) {
         value.close()
+      }
+    }
+  }
+
+  object ErrorConverterFactory : Converter.Factory() {
+    // Indicates this body is an error
+    const val ERROR_MARKER = "ERROR: "
+
+    override fun responseBodyConverter(
+      type: Type,
+      annotations: Array<out Annotation>,
+      retrofit: Retrofit
+    ): Converter<ResponseBody, *>? {
+      return ResponseBodyConverter
+    }
+
+    override fun requestBodyConverter(
+      type: Type,
+      parameterAnnotations: Array<out Annotation>,
+      methodAnnotations: Array<out Annotation>,
+      retrofit: Retrofit
+    ): Converter<*, RequestBody>? {
+      throw NotImplementedError("Test only")
+    }
+
+    object ResponseBodyConverter : Converter<ResponseBody, String> {
+      override fun convert(value: ResponseBody): String {
+        val text = value.string()
+        if (text.startsWith(ERROR_MARKER)) {
+          throw ApiException(text)
+        } else {
+          return text
+        }
       }
     }
   }
