@@ -16,7 +16,7 @@
 package com.slack.retrofit
 
 /**
- * Represents a generic API error from a given Slack API endpoint.
+ * Represents a generic API error from a given endpoint.
  *
  * @see [ApiResult.Failure.ApiFailure] for full documentation for how this [error] property is used and its caveats.
  */
