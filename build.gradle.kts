@@ -50,10 +50,15 @@ java {
 }
 
 tasks.withType<KotlinCompile>().configureEach {
+  val taskName = name
   kotlinOptions {
     jvmTarget = "1.8"
+    val argsList = mutableListOf("-progressive")
+    if (taskName == "compileTestKotlin") {
+      argsList += "-Xopt-in=kotlin.ExperimentalStdlibApi"
+    }
     @Suppress("SuspiciousCollectionReassignment")
-    freeCompilerArgs += listOf("-progressive")
+    freeCompilerArgs += argsList
   }
 }
 
