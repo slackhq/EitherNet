@@ -4,8 +4,6 @@ import com.slack.retrofit.Util.canonicalize
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import java.lang.reflect.WildcardType
-import kotlin.reflect.KType
-import kotlin.reflect.javaType
 
 /**
  * Returns a [Pair] of a [ResultType] and subset of these annotations without that [ResultType]
@@ -76,9 +74,6 @@ public fun ResultType.toType(): Type {
     }
   }
 }
-
-@ExperimentalStdlibApi
-internal fun createResultType(type: KType): ResultType = createResultType(type.javaType)
 
 internal fun createResultType(type: Type): ResultType {
   var ownerType: Type = Nothing::class.java

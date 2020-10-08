@@ -51,12 +51,13 @@ class ResultTypeTest {
     assertThat(Types.equals(this, other)).isTrue()
   }
 
+
   private inline fun <reified T> testType() {
     testType(typeOf<T>())
   }
 
   private fun testType(type: KType) {
-    val annotation = createResultType(type)
+    val annotation = createResultType(type.javaType)
     val created = annotation.toType()
     type.javaType.assertEqualTo(created)
   }
