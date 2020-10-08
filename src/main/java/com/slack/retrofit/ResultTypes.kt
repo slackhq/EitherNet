@@ -62,6 +62,7 @@ public fun Array<out Annotation>.nextAnnotations(): Pair<ResultType, Array<Annot
 }
 
 /** Returns a new [Type] representation of this [ResultType]. */
+@Suppress("SpreadOperator") // This is _the worst_ detekt check
 public fun ResultType.toType(): Type {
   return when {
     typeArgs.isEmpty() -> {
