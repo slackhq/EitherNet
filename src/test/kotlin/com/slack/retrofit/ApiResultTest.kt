@@ -86,7 +86,7 @@ class ApiResultTest {
 
     server.enqueue(response)
     val result = runBlocking { service.unitEndpoint() }
-    assertThat(result).isEqualTo(ApiFailure<String>(404, null))
+    assertThat(result).isEqualTo(ApiFailure.httpFailure(404))
   }
 
   @Test
@@ -119,6 +119,36 @@ class ApiResultTest {
   }
 
   @Test
+  fun apiFailure_customMarker() {
+    val errorMessage = "${ErrorConverterFactory.ERROR_MARKER}The rest of this is ignored."
+    val response = MockResponse()
+      .setResponseCode(200)
+      .setBody(errorMessage)
+
+    server.enqueue(response)
+    val result = runBlocking { service.customErrorTypeEndpoint() }
+    check(result is ApiFailure)
+    assertThat(result).isEqualTo(ApiFailure.apiFailure(ErrorMarker.MARKER))
+    assertThat(result.isApiFailure).isTrue()
+    assertThat(result.isHttpFailure).isFalse()
+  }
+
+  @Test
+  fun apiFailure_unknownErrorType() {
+    val errorMessage = "${ErrorConverterFactory.ERROR_MARKER}The rest of this is ignored."
+    val response = MockResponse()
+      .setResponseCode(200)
+      .setBody(errorMessage)
+
+    server.enqueue(response)
+    val result = runBlocking { service.unknownErrorTypeEndpoint() }
+    check(result is ApiFailure)
+    assertThat(result).isEqualTo(ApiFailure.apiFailure(null))
+    assertThat(result.isApiFailure).isTrue()
+    assertThat(result.isHttpFailure).isFalse()
+  }
+
+  @Test
   fun networkFailure() {
     server.enqueue(MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AFTER_REQUEST))
     val result = runBlocking { service.testEndpoint() }
@@ -140,6 +170,12 @@ class ApiResultTest {
 
     @GET("/")
     suspend fun unitEndpoint(): ApiResult<Unit, String>
+
+    @GET("/")
+    suspend fun customErrorTypeEndpoint(): ApiResult<String, ErrorMarker>
+
+    @GET("/")
+    suspend fun unknownErrorTypeEndpoint(): ApiResult<String, Unit>
   }
 
   /** Just here for testing. In a real endpoint this would be handled by something like MoshiConverterFactory. */
@@ -172,6 +208,10 @@ class ApiResultTest {
     }
   }
 
+  enum class ErrorMarker {
+    MARKER
+  }
+
   object ErrorConverterFactory : Converter.Factory() {
     // Indicates this body is an error
     const val ERROR_MARKER = "ERROR: "
@@ -181,7 +221,8 @@ class ApiResultTest {
       annotations: Array<out Annotation>,
       retrofit: Retrofit
     ): Converter<ResponseBody, *>? {
-      return ResponseBodyConverter
+      val (errorType, _) = annotations.nextAnnotations() ?: error("No error type found!")
+      return ResponseBodyConverter(errorType.toType())
     }
 
     override fun requestBodyConverter(
@@ -193,11 +234,17 @@ class ApiResultTest {
       throw NotImplementedError("Test only")
     }
 
-    object ResponseBodyConverter : Converter<ResponseBody, String> {
+    class ResponseBodyConverter(
+      private val errorType: Type
+    ) : Converter<ResponseBody, String> {
       override fun convert(value: ResponseBody): String {
         val text = value.string()
         if (text.startsWith(ERROR_MARKER)) {
-          throw ApiException(text)
+          when (errorType) {
+            String::class.java -> throw ApiException(text)
+            ErrorMarker::class.java -> throw ApiException(ErrorMarker.MARKER)
+            else -> throw ApiException(null)
+          }
         } else {
           return text
         }

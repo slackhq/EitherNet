@@ -59,21 +59,28 @@ public sealed class ApiResult<out T, out E> {
 
     /**
      * An API failure. This indicates a non-2xx response *OR* a 200 response where and [ApiException] was thrown
-     * during response body conversion. The [code] is available for reference.
+     * during response body conversion. The [code] and [error] are available for reference.
      *
      * If this is a 200 response with an [ApiException], the [error] property will be best-effort populated with the
      * value of the [ApiException.error] property.
+     *
+     * @property code The HTTP status code.
+     * @property isApiFailure Indicates if this is an API failure (i.e. 2xx response with optional
+     *           [error]).
+     * @property error An optional [error][E] type if [isApiFailure] is true.
      */
     public data class ApiFailure<out E> internal constructor(
       public val code: Int,
-      public val error: E?,
+      public val isApiFailure: Boolean,
+      public val error: E?
     ) : Failure<E>() {
 
-      /** Returns whether or not this is an http failure (i.e. non-2xx response). */
-      public val isHttpFailure: Boolean get() = code !in HTTP_SUCCESS_RANGE
+      init {
+        if (isApiFailure) check(code in HTTP_SUCCESS_RANGE)
+      }
 
-      /** Returns whether or not this is an API failure (i.e. 2xx response with error). */
-      public val isApiFailure: Boolean get() = error != null || code in HTTP_SUCCESS_RANGE
+      /** Returns whether or not this is an http failure (i.e. non-2xx response and no [ApiException]). */
+      public val isHttpFailure: Boolean get() = !isApiFailure && code !in HTTP_SUCCESS_RANGE
 
       public companion object {
         private const val OK = 200
@@ -85,13 +92,13 @@ public sealed class ApiResult<out T, out E> {
             "Status code '$code' is a successful HTTP response. If you mean to use a $OK code + error string to " +
               "indicate an API error, use the apiFailure() factory."
           }
-          return ApiFailure(code, null)
+          return ApiFailure(code, isApiFailure = false, error = null)
         }
 
         @Suppress("MemberNameEqualsClassName")
         @JvmStatic
         public fun <E> apiFailure(error: E? = null): ApiFailure<E> {
-          return ApiFailure(OK, error)
+          return ApiFailure(OK, isApiFailure = true, error = error)
         }
       }
     }
@@ -101,6 +108,10 @@ public sealed class ApiResult<out T, out E> {
 /**
  * A custom [Converter.Factory] for [ApiResult] responses. This creates a delegating adapter for the underlying type
  * of the result, and wraps successful results in a new [ApiResult].
+ *
+ * When delegating to a converter for the `Success` type, a [ResultType] annotation is added to
+ * the forwarded annotations to allow for a downstream adapter to potentially contextually decode
+ * the result and throw an [ApiException] with a decoded error type.
  */
 public object ApiResultConverterFactory : Converter.Factory() {
 
@@ -111,11 +122,20 @@ public object ApiResultConverterFactory : Converter.Factory() {
   ): Converter<ResponseBody, *>? {
     if (getRawType(type) != ApiResult::class.java) return null
 
-    val typeParam = (type as ParameterizedType).actualTypeArguments[0]
+    val successType = (type as ParameterizedType).actualTypeArguments[0]
+    val errorType = type.actualTypeArguments[1]
+    val errorResultType: Annotation = createResultType(errorType)
+    val nextAnnotations = Array(annotations.size + 1) { i ->
+      if (i < annotations.size) {
+        annotations[i]
+      } else {
+        errorResultType
+      }
+    }
     val delegateConverter = retrofit.nextResponseBodyConverter<Any>(
       this,
-      typeParam,
-      annotations
+      successType,
+      nextAnnotations
     )
     return ApiResultConverter(delegateConverter)
   }
