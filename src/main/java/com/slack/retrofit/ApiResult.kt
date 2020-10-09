@@ -17,6 +17,8 @@ package com.slack.retrofit
 
 import com.slack.retrofit.ApiResult.Failure.ApiFailure
 import com.slack.retrofit.ApiResult.Failure.HttpFailure
+import com.slack.retrofit.ApiResult.Failure.NetworkFailure
+import com.slack.retrofit.ApiResult.Failure.UnknownFailure
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.CallAdapter
@@ -63,7 +65,9 @@ public sealed class ApiResult<out T, out E> {
      * non-recoverable and should be used as signal or logging before attempting to gracefully
      * degrade or retry.
      */
-    public data class NetworkFailure(public val error: IOException) : Failure<Nothing>()
+    public data class NetworkFailure internal constructor(
+      public val error: IOException
+    ) : Failure<Nothing>()
 
     /**
      * A network failure caused by a given [error]. This error is opaque, as the actual type could
@@ -71,7 +75,9 @@ public sealed class ApiResult<out T, out E> {
      * to be a non-recoverable and should be used as signal or logging before attempting to
      * gracefully degrade or retry.
      */
-    public data class UnknownFailure(public val error: Throwable) : Failure<Nothing>()
+    public data class UnknownFailure internal constructor(
+      public val error: Throwable
+    ) : Failure<Nothing>()
 
     /**
      * An HTTP failure. This indicates a non-2xx response. The [code] are available for reference.
@@ -96,6 +102,7 @@ public sealed class ApiResult<out T, out E> {
     private const val OK = 200
     private val HTTP_SUCCESS_RANGE = OK..299
 
+    /** Returns a new [HttpFailure] with given [code]. */
     public fun httpFailure(code: Int): HttpFailure {
       require(code !in HTTP_SUCCESS_RANGE) {
         "Status code '$code' is a successful HTTP response. If you mean to use a $OK code + error " +
@@ -104,9 +111,14 @@ public sealed class ApiResult<out T, out E> {
       return HttpFailure(code)
     }
 
-    public fun <E> apiFailure(error: E? = null): ApiFailure<E> {
-      return ApiFailure(error = error)
-    }
+    /** Returns a new [ApiFailure] with given [error]. */
+    public fun <E> apiFailure(error: E? = null): ApiFailure<E> = ApiFailure(error)
+
+    /** Returns a new [NetworkFailure] with given [error]. */
+    public fun networkFailure(error: IOException): NetworkFailure = NetworkFailure(error)
+
+    /** Returns a new [UnknownFailure] with given [error]. */
+    public fun unknownFailure(error: Throwable): UnknownFailure = UnknownFailure(error)
   }
 }
 
@@ -192,10 +204,10 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                     callback.onResponse(call, Response.success(ApiResult.apiFailure(t.error)))
                   }
                   is IOException -> {
-                    callback.onResponse(call, Response.success(ApiResult.Failure.NetworkFailure(t)))
+                    callback.onResponse(call, Response.success(ApiResult.networkFailure(t)))
                   }
                   else -> {
-                    callback.onResponse(call, Response.success(ApiResult.Failure.UnknownFailure(t)))
+                    callback.onResponse(call, Response.success(ApiResult.unknownFailure(t)))
                   }
                 }
               }
