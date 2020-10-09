@@ -1,3 +1,143 @@
-# Retrofit ApiResult
+# Retrofit `ApiResult`
 
 A pluggable sealed API result type for modeling Retrofit responses.
+
+## Usage
+
+By default, Retrofit uses exceptions to propagate any errors. This library leverages Kotlin sealed types
+to better, opinionated way of modeling these responses. A key difference in this pattern is that it 
+requires no exception handling to use. _All response types are returned through a single API_.
+
+The core type for this is `ApiResult<out T, out E>`, where `T` is the success type and `E` is a possible
+error type.
+
+`ApiResult` has two sealed subtypes: `Success` and `Failure`. `Success` is typed to `T` with no 
+error type and `Failure` is typed to `E` with no success type. `Failure` in turn is represented by 
+four sealed subtypes of its own: `Failure.NetworkFailure`, `Failure.ApiFailure`, `Failure.HttpFailure`, 
+and `Failure.UnknownFailure`. This allows for simple handling of results through a consistent, 
+non-exceptional flow via sealed `when` branches.
+
+```kotlin
+when (val result = myApi.someEndpoint()) {
+  is Success -> doSomethingWith(result.response)
+  is Failure -> when (result) {
+    is NetworkFailure -> showError(result.error)
+    is HttpFailure -> showError(result.code)
+    is ApiFailure -> showError(result.error)
+    is UnknownError -> showError(result.error)
+  }
+}
+```
+
+Usually, user code for this could just simply show a generic error message for a `Failure`
+case, but the sealed subtypes also allow for more specific error messaging or pluggability of error 
+types.
+
+Simply change your endpoint return type to the typed `ApiResult` and include our call adapter and 
+delegating converter factory.
+
+
+```kotlin
+interface TestApi {
+  @GET("/")
+  suspend fun getData(): ApiResult<SuccessResponse, ErrorResponse>
+}
+
+val api = Retrofit.Builder()
+  .addConverterFactory(ApiResultConverterFactory)
+  .addCallAdapterFactory(ApiResultCallAdapterFactory)
+  .build()
+  .create<TestApi>()
+```
+
+If you don't have custom error return types, simply use `Nothing` for the error type.
+
+### Plugability
+
+A common pattern for some APIs is to return a polymorphic `200` response where the data needs to be
+dynamically parsed. Consider this example:
+
+```JSON
+{
+  "ok": true,
+  "data": {
+    ...
+  }
+}
+```
+
+The same API may return this structure in an error event
+
+```JSON
+{
+  "ok": false,
+  "error_message": "Please try again."
+}
+```
+
+This is hard to model with a single concrete type, but easy to handle with `ApiResult`. Simply
+throw an `ApiException` with the decoded error type in a custom Retrofit `Converter` and it will be
+automatically surfaced as a `Failure.ApiFailure` type with that error instance.
+
+```kotlin
+@GET("/")
+suspend fun getData(): ApiResult<SuccessResponse, ErrorResponse>
+
+// In your own converter factory.
+class ErrorConverterFactory : Converter.Factory() {
+  override fun responseBodyConverter(
+    type: Type,
+    annotations: Array<out Annotation>,
+    retrofit: Retrofit
+  ): Converter<ResponseBody, *>? {
+    // This returns a `@ResultType` instance that can be used to get the error type via toType()
+    val (errorType, nextAnnotations) = annotations.nextAnnotations() ?: error(
+      "No error type found!")
+    return ResponseBodyConverter(errorType.toType())
+  }
+
+  class ResponseBodyConverter(
+    private val errorType: Type
+  ) : Converter<ResponseBody, *> {
+    override fun convert(value: ResponseBody): String {
+      if (value.isErrorType()) {
+        val errorResponse = ...
+        throw ApiException(errorResponse)
+      } else {
+        return SuccessResponse(...)
+      }
+    }
+  }
+}
+```
+
+## Installation
+
+```gradle
+dependencies {
+  implementation("com.slack.retrofit:api-result:<version>")
+}
+```
+
+Snapshots of the development version are available in [Sonatype's `snapshots` repository][snap].
+
+License
+--------
+
+    Copyright 2020 Slack Technologies, Inc.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+
+[snap]: https://oss.sonatype.org/content/repositories/snapshots/com/slack/retrofit/
+

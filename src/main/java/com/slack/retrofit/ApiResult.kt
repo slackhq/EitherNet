@@ -31,15 +31,18 @@ import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
 /**
- * Represents a result from a traditional HTTP API. These are represented by 2 distinct types:
- * a typed [Success] and typed [Failure]. [Failure] in turn is represented by four types:
- * [Failure.NetworkFailure], [Failure.ApiFailure], [Failure.HttpFailure], [Failure.UnknownFailure].
- * This allows for simple handling of results through a consistent, non-exceptional flow.
+ * Represents a result from a traditional HTTP API. [ApiResult] has two sealed subtypes: [Success]
+ * and [Failure]. [Success] is typed to [T] with no error type and [Failure] is typed to [E] with
+ * no success type.
+ *
+ * [Failure] in turn is represented by four sealed subtypes of its own: [Failure.NetworkFailure],
+ * [Failure.ApiFailure], [Failure.HttpFailure], and [Failure.UnknownFailure]. This allows for
+ * simple handling of results through a consistent, non-exceptional flow via sealed `when` branches.
  *
  * ```
  * when (val result = myApi.someEndpoint()) {
  *   is Success -> doSomethingWith(result.response)
- *   is Failure -> when (result) -> {
+ *   is Failure -> when (result) {
  *     is NetworkFailure -> showError(result.error)
  *     is HttpFailure -> showError(result.code)
  *     is ApiFailure -> showError(result.error)
