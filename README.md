@@ -5,16 +5,16 @@ A pluggable sealed API result type for modeling Retrofit responses.
 ## Usage
 
 By default, Retrofit uses exceptions to propagate any errors. This library leverages Kotlin sealed types
-to better, opinionated way of modeling these responses. A key difference in this pattern is that it 
+to better, opinionated way of modeling these responses. A key difference in this pattern is that it
 requires no exception handling to use. _All response types are returned through a single API_.
 
 The core type for this is `ApiResult<out T, out E>`, where `T` is the success type and `E` is a possible
 error type.
 
-`ApiResult` has two sealed subtypes: `Success` and `Failure`. `Success` is typed to `T` with no 
-error type and `Failure` is typed to `E` with no success type. `Failure` in turn is represented by 
-four sealed subtypes of its own: `Failure.NetworkFailure`, `Failure.ApiFailure`, `Failure.HttpFailure`, 
-and `Failure.UnknownFailure`. This allows for simple handling of results through a consistent, 
+`ApiResult` has two sealed subtypes: `Success` and `Failure`. `Success` is typed to `T` with no
+error type and `Failure` is typed to `E` with no success type. `Failure` in turn is represented by
+four sealed subtypes of its own: `Failure.NetworkFailure`, `Failure.ApiFailure`, `Failure.HttpFailure`,
+and `Failure.UnknownFailure`. This allows for simple handling of results through a consistent,
 non-exceptional flow via sealed `when` branches.
 
 ```kotlin
@@ -30,10 +30,10 @@ when (val result = myApi.someEndpoint()) {
 ```
 
 Usually, user code for this could just simply show a generic error message for a `Failure`
-case, but the sealed subtypes also allow for more specific error messaging or pluggability of error 
+case, but the sealed subtypes also allow for more specific error messaging or pluggability of error
 types.
 
-Simply change your endpoint return type to the typed `ApiResult` and include our call adapter and 
+Simply change your endpoint return type to the typed `ApiResult` and include our call adapter and
 delegating converter factory.
 
 
@@ -140,4 +140,3 @@ License
 
 
 [snap]: https://oss.sonatype.org/content/repositories/snapshots/com/slack/retrofit/
-
