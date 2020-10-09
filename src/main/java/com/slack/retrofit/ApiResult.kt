@@ -29,41 +29,47 @@ import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
 /**
- * Represents a result from a traditional HTTP API. These are represented by 3 distinct types: a typed [Success] and two
- * untyped [Failure] types [Failure.NetworkFailure] and [Failure.ApiFailure]. This allows for simple handling of
- * results through a consistent, non-exceptional flow.
+ * Represents a result from a traditional HTTP API. These are represented by 2 distinct types:
+ * a typed [Success] and typed [Failure]. [Failure] in turn is represented by four types:
+ * [Failure.NetworkFailure], [Failure.ApiFailure], [Failure.HttpFailure], [Failure.UnknownFailure].
+ * This allows for simple handling of results through a consistent, non-exceptional flow.
  *
  * ```
  * when (val result = myApi.someEndpoint()) {
  *   is Success -> doSomethingWith(result.response)
  *   is Failure -> when (result) -> {
  *     is NetworkFailure -> showError(result.error)
- *     is ApiFailure -> showError(result.code)
+ *     is HttpFailure -> showError(result.code)
+ *     is ApiFailure -> showError(result.error)
+ *     is UnknownError -> showError(result.error)
  *   }
  * }
  * ```
  *
- * Usually, user code for this would just simply show a generic error message for either [Failure] case, but a sealed
- * class is exposed for more specific error messaging.
+ * Usually, user code for this could just simply show a generic error message for a [Failure]
+ * case, but a sealed class is exposed for more specific error messaging.
  */
 public sealed class ApiResult<out T, out E> {
 
   /** A successful result with the data available in [response]. */
   public data class Success<T : Any>(public val response: T) : ApiResult<T, Nothing>()
 
+  /** Represents a failure of some sort. */
   public sealed class Failure<out E> : ApiResult<Nothing, E>() {
 
     /**
-     * A network failure cause by a given [error]. This error is opaque, as the actual type could be from a number of
-     * sources (connectivity, etc). This event is generally considered to be a non-recoverable and
-     * should be used as signal or logging before attempting to gracefully degrade or retry.
+     * A network failure caused by a given [error]. This error is opaque, as the actual type could
+     * be from a number of sources (connectivity, etc). This event is generally considered to be a
+     * non-recoverable and should be used as signal or logging before attempting to gracefully
+     * degrade or retry.
      */
     public data class NetworkFailure(public val error: IOException) : Failure<Nothing>()
 
     /**
-     * A network failure cause by a given [error]. This error is opaque, as the actual type could be from a number of
-     * sources (serialization issues, etc). This event is generally considered to be a non-recoverable and
-     * should be used as signal or logging before attempting to gracefully degrade or retry.
+     * A network failure caused by a given [error]. This error is opaque, as the actual type could
+     * be from a number of sources (serialization issues, etc). This event is generally considered
+     * to be a non-recoverable and should be used as signal or logging before attempting to
+     * gracefully degrade or retry.
      */
     public data class UnknownFailure(public val error: Throwable) : Failure<Nothing>()
 
@@ -92,8 +98,8 @@ public sealed class ApiResult<out T, out E> {
 
     public fun httpFailure(code: Int): HttpFailure {
       require(code !in HTTP_SUCCESS_RANGE) {
-        "Status code '$code' is a successful HTTP response. If you mean to use a $OK code + error string to " +
-          "indicate an API error, use the apiFailure() factory."
+        "Status code '$code' is a successful HTTP response. If you mean to use a $OK code + error " +
+          "string to indicate an API error, use the apiFailure() factory."
       }
       return HttpFailure(code)
     }
