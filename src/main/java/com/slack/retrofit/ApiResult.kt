@@ -15,6 +15,8 @@
  */
 package com.slack.retrofit
 
+import com.slack.retrofit.ApiResult.Failure.ApiFailure
+import com.slack.retrofit.ApiResult.Failure.HttpFailure
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.CallAdapter
@@ -22,6 +24,7 @@ import retrofit2.Callback
 import retrofit2.Converter
 import retrofit2.Response
 import retrofit2.Retrofit
+import java.io.IOException
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
@@ -52,55 +55,51 @@ public sealed class ApiResult<out T, out E> {
 
     /**
      * A network failure cause by a given [error]. This error is opaque, as the actual type could be from a number of
-     * sources (connectivity, serialization issues, etc). This event is generally considered to be a non-recoverable and
+     * sources (connectivity, etc). This event is generally considered to be a non-recoverable and
      * should be used as signal or logging before attempting to gracefully degrade or retry.
      */
-    public data class NetworkFailure(public val error: Throwable) : Failure<Nothing>()
+    public data class NetworkFailure(public val error: IOException) : Failure<Nothing>()
 
     /**
-     * An API failure. This indicates a non-2xx response *OR* a 200 response where and [ApiException] was thrown
-     * during response body conversion. The [code] and [error] are available for reference.
-     *
-     * If this is a 200 response with an [ApiException], the [error] property will be best-effort populated with the
-     * value of the [ApiException.error] property.
+     * A network failure cause by a given [error]. This error is opaque, as the actual type could be from a number of
+     * sources (serialization issues, etc). This event is generally considered to be a non-recoverable and
+     * should be used as signal or logging before attempting to gracefully degrade or retry.
+     */
+    public data class UnknownFailure(public val error: Throwable) : Failure<Nothing>()
+
+    /**
+     * An HTTP failure. This indicates a non-2xx response. The [code] are available for reference.
      *
      * @property code The HTTP status code.
-     * @property isApiFailure Indicates if this is an API failure (i.e. 2xx response with optional
-     *           [error]).
-     * @property error An optional [error][E] type if [isApiFailure] is true.
      */
-    public data class ApiFailure<out E> internal constructor(
-      public val code: Int,
-      public val isApiFailure: Boolean,
-      public val error: E?
-    ) : Failure<E>() {
+    public data class HttpFailure internal constructor(public val code: Int) : Failure<Nothing>()
 
-      init {
-        if (isApiFailure) check(code in HTTP_SUCCESS_RANGE)
+    /**
+     * An API failure. This indicates a 2xx response where [ApiException] was thrown
+     * during response body conversion.
+     *
+     * An [ApiException], the [error] property will be best-effort populated with the
+     * value of the [ApiException.error] property.
+     *
+     * @property error An optional [error][E] type.
+     */
+    public data class ApiFailure<out E> internal constructor(public val error: E?) : Failure<E>()
+  }
+
+  public companion object {
+    private const val OK = 200
+    private val HTTP_SUCCESS_RANGE = OK..299
+
+    public fun httpFailure(code: Int): HttpFailure {
+      require(code !in HTTP_SUCCESS_RANGE) {
+        "Status code '$code' is a successful HTTP response. If you mean to use a $OK code + error string to " +
+          "indicate an API error, use the apiFailure() factory."
       }
+      return HttpFailure(code)
+    }
 
-      /** Returns whether or not this is an http failure (i.e. non-2xx response and no [ApiException]). */
-      public val isHttpFailure: Boolean get() = !isApiFailure && code !in HTTP_SUCCESS_RANGE
-
-      public companion object {
-        private const val OK = 200
-        private val HTTP_SUCCESS_RANGE = OK..299
-
-        @JvmStatic
-        public fun httpFailure(code: Int): ApiFailure<Nothing> {
-          require(code !in HTTP_SUCCESS_RANGE) {
-            "Status code '$code' is a successful HTTP response. If you mean to use a $OK code + error string to " +
-              "indicate an API error, use the apiFailure() factory."
-          }
-          return ApiFailure(code, isApiFailure = false, error = null)
-        }
-
-        @Suppress("MemberNameEqualsClassName")
-        @JvmStatic
-        public fun <E> apiFailure(error: E? = null): ApiFailure<E> {
-          return ApiFailure(OK, isApiFailure = true, error = error)
-        }
-      }
+    public fun <E> apiFailure(error: E? = null): ApiFailure<E> {
+      return ApiFailure(error = error)
     }
   }
 }
@@ -182,10 +181,16 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
           call.enqueue(
             object : Callback<ApiResult<*, *>> {
               override fun onFailure(call: Call<ApiResult<*, *>>, t: Throwable) {
-                if (t is ApiException) {
-                  callback.onResponse(call, Response.success(ApiResult.Failure.ApiFailure.apiFailure(t.error)))
-                } else {
-                  callback.onResponse(call, Response.success(ApiResult.Failure.NetworkFailure(t)))
+                when (t) {
+                  is ApiException -> {
+                    callback.onResponse(call, Response.success(ApiResult.apiFailure(t.error)))
+                  }
+                  is IOException -> {
+                    callback.onResponse(call, Response.success(ApiResult.Failure.NetworkFailure(t)))
+                  }
+                  else -> {
+                    callback.onResponse(call, Response.success(ApiResult.Failure.UnknownFailure(t)))
+                  }
                 }
               }
 
@@ -193,7 +198,7 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                 if (response.isSuccessful) {
                   callback.onResponse(call, response)
                 } else {
-                  callback.onResponse(call, Response.success(ApiResult.Failure.ApiFailure.httpFailure(response.code())))
+                  callback.onResponse(call, Response.success(ApiResult.httpFailure(response.code())))
                 }
               }
             }

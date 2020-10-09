@@ -33,6 +33,7 @@ import retrofit2.create
 import retrofit2.http.GET
 import java.io.IOException
 import java.lang.reflect.Type
+import kotlin.annotation.AnnotationRetention.RUNTIME
 
 class ApiResultTest {
 
@@ -86,7 +87,7 @@ class ApiResultTest {
 
     server.enqueue(response)
     val result = runBlocking { service.unitEndpoint() }
-    assertThat(result).isEqualTo(ApiFailure.httpFailure(404))
+    assertThat(result).isEqualTo(ApiResult.httpFailure(404))
   }
 
   @Test
@@ -97,10 +98,7 @@ class ApiResultTest {
 
     server.enqueue(response)
     val result = runBlocking { service.testEndpoint() }
-    check(result is ApiFailure)
-    assertThat(result).isEqualTo(ApiFailure.httpFailure(404))
-    assertThat(result.isApiFailure).isFalse()
-    assertThat(result.isHttpFailure).isTrue()
+    assertThat(result).isEqualTo(ApiResult.httpFailure(404))
   }
 
   @Test
@@ -113,9 +111,7 @@ class ApiResultTest {
     server.enqueue(response)
     val result = runBlocking { service.testEndpoint() }
     check(result is ApiFailure)
-    assertThat(result).isEqualTo(ApiFailure.apiFailure(errorMessage))
-    assertThat(result.isApiFailure).isTrue()
-    assertThat(result.isHttpFailure).isFalse()
+    assertThat(result).isEqualTo(ApiResult.apiFailure(errorMessage))
   }
 
   @Test
@@ -128,9 +124,7 @@ class ApiResultTest {
     server.enqueue(response)
     val result = runBlocking { service.customErrorTypeEndpoint() }
     check(result is ApiFailure)
-    assertThat(result).isEqualTo(ApiFailure.apiFailure(ErrorMarker.MARKER))
-    assertThat(result.isApiFailure).isTrue()
-    assertThat(result.isHttpFailure).isFalse()
+    assertThat(result).isEqualTo(ApiResult.apiFailure(ErrorMarker.MARKER))
   }
 
   @Test
@@ -143,9 +137,7 @@ class ApiResultTest {
     server.enqueue(response)
     val result = runBlocking { service.unknownErrorTypeEndpoint() }
     check(result is ApiFailure)
-    assertThat(result).isEqualTo(ApiFailure.apiFailure(null))
-    assertThat(result.isApiFailure).isTrue()
-    assertThat(result.isHttpFailure).isFalse()
+    assertThat(result).isEqualTo(ApiResult.apiFailure(null))
   }
 
   @Test
@@ -164,6 +156,20 @@ class ApiResultTest {
     assertThat((result as ApiResult.Failure.NetworkFailure).error).isInstanceOf(IOException::class.java)
   }
 
+  @Test
+  fun unknownFailure() {
+    // Triggers an encoding failure
+    server.enqueue(
+      MockResponse()
+        .setResponseCode(200)
+        .setBody("")
+    )
+    val result = runBlocking { service.badEndpoint() }
+    assertThat(result).isInstanceOf(ApiResult.Failure.UnknownFailure::class.java)
+    assertThat((result as ApiResult.Failure.UnknownFailure).error)
+      .isInstanceOf(BadEndpointException::class.java)
+  }
+
   interface TestApi {
     @GET("/")
     suspend fun testEndpoint(): ApiResult<String, String>
@@ -176,6 +182,10 @@ class ApiResultTest {
 
     @GET("/")
     suspend fun unknownErrorTypeEndpoint(): ApiResult<String, Unit>
+
+    @BadEndpoint
+    @GET("/")
+    suspend fun badEndpoint(): ApiResult<String, Unit>
   }
 
   /** Just here for testing. In a real endpoint this would be handled by something like MoshiConverterFactory. */
@@ -212,6 +222,11 @@ class ApiResultTest {
     MARKER
   }
 
+  @Retention(RUNTIME)
+  annotation class BadEndpoint
+
+  class BadEndpointException : RuntimeException()
+
   object ErrorConverterFactory : Converter.Factory() {
     // Indicates this body is an error
     const val ERROR_MARKER = "ERROR: "
@@ -221,6 +236,9 @@ class ApiResultTest {
       annotations: Array<out Annotation>,
       retrofit: Retrofit
     ): Converter<ResponseBody, *>? {
+      if (annotations.any { it is BadEndpoint }) {
+        return Converter<ResponseBody, Any> { throw BadEndpointException() }
+      }
       val (errorType, _) = annotations.nextAnnotations() ?: error("No error type found!")
       return ResponseBodyConverter(errorType.toType())
     }
