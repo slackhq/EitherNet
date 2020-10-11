@@ -5,8 +5,7 @@ A pluggable sealed API result type for modeling Retrofit responses.
 ## Usage
 
 By default, Retrofit uses exceptions to propagate any errors. This library leverages Kotlin sealed types
-to better, opinionated way of modeling these responses. A key difference in this pattern is that it
-requires no exception handling to use. _All response types are returned through a single API_.
+to better model these responses with a type-safe single point of return and no exception handling needed!
 
 The core type for this is `ApiResult<out T, out E>`, where `T` is the success type and `E` is a possible
 error type.
