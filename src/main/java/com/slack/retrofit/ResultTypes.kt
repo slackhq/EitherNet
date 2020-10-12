@@ -48,7 +48,7 @@ public fun Array<out Annotation>.nextAnnotations(): Pair<ResultType, Array<Annot
     if (next is ResultType) {
       resultType = next
     } else {
-      nextAnnotations[i] = next
+      nextAnnotations[nextIndex] = next
       nextIndex++
     }
   }
