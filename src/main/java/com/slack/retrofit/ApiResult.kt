@@ -83,7 +83,7 @@ public sealed class ApiResult<out T, out E> {
     ) : Failure<Nothing>()
 
     /**
-     * An HTTP failure. This indicates a non-2xx response. The [code] are available for reference.
+     * An HTTP failure. This indicates a non-2xx response. The [code] is available for reference.
      *
      * @property code The HTTP status code.
      */
