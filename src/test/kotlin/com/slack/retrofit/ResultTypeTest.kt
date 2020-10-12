@@ -18,10 +18,15 @@ package com.slack.retrofit
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 import java.lang.reflect.Type
+import kotlin.annotation.AnnotationRetention.RUNTIME
 import kotlin.reflect.KType
 import kotlin.reflect.javaType
 import kotlin.reflect.typeOf
 
+@Retention(RUNTIME)
+annotation class SampleAnnotation
+
+@SampleAnnotation
 class ResultTypeTest {
 
   @Test
@@ -54,6 +59,18 @@ class ResultTypeTest {
     val annotation = createResultType(wildcard)
     val created = annotation.toType()
     Util.removeSubtypeWildcard(wildcard).assertEqualTo(created)
+  }
+
+  @Test
+  fun nextAnnotations() {
+    val annotations = Array<Annotation>(4) {
+      ResultTypeTest::class.java.getAnnotation(SampleAnnotation::class.java)
+    }
+    val resultTypeAnnotation = createResultType(String::class.java)
+    annotations[0] = resultTypeAnnotation
+    val (resultType, nextAnnotations) = annotations.nextAnnotations() ?: error("No annotation found")
+    assertThat(nextAnnotations.size).isEqualTo(3)
+    assertThat(resultType).isSameInstanceAs(resultTypeAnnotation)
   }
 
   private class A
