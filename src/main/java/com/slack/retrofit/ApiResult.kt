@@ -73,7 +73,7 @@ public sealed class ApiResult<out T, out E> {
     ) : Failure<Nothing>()
 
     /**
-     * A network failure caused by a given [error]. This error is opaque, as the actual type could
+     * An unknown failure caused by a given [error]. This error is opaque, as the actual type could
      * be from a number of sources (serialization issues, etc). This event is generally considered
      * to be a non-recoverable and should be used as signal or logging before attempting to
      * gracefully degrade or retry.
