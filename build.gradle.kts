@@ -50,14 +50,24 @@ java {
 }
 
 tasks.withType<KotlinCompile>().configureEach {
+  val taskName = name
   kotlinOptions {
     jvmTarget = "1.8"
-    freeCompilerArgs = listOf("-progressive")
+    val argsList = mutableListOf("-progressive")
+    if (taskName == "compileTestKotlin") {
+      argsList += "-Xopt-in=kotlin.ExperimentalStdlibApi"
+    }
+    @Suppress("SuspiciousCollectionReassignment")
+    freeCompilerArgs += argsList
   }
 }
 
 tasks.withType<Detekt>().configureEach {
   jvmTarget = "1.8"
+}
+
+kotlin {
+  explicitApi()
 }
 
 tasks.named<DokkaTask>("dokkaHtml") {
@@ -76,7 +86,7 @@ spotless {
     trimTrailingWhitespace()
     endWithNewline()
   }
-  val ktlintVersion = "0.38.1"
+  val ktlintVersion = "0.39.0"
   val ktlintUserData = mapOf("indent_size" to "2", "continuation_indent_size" to "2")
   kotlin {
     target("**/*.kt")
@@ -96,9 +106,16 @@ spotless {
 
 val moshiVersion = "1.10.0"
 val retrofitVersion = "2.9.0"
+val okhttpVersion = "4.9.0"
+val coroutinesVersion = "1.3.9"
 dependencies {
   implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
 
+  testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+  testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
+  testImplementation("com.squareup.retrofit2:converter-scalars:$retrofitVersion")
+  testImplementation("com.squareup.okhttp3:okhttp:$okhttpVersion")
+  testImplementation("com.squareup.okhttp3:mockwebserver:$okhttpVersion")
   testImplementation("com.squareup.moshi:moshi:$moshiVersion")
   testImplementation("com.squareup.moshi:moshi-kotlin:$moshiVersion")
   testImplementation("junit:junit:4.13")
