@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.slack.retrofit;
+package com.slack.eithernet;
 
-import com.slack.retrofit.Util.GenericArrayTypeImpl;
-import com.slack.retrofit.Util.ParameterizedTypeImpl;
-import com.slack.retrofit.Util.WildcardTypeImpl;
+import com.slack.eithernet.Util.GenericArrayTypeImpl;
+import com.slack.eithernet.Util.ParameterizedTypeImpl;
+import com.slack.eithernet.Util.WildcardTypeImpl;
 import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
@@ -27,7 +27,7 @@ import java.lang.reflect.WildcardType;
 import java.util.Arrays;
 import org.jetbrains.annotations.Nullable;
 
-import static com.slack.retrofit.Util.EMPTY_TYPE_ARRAY;
+import static com.slack.eithernet.Util.EMPTY_TYPE_ARRAY;
 
 /** Factory methods for types. */
 public final class Types {

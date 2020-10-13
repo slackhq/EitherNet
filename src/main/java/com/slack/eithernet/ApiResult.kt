@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.slack.retrofit
+package com.slack.eithernet
 
 import com.slack.retrofit.ApiResult.Failure.ApiFailure
 import com.slack.retrofit.ApiResult.Failure.HttpFailure
