@@ -15,7 +15,7 @@
  */
 package com.slack.eithernet
 
-import com.slack.retrofit.Util.canonicalize
+import com.slack.eithernet.Util.canonicalize
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import java.lang.reflect.WildcardType
