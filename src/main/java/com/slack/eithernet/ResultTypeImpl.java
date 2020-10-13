@@ -1,4 +1,4 @@
-package com.slack.retrofit;
+package com.slack.eithernet;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;

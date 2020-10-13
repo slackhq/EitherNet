@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.slack.retrofit
+package com.slack.eithernet
 
-import com.slack.retrofit.ApiResult.Failure.ApiFailure
-import com.slack.retrofit.ApiResult.Failure.HttpFailure
-import com.slack.retrofit.ApiResult.Failure.NetworkFailure
-import com.slack.retrofit.ApiResult.Failure.UnknownFailure
+import com.slack.eithernet.ApiResult.Failure.ApiFailure
+import com.slack.eithernet.ApiResult.Failure.HttpFailure
+import com.slack.eithernet.ApiResult.Failure.NetworkFailure
+import com.slack.eithernet.ApiResult.Failure.UnknownFailure
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.CallAdapter

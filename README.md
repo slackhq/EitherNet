@@ -1,6 +1,6 @@
-# Retrofit `ApiResult`
+# EitherNet
 
-A pluggable sealed API result type for modeling Retrofit responses.
+A pluggable sealed API result type for modeling [Retrofit](https://github.com/square/retrofit) responses.
 
 ## Usage
 
@@ -114,7 +114,7 @@ class ErrorConverterFactory : Converter.Factory() {
 
 ```gradle
 dependencies {
-  implementation("com.slack.retrofit:api-result:<version>")
+  implementation("com.slack.eithernet:eithernet:<version>")
 }
 ```
 
@@ -138,4 +138,4 @@ License
     limitations under the License.
 
 
-[snap]: https://oss.sonatype.org/content/repositories/snapshots/com/slack/retrofit/
+[snap]: https://oss.sonatype.org/content/repositories/snapshots/com/slack/eithernet/

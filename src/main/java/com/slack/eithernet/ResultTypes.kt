@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.slack.retrofit
+package com.slack.eithernet
 
-import com.slack.retrofit.Util.canonicalize
+import com.slack.eithernet.Util.canonicalize
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import java.lang.reflect.WildcardType

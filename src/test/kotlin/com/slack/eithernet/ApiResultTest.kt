@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.slack.retrofit
+package com.slack.eithernet
 
 import com.google.common.truth.Truth.assertThat
-import com.slack.retrofit.ApiResult.Failure.ApiFailure
+import com.slack.eithernet.ApiResult.Failure.ApiFailure
 import kotlinx.coroutines.runBlocking
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
