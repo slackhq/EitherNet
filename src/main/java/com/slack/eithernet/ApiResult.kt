@@ -255,6 +255,7 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                       val nextAnnotations = arrayOfNulls<Annotation>(annotations.size + 1)
                       nextAnnotations[0] = statusCode
                       annotations.copyInto(nextAnnotations, 1)
+                      @Suppress("TooGenericExceptionCaught")
                       errorBody = try {
                         retrofit.responseBodyConverter<Any>(errorType, nextAnnotations)
                           .convert(responseBody)
