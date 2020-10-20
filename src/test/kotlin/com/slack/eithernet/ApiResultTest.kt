@@ -17,6 +17,7 @@ package com.slack.eithernet
 
 import com.google.common.truth.Truth.assertThat
 import com.slack.eithernet.ApiResult.Failure.ApiFailure
+import com.slack.eithernet.ApiResult.Failure.UnknownFailure
 import kotlinx.coroutines.runBlocking
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -87,7 +88,7 @@ class ApiResultTest {
 
     server.enqueue(response)
     val result = runBlocking { service.unitEndpoint() }
-    assertThat(result).isEqualTo(ApiResult.httpFailure(404))
+    assertThat(result).isEqualTo(ApiResult.httpFailure(404, null))
   }
 
   @Test
@@ -98,7 +99,40 @@ class ApiResultTest {
 
     server.enqueue(response)
     val result = runBlocking { service.testEndpoint() }
-    assertThat(result).isEqualTo(ApiResult.httpFailure(404))
+    assertThat(result).isEqualTo(ApiResult.httpFailure(404, null))
+  }
+
+  @Test
+  fun apiHttpFailure_withBody() {
+    val response = MockResponse()
+      .setResponseCode(404)
+      .setBody("Custom errors for all")
+
+    server.enqueue(response)
+    val result = runBlocking { service.testEndpointWithErrorBody() }
+    assertThat(result).isEqualTo(ApiResult.httpFailure(404, "Custom errors for all"))
+  }
+
+  @Test
+  fun apiHttpFailure_withBodyEncodingIssue() {
+    val response = MockResponse()
+      .setResponseCode(404)
+      .setBody("Custom errors for all")
+
+    server.enqueue(response)
+    val result = runBlocking { service.badEndpointWithErrorBody() }
+    check(result is UnknownFailure)
+    assertThat(result.error).isInstanceOf(BadEndpointException::class.java)
+  }
+
+  @Test
+  fun apiHttpFailure_withBody_missingBody() {
+    val response = MockResponse()
+      .setResponseCode(404)
+
+    server.enqueue(response)
+    val result = runBlocking { service.testEndpointWithErrorBody() }
+    assertThat(result).isEqualTo(ApiResult.httpFailure(404, null))
   }
 
   @Test
@@ -165,14 +199,23 @@ class ApiResultTest {
         .setBody("")
     )
     val result = runBlocking { service.badEndpoint() }
-    assertThat(result).isInstanceOf(ApiResult.Failure.UnknownFailure::class.java)
-    assertThat((result as ApiResult.Failure.UnknownFailure).error)
+    assertThat(result).isInstanceOf(UnknownFailure::class.java)
+    assertThat((result as UnknownFailure).error)
       .isInstanceOf(BadEndpointException::class.java)
   }
 
   interface TestApi {
     @GET("/")
     suspend fun testEndpoint(): ApiResult<String, String>
+
+    @DecodeErrorBody
+    @GET("/")
+    suspend fun testEndpointWithErrorBody(): ApiResult<String, String>
+
+    @BadEndpoint
+    @DecodeErrorBody
+    @GET("/")
+    suspend fun badEndpointWithErrorBody(): ApiResult<String, String>
 
     @GET("/")
     suspend fun unitEndpoint(): ApiResult<Unit, String>
@@ -238,8 +281,10 @@ class ApiResultTest {
     ): Converter<ResponseBody, *>? {
       if (annotations.any { it is BadEndpoint }) {
         return Converter<ResponseBody, Any> { throw BadEndpointException() }
+      } else if (annotations.any { it is StatusCode }) {
+        return null
       }
-      val (errorType, _) = annotations.nextAnnotations() ?: error("No error type found!")
+      val (errorType, _) = annotations.errorType() ?: error("No error type found!")
       return ResponseBodyConverter(errorType.toType())
     }
 
