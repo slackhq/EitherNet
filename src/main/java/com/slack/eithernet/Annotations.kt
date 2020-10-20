@@ -15,7 +15,6 @@
  */
 package com.slack.eithernet
 
-import com.slack.eithernet.ApiResult.Companion
 import com.slack.eithernet.Util.canonicalize
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type

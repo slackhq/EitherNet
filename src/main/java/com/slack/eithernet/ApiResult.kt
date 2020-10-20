@@ -204,7 +204,8 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
     }
 
     val decodeErrorBody = annotations.any { it is DecodeErrorBody }
-    return ApiResultCallAdapter(retrofit,
+    return ApiResultCallAdapter(
+      retrofit,
       apiResultType,
       decodeErrorBody,
       annotations
@@ -263,8 +264,10 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                       }
                     }
                   }
-                  callback.onResponse(call,
-                    Response.success(ApiResult.httpFailure(response.code(), errorBody)))
+                  callback.onResponse(
+                    call,
+                    Response.success(ApiResult.httpFailure(response.code(), errorBody))
+                  )
                 }
               }
             }
