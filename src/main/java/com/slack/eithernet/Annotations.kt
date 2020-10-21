@@ -32,7 +32,7 @@ import java.lang.reflect.WildcardType
  *   annotations: Array<out Annotation>,
  *   retrofit: Retrofit
  * ): Converter<ResponseBody, *>? {
- *   val (statusCode, nextAnnotations) = annotations.nextAnnotations()
+ *   val (statusCode, nextAnnotations) = annotations.statusCode()
  *     ?: return
  *   val errorType = when (statusCode) {
  *     401 -> Unuuthorized::class.java
