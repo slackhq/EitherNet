@@ -23,7 +23,7 @@ when (val result = myApi.someEndpoint()) {
     is NetworkFailure -> showError(result.error)
     is HttpFailure -> showError(result.code)
     is ApiFailure -> showError(result.error)
-    is UnknownError -> showError(result.error)
+    is UnknownFailure -> showError(result.error)
   }
 }
 ```
