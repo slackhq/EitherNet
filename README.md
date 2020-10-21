@@ -77,7 +77,7 @@ override fun responseBodyConverter(
   val (statusCode, nextAnnotations) = annotations.nextAnnotations()
     ?: return
   val errorType = when (statusCode.value) {
-    401 -> Unuuthorized::class.java
+    401 -> Unauthorized::class.java
     404 -> NotFound::class.java
     // ...
   }
