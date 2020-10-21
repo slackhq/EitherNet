@@ -74,7 +74,7 @@ override fun responseBodyConverter(
   annotations: Array<out Annotation>,
   retrofit: Retrofit
 ): Converter<ResponseBody, *>? {
-  val (statusCode, nextAnnotations) = annotations.nextAnnotations()
+  val (statusCode, nextAnnotations) = annotations.statusCode()
     ?: return
   val errorType = when (statusCode.value) {
     401 -> Unauthorized::class.java
