@@ -75,7 +75,7 @@ override fun responseBodyConverter(
   retrofit: Retrofit
 ): Converter<ResponseBody, *>? {
   val (statusCode, nextAnnotations) = annotations.statusCode()
-    ?: return
+    ?: return null
   val errorType = when (statusCode.value) {
     401 -> Unauthorized::class.java
     404 -> NotFound::class.java
@@ -127,7 +127,7 @@ class ErrorConverterFactory : Converter.Factory() {
     retrofit: Retrofit
   ): Converter<ResponseBody, *>? {
     // This returns a `@ResultType` instance that can be used to get the error type via toType()
-    val (errorType, nextAnnotations) = annotations.errorType() ?: error("No error type found!")
+    val (errorType, nextAnnotations) = annotations.errorType() ?: return null
     return ResponseBodyConverter(errorType.toType())
   }
 
