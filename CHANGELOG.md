@@ -17,7 +17,7 @@ interface TestApi {
 }
 ```
 
-See the [README](https://github.com/slackhq/EitherNet/tree/53c2e02292b17b48019139305f0ec6d1d782db95#decoding-error-bodies) section for more details.
+See the [README](https://github.com/slackhq/EitherNet/blob/main/README.md#decoding-error-bodies) section for more details.
 
 0.1.0
 -----
