@@ -95,11 +95,20 @@ class ApiResultTest {
   fun apiHttpFailure() {
     val response = MockResponse()
       .setResponseCode(404)
-      .setBody("Errors?")
 
     server.enqueue(response)
     val result = runBlocking { service.testEndpoint() }
     assertThat(result).isEqualTo(ApiResult.httpFailure(404, null))
+  }
+
+  @Test
+  fun apiHttpFailure_5xx() {
+    val response = MockResponse()
+      .setResponseCode(500)
+
+    server.enqueue(response)
+    val result = runBlocking { service.testEndpoint() }
+    assertThat(result).isEqualTo(ApiResult.httpFailure(500, null))
   }
 
   @Test

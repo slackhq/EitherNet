@@ -63,7 +63,7 @@ interface TestApi {
 }
 ```
 
-Now a 4xx response will try to decode its error body (if any) as `ErrorResponse`. If you want to
+Now a 4xx or 5xx response will try to decode its error body (if any) as `ErrorResponse`. If you want to
 contextually decode the error body based on the status code, you can retrieve a `@StatusCode` annotation
 from annotations in a custom Retrofit `Converter`.
 

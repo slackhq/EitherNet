@@ -85,7 +85,7 @@ public sealed class ApiResult<out T, out E> {
     ) : Failure<Nothing>()
 
     /**
-     * An HTTP failure. This indicates a 4xx response. The [code] is available for reference.
+     * An HTTP failure. This indicates a 4xx or 5xx response. The [code] is available for reference.
      *
      * @property code The HTTP status code.
      * @property error An optional [error][E]. This would be from the error body of the response.
@@ -110,7 +110,7 @@ public sealed class ApiResult<out T, out E> {
   public companion object {
     private const val OK = 200
     private val HTTP_SUCCESS_RANGE = OK..299
-    private val HTTP_FAILURE_RANGE = 400..499
+    private val HTTP_FAILURE_RANGE = 400..599
 
     /** Returns a new [HttpFailure] with given [code] and optional [error]. */
     public fun <E> httpFailure(code: Int, error: E? = null): HttpFailure<E> {
@@ -133,7 +133,7 @@ public sealed class ApiResult<out T, out E> {
           "string to indicate an API error, use the ApiResult.apiFailure() factory."
       }
       require(code in HTTP_FAILURE_RANGE) {
-        "Status code '$code' is not a HTTP failure response. Must be a 4xx code."
+        "Status code '$code' is not a HTTP failure response. Must be a 4xx or 5xx code."
       }
     }
   }
