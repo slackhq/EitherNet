@@ -24,6 +24,7 @@ import okhttp3.ResponseBody
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.SocketPolicy
+import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -211,6 +212,39 @@ class ApiResultTest {
     assertThat(result).isInstanceOf(UnknownFailure::class.java)
     assertThat((result as UnknownFailure).error)
       .isInstanceOf(BadEndpointException::class.java)
+  }
+
+  @Test
+  fun statusCodeTests() {
+    // Basic value checks
+    val fourHundred = createStatusCode(400)
+    assertThat(fourHundred.value).isEqualTo(400)
+    val fiveHundred = createStatusCode(500)
+    assertThat(fiveHundred.value).isEqualTo(500)
+
+    // Basic equality checks
+    assertThat(fourHundred).isEqualTo(createStatusCode(400))
+    assertThat(fourHundred).isNotEqualTo(fiveHundred)
+  }
+
+  @Test
+  fun statusCode_200() {
+    try {
+      createStatusCode(200)
+      fail()
+    } catch (e: IllegalArgumentException) {
+      assertThat(e).hasMessageThat().contains("use the ApiResult.apiFailure()")
+    }
+  }
+
+  @Test
+  fun statusCode_non_error() {
+    try {
+      createStatusCode(307)
+      fail()
+    } catch (e: IllegalArgumentException) {
+      assertThat(e).hasMessageThat().contains("Must be a 4xx or 5xx code")
+    }
   }
 
   interface TestApi {
