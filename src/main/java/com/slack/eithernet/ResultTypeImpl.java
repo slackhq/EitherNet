@@ -61,7 +61,7 @@ final class ResultTypeImpl implements ResultType {
   }
 
   @Override public String toString() {
-    return "ResultTypeImpl{"
+    return "ResultType{"
         + "ownerType="
         + ownerType
         + ", rawType="

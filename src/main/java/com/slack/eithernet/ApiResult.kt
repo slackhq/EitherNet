@@ -15,10 +15,12 @@
  */
 package com.slack.eithernet
 
+import com.slack.eithernet.ApiResult.Failure
 import com.slack.eithernet.ApiResult.Failure.ApiFailure
 import com.slack.eithernet.ApiResult.Failure.HttpFailure
 import com.slack.eithernet.ApiResult.Failure.NetworkFailure
 import com.slack.eithernet.ApiResult.Failure.UnknownFailure
+import com.slack.eithernet.ApiResult.Success
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.CallAdapter
@@ -69,7 +71,7 @@ public sealed class ApiResult<out T, out E> {
      * degrade or retry.
      */
     public data class NetworkFailure internal constructor(
-      public val error: IOException
+      public val error: IOException,
     ) : Failure<Nothing>()
 
     /**
@@ -79,15 +81,19 @@ public sealed class ApiResult<out T, out E> {
      * gracefully degrade or retry.
      */
     public data class UnknownFailure internal constructor(
-      public val error: Throwable
+      public val error: Throwable,
     ) : Failure<Nothing>()
 
     /**
-     * An HTTP failure. This indicates a non-2xx response. The [code] is available for reference.
+     * An HTTP failure. This indicates a 4xx or 5xx response. The [code] is available for reference.
      *
      * @property code The HTTP status code.
+     * @property error An optional [error][E]. This would be from the error body of the response.
      */
-    public data class HttpFailure internal constructor(public val code: Int) : Failure<Nothing>()
+    public data class HttpFailure<out E> internal constructor(
+      public val code: Int,
+      public val error: E?,
+    ) : Failure<E>()
 
     /**
      * An API failure. This indicates a 2xx response where [ApiException] was thrown
@@ -96,7 +102,7 @@ public sealed class ApiResult<out T, out E> {
      * An [ApiException], the [error] property will be best-effort populated with the
      * value of the [ApiException.error] property.
      *
-     * @property error An optional [error][E] type.
+     * @property error An optional [error][E].
      */
     public data class ApiFailure<out E> internal constructor(public val error: E?) : Failure<E>()
   }
@@ -104,14 +110,12 @@ public sealed class ApiResult<out T, out E> {
   public companion object {
     private const val OK = 200
     private val HTTP_SUCCESS_RANGE = OK..299
+    private val HTTP_FAILURE_RANGE = 400..599
 
-    /** Returns a new [HttpFailure] with given [code]. */
-    public fun httpFailure(code: Int): HttpFailure {
-      require(code !in HTTP_SUCCESS_RANGE) {
-        "Status code '$code' is a successful HTTP response. If you mean to use a $OK code + error " +
-          "string to indicate an API error, use the apiFailure() factory."
-      }
-      return HttpFailure(code)
+    /** Returns a new [HttpFailure] with given [code] and optional [error]. */
+    public fun <E> httpFailure(code: Int, error: E? = null): HttpFailure<E> {
+      checkHttpFailureCode(code)
+      return HttpFailure(code, error)
     }
 
     /** Returns a new [ApiFailure] with given [error]. */
@@ -122,6 +126,16 @@ public sealed class ApiResult<out T, out E> {
 
     /** Returns a new [UnknownFailure] with given [error]. */
     public fun unknownFailure(error: Throwable): UnknownFailure = UnknownFailure(error)
+
+    internal fun checkHttpFailureCode(code: Int) {
+      require(code !in HTTP_SUCCESS_RANGE) {
+        "Status code '$code' is a successful HTTP response. If you mean to use a $OK code + error " +
+          "string to indicate an API error, use the ApiResult.apiFailure() factory."
+      }
+      require(code in HTTP_FAILURE_RANGE) {
+        "Status code '$code' is not a HTTP failure response. Must be a 4xx or 5xx code."
+      }
+    }
   }
 }
 
@@ -138,7 +152,7 @@ public object ApiResultConverterFactory : Converter.Factory() {
   override fun responseBodyConverter(
     type: Type,
     annotations: Array<out Annotation>,
-    retrofit: Retrofit
+    retrofit: Retrofit,
   ): Converter<ResponseBody, *>? {
     if (getRawType(type) != ApiResult::class.java) return null
 
@@ -161,40 +175,48 @@ public object ApiResultConverterFactory : Converter.Factory() {
   }
 
   private class ApiResultConverter(
-    private val delegate: Converter<ResponseBody, Any>
+    private val delegate: Converter<ResponseBody, Any>,
   ) : Converter<ResponseBody, ApiResult<*, *>> {
     override fun convert(value: ResponseBody): ApiResult<*, *>? {
-      return delegate.convert(value)?.let { result ->
-        ApiResult.Success(result)
-      }
+      return delegate.convert(value)?.let(::Success)
     }
   }
 }
 
 /**
- * A custom [CallAdapter.Factory] for [ApiResult] calls. This creates a delegating adapter for suspend function calls
- * that return [ApiResult]. This facilitates returning all error types through the possible [ApiResult] subtypes.
+ * A custom [CallAdapter.Factory] for [ApiResult] calls. This creates a delegating adapter for
+ * suspend function calls that return [ApiResult]. This facilitates returning all error types
+ * through the possible [ApiResult] subtypes.
  */
 public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
   @Suppress("ReturnCount")
   override fun get(
     returnType: Type,
     annotations: Array<out Annotation>,
-    retrofit: Retrofit
+    retrofit: Retrofit,
   ): CallAdapter<*, *>? {
     if (getRawType(returnType) != Call::class.java) {
       return null
     }
-    val upperBound = getParameterUpperBound(0, returnType as ParameterizedType)
-    if (getRawType(upperBound) != ApiResult::class.java) {
+    val apiResultType = getParameterUpperBound(0, returnType as ParameterizedType)
+    if (apiResultType !is ParameterizedType || apiResultType.rawType != ApiResult::class.java) {
       return null
     }
 
-    return ApiResultCallAdapter(upperBound)
+    val decodeErrorBody = annotations.any { it is DecodeErrorBody }
+    return ApiResultCallAdapter(
+      retrofit,
+      apiResultType,
+      decodeErrorBody,
+      annotations
+    )
   }
 
   private class ApiResultCallAdapter(
-    private val responseType: Type
+    private val retrofit: Retrofit,
+    private val apiResultType: ParameterizedType,
+    private val decodeErrorBody: Boolean,
+    private val annotations: Array<out Annotation>,
   ) : CallAdapter<ApiResult<*, *>, Call<ApiResult<*, *>>> {
     override fun adapt(call: Call<ApiResult<*, *>>): Call<ApiResult<*, *>> {
       return object : Call<ApiResult<*, *>> by call {
@@ -215,11 +237,38 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                 }
               }
 
-              override fun onResponse(call: Call<ApiResult<*, *>>, response: Response<ApiResult<*, *>>) {
+              override fun onResponse(
+                call: Call<ApiResult<*, *>>,
+                response: Response<ApiResult<*, *>>,
+              ) {
                 if (response.isSuccessful) {
                   callback.onResponse(call, response)
                 } else {
-                  callback.onResponse(call, Response.success(ApiResult.httpFailure(response.code())))
+                  var errorBody: Any? = null
+                  if (decodeErrorBody) {
+                    response.errorBody()?.let { responseBody ->
+                      // Don't try to decode empty bodies
+                      // Unknown length bodies (i.e. -1L) are fine
+                      if (responseBody.contentLength() == 0L) return@let
+                      val errorType = apiResultType.actualTypeArguments[1]
+                      val statusCode = createStatusCode(response.code())
+                      val nextAnnotations = arrayOfNulls<Annotation>(annotations.size + 1)
+                      nextAnnotations[0] = statusCode
+                      annotations.copyInto(nextAnnotations, 1)
+                      @Suppress("TooGenericExceptionCaught")
+                      errorBody = try {
+                        retrofit.responseBodyConverter<Any>(errorType, nextAnnotations)
+                          .convert(responseBody)
+                      } catch (e: Throwable) {
+                        callback.onResponse(call, Response.success(ApiResult.unknownFailure(e)))
+                        return
+                      }
+                    }
+                  }
+                  callback.onResponse(
+                    call,
+                    Response.success(ApiResult.httpFailure(response.code(), errorBody))
+                  )
                 }
               }
             }
@@ -228,6 +277,6 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
       }
     }
 
-    override fun responseType(): Type = responseType
+    override fun responseType(): Type = apiResultType
   }
 }

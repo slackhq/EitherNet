@@ -21,6 +21,34 @@ import java.lang.reflect.Type
 import java.lang.reflect.WildcardType
 
 /**
+ * Returns a [Pair] of a [StatusCode] and subset of these annotations without that [StatusCode]
+ * instance. This should be used in a custom Retrofit [retrofit2.Converter.Factory] to know what
+ * the given status code of a non-2xx response was when decoding the error body. This can be useful
+ * for contextually decoding error bodies based on the status code.
+ *
+ * ```
+ * override fun responseBodyConverter(
+ *   type: Type,
+ *   annotations: Array<out Annotation>,
+ *   retrofit: Retrofit
+ * ): Converter<ResponseBody, *>? {
+ *   val (statusCode, nextAnnotations) = annotations.statusCode()
+ *     ?: return
+ *   val errorType = when (statusCode) {
+ *     401 -> Unuuthorized::class.java
+ *     404 -> NotFound::class.java
+ *     // ...
+ *   }
+ *   val errorDelegate = retrofit.nextResponseBodyConverter<Any>(this, errorType.toType(), nextAnnotations)
+ *   return MyCustomBodyConverter(errorDelegate)
+ * }
+ * ```
+ */
+public fun Array<out Annotation>.statusCode(): Pair<StatusCode, Array<Annotation>>? {
+  return nextAnnotations(StatusCode::class.java)
+}
+
+/**
  * Returns a [Pair] of a [ResultType] and subset of these annotations without that [ResultType]
  * instance. This should be used in a custom Retrofit [retrofit2.Converter.Factory] to determine
  * the error type of an [ApiResult] for the given endpoint.
@@ -31,22 +59,27 @@ import java.lang.reflect.WildcardType
  *   annotations: Array<out Annotation>,
  *   retrofit: Retrofit
  * ): Converter<ResponseBody, *>? {
- *   val (errorType, nextAnnotations) = annotations.nextAnnotations()
+ *   val (errorType, nextAnnotations) = annotations.errorType()
  *     ?: error("No error type found!")
  *   val errorDelegate = retrofit.nextResponseBodyConverter<Any>(this, errorType.toType(), nextAnnotations)
  *   return MyCustomBodyConverter(errorDelegate)
  * }
  * ```
  */
-public fun Array<out Annotation>.nextAnnotations(): Pair<ResultType, Array<Annotation>>? {
+public fun Array<out Annotation>.errorType(): Pair<ResultType, Array<Annotation>>? {
+  return nextAnnotations(ResultType::class.java)
+}
+
+private fun <A> Array<out Annotation>.nextAnnotations(type: Class<A>): Pair<A, Array<Annotation>>? {
   var nextIndex = 0
   val theseAnnotations = this
-  var resultType: ResultType? = null
+  var resultType: A? = null
   val nextAnnotations = arrayOfNulls<Annotation>(size - 1)
   for (i in indices) {
     val next = theseAnnotations[i]
-    if (next is ResultType) {
-      resultType = next
+    if (type.isInstance(next)) {
+      @Suppress("UNCHECKED_CAST")
+      resultType = next as A
     } else {
       nextAnnotations[nextIndex] = next
       nextIndex++
@@ -91,6 +124,11 @@ public fun ResultType.toType(): Type {
   }
 }
 
+internal fun createStatusCode(code: Int): StatusCode {
+  ApiResult.checkHttpFailureCode(code)
+  return StatusCodeImpl(code)
+}
+
 internal fun createResultType(type: Type): ResultType {
   var ownerType: Type = Nothing::class.java
   val rawType: Class<*>
@@ -125,11 +163,9 @@ internal fun createResultType(type: Type): ResultType {
   )
 }
 
-internal fun createResultType(
+private fun createResultType(
   ownerType: Class<*>,
   rawType: Class<*>,
   typeArgs: Array<ResultType>,
   isArray: Boolean
-): ResultType {
-  return ResultTypeImpl(ownerType, rawType, typeArgs, isArray)
-}
+): ResultType = ResultTypeImpl(ownerType, rawType, typeArgs, isArray)

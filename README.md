@@ -23,7 +23,7 @@ when (val result = myApi.someEndpoint()) {
     is NetworkFailure -> showError(result.error)
     is HttpFailure -> showError(result.code)
     is ApiFailure -> showError(result.error)
-    is UnknownError -> showError(result.error)
+    is UnknownFailure -> showError(result.error)
   }
 }
 ```
@@ -50,6 +50,43 @@ val api = Retrofit.Builder()
 ```
 
 If you don't have custom error return types, simply use `Nothing` for the error type.
+
+### Decoding Error Bodies
+
+If you want to decode error types in `HttpFailure`s, annotate your endpoint with `@DecodeErrorBody`:
+
+```kotlin
+interface TestApi {
+  @DecodeErrorBody
+  @GET("/")
+  suspend fun getData(): ApiResult<SuccessResponse, ErrorResponse>
+}
+```
+
+Now a 4xx or 5xx response will try to decode its error body (if any) as `ErrorResponse`. If you want to
+contextually decode the error body based on the status code, you can retrieve a `@StatusCode` annotation
+from annotations in a custom Retrofit `Converter`.
+
+```kotlin
+// In your own converter factory.
+override fun responseBodyConverter(
+  type: Type,
+  annotations: Array<out Annotation>,
+  retrofit: Retrofit
+): Converter<ResponseBody, *>? {
+  val (statusCode, nextAnnotations) = annotations.statusCode()
+    ?: return
+  val errorType = when (statusCode.value) {
+    401 -> Unauthorized::class.java
+    404 -> NotFound::class.java
+    // ...
+  }
+  val errorDelegate = retrofit.nextResponseBodyConverter<Any>(this, errorType.toType(), nextAnnotations)
+  return MyCustomBodyConverter(errorDelegate)
+}
+```
+
+Note that error bodies with a content length of 0 will be skipped.
 
 ### Plugability
 
@@ -90,8 +127,7 @@ class ErrorConverterFactory : Converter.Factory() {
     retrofit: Retrofit
   ): Converter<ResponseBody, *>? {
     // This returns a `@ResultType` instance that can be used to get the error type via toType()
-    val (errorType, nextAnnotations) = annotations.nextAnnotations() ?: error(
-      "No error type found!")
+    val (errorType, nextAnnotations) = annotations.errorType() ?: error("No error type found!")
     return ResponseBodyConverter(errorType.toType())
   }
 
