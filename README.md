@@ -148,6 +148,7 @@ class ErrorConverterFactory : Converter.Factory() {
 
 ## Installation
 
+[![Maven Central](https://img.shields.io/maven-central/v/com.slack.eithernet/eithernet.svg)](https://mvnrepository.com/artifact/com.slack.eithernet/eithernet)
 ```gradle
 dependencies {
   implementation("com.slack.eithernet:eithernet:<version>")
