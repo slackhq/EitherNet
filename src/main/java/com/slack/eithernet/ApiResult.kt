@@ -16,10 +16,18 @@
 package com.slack.eithernet
 
 import com.slack.eithernet.ApiResult.Failure
-import com.slack.eithernet.ApiResult.Failure.*
+import com.slack.eithernet.ApiResult.Failure.ApiFailure
+import com.slack.eithernet.ApiResult.Failure.HttpFailure
+import com.slack.eithernet.ApiResult.Failure.NetworkFailure
+import com.slack.eithernet.ApiResult.Failure.UnknownFailure
 import com.slack.eithernet.ApiResult.Success
 import okhttp3.ResponseBody
-import retrofit2.*
+import retrofit2.Call
+import retrofit2.CallAdapter
+import retrofit2.Callback
+import retrofit2.Converter
+import retrofit2.Response
+import retrofit2.Retrofit
 import java.io.IOException
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
