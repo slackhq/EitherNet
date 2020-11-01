@@ -16,18 +16,10 @@
 package com.slack.eithernet
 
 import com.slack.eithernet.ApiResult.Failure
-import com.slack.eithernet.ApiResult.Failure.ApiFailure
-import com.slack.eithernet.ApiResult.Failure.HttpFailure
-import com.slack.eithernet.ApiResult.Failure.NetworkFailure
-import com.slack.eithernet.ApiResult.Failure.UnknownFailure
+import com.slack.eithernet.ApiResult.Failure.*
 import com.slack.eithernet.ApiResult.Success
 import okhttp3.ResponseBody
-import retrofit2.Call
-import retrofit2.CallAdapter
-import retrofit2.Callback
-import retrofit2.Converter
-import retrofit2.Response
-import retrofit2.Retrofit
+import retrofit2.*
 import java.io.IOException
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
@@ -111,6 +103,9 @@ public sealed class ApiResult<out T, out E> {
     private const val OK = 200
     private val HTTP_SUCCESS_RANGE = OK..299
     private val HTTP_FAILURE_RANGE = 400..599
+
+    /** Returns a new [Success] with given [value]. */
+    public fun <T : Any, E> success(value: T): ApiResult<T, E> = Success(value)
 
     /** Returns a new [HttpFailure] with given [code] and optional [error]. */
     public fun <E> httpFailure(code: Int, error: E? = null): HttpFailure<E> {
