@@ -59,7 +59,15 @@ import java.lang.reflect.Type
 public sealed class ApiResult<out T, out E> {
 
   /** A successful result with the data available in [response]. */
-  public data class Success<T : Any>(public val response: T) : ApiResult<T, Nothing>()
+
+  public data class Success<T : Any>
+  @Deprecated(
+    message = "Use ApiResult.success(value)",
+    replaceWith = ReplaceWith(
+      expression = "ApiResult.success(response)",
+      imports = ["com.slack.eithernet.ApiResult"]
+    )
+  ) constructor(public val response: T) : ApiResult<T, Nothing>()
 
   /** Represents a failure of some sort. */
   public sealed class Failure<out E> : ApiResult<Nothing, E>() {
@@ -113,7 +121,8 @@ public sealed class ApiResult<out T, out E> {
     private val HTTP_FAILURE_RANGE = 400..599
 
     /** Returns a new [Success] with given [value]. */
-    public fun <T : Any, E> success(value: T): ApiResult<T, E> = Success(value)
+    @Suppress("DEPRECATION")
+    public fun <T : Any> success(value: T): Success<T> = Success(value)
 
     /** Returns a new [HttpFailure] with given [code] and optional [error]. */
     public fun <E> httpFailure(code: Int, error: E? = null): HttpFailure<E> {
@@ -181,7 +190,7 @@ public object ApiResultConverterFactory : Converter.Factory() {
     private val delegate: Converter<ResponseBody, Any>,
   ) : Converter<ResponseBody, ApiResult<*, *>> {
     override fun convert(value: ResponseBody): ApiResult<*, *>? {
-      return delegate.convert(value)?.let(::Success)
+      return delegate.convert(value)?.let { ApiResult.success(it) }
     }
   }
 }
