@@ -67,7 +67,7 @@ class ApiResultTest {
 
     server.enqueue(response)
     val result = runBlocking { service.testEndpoint() }
-    assertThat(result).isEqualTo(ApiResult.Success("Response!"))
+    assertThat(result).isEqualTo(ApiResult.success("Response!"))
   }
 
   @Test
@@ -78,7 +78,7 @@ class ApiResultTest {
 
     server.enqueue(response)
     val result = runBlocking { service.unitEndpoint() }
-    assertThat(result).isEqualTo(ApiResult.Success(Unit))
+    assertThat(result).isEqualTo(ApiResult.success(Unit))
   }
 
   @Test
