@@ -171,13 +171,7 @@ public object ApiResultConverterFactory : Converter.Factory() {
     val successType = (type as ParameterizedType).actualTypeArguments[0]
     val errorType = type.actualTypeArguments[1]
     val errorResultType: Annotation = createResultType(errorType)
-    val nextAnnotations = Array(annotations.size + 1) { i ->
-      if (i < annotations.size) {
-        annotations[i]
-      } else {
-        errorResultType
-      }
-    }
+    val nextAnnotations = annotations + errorResultType
     val delegateConverter = retrofit.nextResponseBodyConverter<Any>(
       this,
       successType,
@@ -264,9 +258,7 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                       if (responseBody.contentLength() == 0L) return@let
                       val errorType = apiResultType.actualTypeArguments[1]
                       val statusCode = createStatusCode(response.code())
-                      val nextAnnotations = arrayOfNulls<Annotation>(annotations.size + 1)
-                      nextAnnotations[0] = statusCode
-                      annotations.copyInto(nextAnnotations, 1)
+                      val nextAnnotations = annotations + statusCode
                       @Suppress("TooGenericExceptionCaught")
                       errorBody = try {
                         retrofit.responseBodyConverter<Any>(errorType, nextAnnotations)
