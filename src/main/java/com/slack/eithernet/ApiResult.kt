@@ -163,7 +163,7 @@ public object ApiResultConverterFactory : Converter.Factory() {
 
   override fun responseBodyConverter(
     type: Type,
-    annotations: Array<out Annotation>,
+    annotations: Array<Annotation>,
     retrofit: Retrofit,
   ): Converter<ResponseBody, *>? {
     if (getRawType(type) != ApiResult::class.java) return null
@@ -198,7 +198,7 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
   @Suppress("ReturnCount")
   override fun get(
     returnType: Type,
-    annotations: Array<out Annotation>,
+    annotations: Array<Annotation>,
     retrofit: Retrofit,
   ): CallAdapter<*, *>? {
     if (getRawType(returnType) != Call::class.java) {
@@ -222,7 +222,7 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
     private val retrofit: Retrofit,
     private val apiResultType: ParameterizedType,
     private val decodeErrorBody: Boolean,
-    private val annotations: Array<out Annotation>,
+    private val annotations: Array<Annotation>,
   ) : CallAdapter<ApiResult<*, *>, Call<ApiResult<*, *>>> {
     override fun adapt(call: Call<ApiResult<*, *>>): Call<ApiResult<*, *>> {
       return object : Call<ApiResult<*, *>> by call {
