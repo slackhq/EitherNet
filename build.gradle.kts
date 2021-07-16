@@ -65,12 +65,12 @@ kotlin {
 
 tasks.named<DokkaTask>("dokkaHtml") {
   outputDirectory.set(rootDir.resolve("docs/0.x"))
-//  dokkaSourceSets.configureEach {
-//    skipDeprecated.set(true)
-//    externalDocumentationLink {
-//      url.set(URL("https://square.github.io/retrofit/2.x/retrofit/"))
-//    }
-//  }
+  dokkaSourceSets.configureEach {
+    skipDeprecated.set(true)
+    externalDocumentationLink {
+      url.set(URL("https://square.github.io/retrofit/2.x/retrofit/"))
+    }
+  }
 }
 
 spotless {
