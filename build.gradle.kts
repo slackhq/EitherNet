@@ -19,34 +19,27 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URL
 
 plugins {
-  kotlin("jvm") version "1.4.10"
-  id("org.jetbrains.dokka") version "1.4.10"
-  id("com.diffplug.spotless") version "5.6.0"
-  id("com.vanniktech.maven.publish") version "0.13.0"
-  id("io.gitlab.arturbosch.detekt") version "1.13.1"
+  kotlin("jvm") version "1.5.21"
+  id("org.jetbrains.dokka") version "1.5.0"
+  id("com.diffplug.spotless") version "5.14.1"
+  id("com.vanniktech.maven.publish") version "0.17.0"
+  id("io.gitlab.arturbosch.detekt") version "1.17.0"
 }
 
 repositories {
   mavenCentral()
-  exclusiveContent {
-    forRepository {
-      maven {
-        name = "JCenter"
-        setUrl("https://jcenter.bintray.com/")
-      }
-    }
-    filter {
-      // Required for Dokka
-      includeModule("org.jetbrains.kotlinx", "kotlinx-html-jvm")
-      includeGroup("org.jetbrains.dokka")
-      includeModule("org.jetbrains", "markdown")
-    }
-  }
 }
 
-java {
-  sourceCompatibility = JavaVersion.VERSION_1_8
-  targetCompatibility = JavaVersion.VERSION_1_8
+pluginManager.withPlugin("java") {
+  configure<JavaPluginExtension> {
+    toolchain {
+      languageVersion.set(JavaLanguageVersion.of(11))
+    }
+  }
+
+  project.tasks.withType<JavaCompile>().configureEach {
+    options.release.set(8)
+  }
 }
 
 tasks.withType<KotlinCompile>().configureEach {
@@ -72,12 +65,12 @@ kotlin {
 
 tasks.named<DokkaTask>("dokkaHtml") {
   outputDirectory.set(rootDir.resolve("docs/0.x"))
-  dokkaSourceSets.configureEach {
-    skipDeprecated.set(true)
-    externalDocumentationLink {
-      url.set(URL("https://square.github.io/retrofit/2.x/retrofit/"))
-    }
-  }
+//  dokkaSourceSets.configureEach {
+//    skipDeprecated.set(true)
+//    externalDocumentationLink {
+//      url.set(URL("https://square.github.io/retrofit/2.x/retrofit/"))
+//    }
+//  }
 }
 
 spotless {
@@ -86,7 +79,7 @@ spotless {
     trimTrailingWhitespace()
     endWithNewline()
   }
-  val ktlintVersion = "0.39.0"
+  val ktlintVersion = "0.41.0"
   val ktlintUserData = mapOf("indent_size" to "2", "continuation_indent_size" to "2")
   kotlin {
     target("**/*.kt")
@@ -104,10 +97,10 @@ spotless {
   }
 }
 
-val moshiVersion = "1.10.0"
+val moshiVersion = "1.12.0"
 val retrofitVersion = "2.9.0"
 val okhttpVersion = "4.9.0"
-val coroutinesVersion = "1.3.9"
+val coroutinesVersion = "1.5.1"
 dependencies {
   implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
 
@@ -118,6 +111,6 @@ dependencies {
   testImplementation("com.squareup.okhttp3:mockwebserver:$okhttpVersion")
   testImplementation("com.squareup.moshi:moshi:$moshiVersion")
   testImplementation("com.squareup.moshi:moshi-kotlin:$moshiVersion")
-  testImplementation("junit:junit:4.13.1")
-  testImplementation("com.google.truth:truth:1.0.1")
+  testImplementation("junit:junit:4.13.2")
+  testImplementation("com.google.truth:truth:1.1.2")
 }
