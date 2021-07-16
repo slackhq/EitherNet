@@ -60,14 +60,7 @@ public sealed interface ApiResult<out T, out E> {
 
   /** A successful result with the data available in [response]. */
 
-  public data class Success<T : Any>
-  @Deprecated(
-    message = "Use ApiResult.success(value)",
-    replaceWith = ReplaceWith(
-      expression = "ApiResult.success(response)",
-      imports = ["com.slack.eithernet.ApiResult"]
-    )
-  ) constructor(public val response: T) : ApiResult<T, Nothing>
+  public data class Success<T : Any> internal constructor(public val response: T) : ApiResult<T, Nothing>
 
   /** Represents a failure of some sort. */
   public sealed interface Failure<out E> : ApiResult<Nothing, E> {
@@ -121,7 +114,6 @@ public sealed interface ApiResult<out T, out E> {
     private val HTTP_FAILURE_RANGE = 400..599
 
     /** Returns a new [Success] with given [value]. */
-    @Suppress("DEPRECATION")
     public fun <T : Any> success(value: T): Success<T> = Success(value)
 
     /** Returns a new [HttpFailure] with given [code] and optional [error]. */
