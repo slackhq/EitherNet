@@ -24,6 +24,7 @@ plugins {
   id("com.diffplug.spotless") version "5.14.1"
   id("com.vanniktech.maven.publish") version "0.17.0"
   id("io.gitlab.arturbosch.detekt") version "1.17.0"
+  id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.6.0"
 }
 
 repositories {
