@@ -45,7 +45,4 @@ jobs:
 
       - name: Publish (default branch only)
         if: github.ref == 'refs/heads/main' && matrix.java-version == '11'
-        run: ./gradlew uploadArchives
-        env:
-          ORG_GRADLE_PROJECT_SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPEUSERNAME }}
-          ORG_GRADLE_PROJECT_SONATYPE_NEXUS_PASSWORD: ${{ secrets.SONATYPEPASSWORD }}
+        run: ./gradlew publishAllPublicationsToMavenCentralRepository -PmavenCentralUsername=${{ secrets.SONATYPEUSERNAME }} -PmavenCentralPassword=${{ secrets.SONATYPEPASSWORD }}
