@@ -14,7 +14,7 @@ _Note that we consider this stable for production use, this is mostly about API 
 * **Breaking:** `ApiResult` and `ApiResult.Failure` are both now `sealed interface` types rather than sealed classes. For most consumers this shouldn't be a source breaking change!
 * **Breaking:** `ApiResult.Success` constructor is now `internal`, please use the `ApiResult.success(<value>)` factory.
 * Test up to JDK 17.
-  
+
 Updated dependencies
 ```
 Kotlin      1.5.21
