@@ -317,6 +317,7 @@ class ApiResultTest {
     // Indicates this body is an error
     const val ERROR_MARKER = "ERROR: "
 
+    @Suppress("ReturnCount")
     override fun responseBodyConverter(
       type: Type,
       annotations: Array<out Annotation>,

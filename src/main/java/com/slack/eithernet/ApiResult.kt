@@ -56,21 +56,14 @@ import java.lang.reflect.Type
  * Usually, user code for this could just simply show a generic error message for a [Failure]
  * case, but a sealed class is exposed for more specific error messaging.
  */
-public sealed class ApiResult<out T, out E> {
+public sealed interface ApiResult<out T, out E> {
 
   /** A successful result with the data available in [response]. */
 
-  public data class Success<T : Any>
-  @Deprecated(
-    message = "Use ApiResult.success(value)",
-    replaceWith = ReplaceWith(
-      expression = "ApiResult.success(response)",
-      imports = ["com.slack.eithernet.ApiResult"]
-    )
-  ) constructor(public val response: T) : ApiResult<T, Nothing>()
+  public data class Success<T : Any> internal constructor(public val response: T) : ApiResult<T, Nothing>
 
   /** Represents a failure of some sort. */
-  public sealed class Failure<out E> : ApiResult<Nothing, E>() {
+  public sealed interface Failure<out E> : ApiResult<Nothing, E> {
 
     /**
      * A network failure caused by a given [error]. This error is opaque, as the actual type could
@@ -80,7 +73,7 @@ public sealed class ApiResult<out T, out E> {
      */
     public data class NetworkFailure internal constructor(
       public val error: IOException,
-    ) : Failure<Nothing>()
+    ) : Failure<Nothing>
 
     /**
      * An unknown failure caused by a given [error]. This error is opaque, as the actual type could
@@ -90,7 +83,7 @@ public sealed class ApiResult<out T, out E> {
      */
     public data class UnknownFailure internal constructor(
       public val error: Throwable,
-    ) : Failure<Nothing>()
+    ) : Failure<Nothing>
 
     /**
      * An HTTP failure. This indicates a 4xx or 5xx response. The [code] is available for reference.
@@ -101,7 +94,7 @@ public sealed class ApiResult<out T, out E> {
     public data class HttpFailure<out E> internal constructor(
       public val code: Int,
       public val error: E?,
-    ) : Failure<E>()
+    ) : Failure<E>
 
     /**
      * An API failure. This indicates a 2xx response where [ApiException] was thrown
@@ -112,7 +105,7 @@ public sealed class ApiResult<out T, out E> {
      *
      * @property error An optional [error][E].
      */
-    public data class ApiFailure<out E> internal constructor(public val error: E?) : Failure<E>()
+    public data class ApiFailure<out E> internal constructor(public val error: E?) : Failure<E>
   }
 
   public companion object {
@@ -121,7 +114,6 @@ public sealed class ApiResult<out T, out E> {
     private val HTTP_FAILURE_RANGE = 400..599
 
     /** Returns a new [Success] with given [value]. */
-    @Suppress("DEPRECATION")
     public fun <T : Any> success(value: T): Success<T> = Success(value)
 
     /** Returns a new [HttpFailure] with given [code] and optional [error]. */
