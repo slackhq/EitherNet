@@ -9,6 +9,8 @@ _2021-07-19_
 This is our first (and hopefully final!) 1.0 release candidate. Please report any issues or API
 surface area issues now or forever hold your peace.
 
+_Note that we consider this stable for production use, this is mostly about API stability._
+
 * **Breaking:** `ApiResult` and `ApiResult.Failure` are both now `sealed interface` types rather than sealed classes. For most consumers this shouldn't be a source breaking change!
 * **Breaking:** `ApiResult.Success` constructor is now `internal`, please use the `ApiResult.success(<value>)` factory.
 * Test up to JDK 17.
