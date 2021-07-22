@@ -17,7 +17,10 @@ package com.slack.eithernet
 
 import com.google.common.truth.Truth.assertThat
 import com.slack.eithernet.ApiResult.Failure.ApiFailure
+import com.slack.eithernet.ApiResult.Failure.HttpFailure
+import com.slack.eithernet.ApiResult.Failure.NetworkFailure
 import com.slack.eithernet.ApiResult.Failure.UnknownFailure
+import com.slack.eithernet.ApiResult.Success
 import kotlinx.coroutines.runBlocking
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -67,7 +70,12 @@ class ApiResultTest {
 
     server.enqueue(response)
     val result = runBlocking { service.testEndpoint() }
-    assertThat(result).isEqualTo(ApiResult.success("Response!"))
+    check(result is Success)
+    assertThat(result.value).isEqualTo("Response!")
+
+    // Assert tags
+    assertThat(result.request()).isNotNull()
+    assertThat(result.response()).isNotNull()
   }
 
   @Test
@@ -78,7 +86,8 @@ class ApiResultTest {
 
     server.enqueue(response)
     val result = runBlocking { service.unitEndpoint() }
-    assertThat(result).isEqualTo(ApiResult.success(Unit))
+    check(result is Success)
+    assertThat(result.value).isEqualTo(Unit)
   }
 
   @Test
@@ -89,7 +98,13 @@ class ApiResultTest {
 
     server.enqueue(response)
     val result = runBlocking { service.unitEndpoint() }
-    assertThat(result).isEqualTo(ApiResult.httpFailure(404, null))
+    check(result is HttpFailure)
+    assertThat(result.code).isEqualTo(404)
+    assertThat(result.error).isNull()
+
+    // Assert tags
+    assertThat(result.request()).isNotNull()
+    assertThat(result.response()).isNotNull()
   }
 
   @Test
@@ -99,7 +114,9 @@ class ApiResultTest {
 
     server.enqueue(response)
     val result = runBlocking { service.testEndpoint() }
-    assertThat(result).isEqualTo(ApiResult.httpFailure(404, null))
+    check(result is HttpFailure)
+    assertThat(result.code).isEqualTo(404)
+    assertThat(result.error).isNull()
   }
 
   @Test
@@ -109,7 +126,9 @@ class ApiResultTest {
 
     server.enqueue(response)
     val result = runBlocking { service.testEndpoint() }
-    assertThat(result).isEqualTo(ApiResult.httpFailure(500, null))
+    check(result is HttpFailure)
+    assertThat(result.code).isEqualTo(500)
+    assertThat(result.error).isNull()
   }
 
   @Test
@@ -120,7 +139,9 @@ class ApiResultTest {
 
     server.enqueue(response)
     val result = runBlocking { service.testEndpointWithErrorBody() }
-    assertThat(result).isEqualTo(ApiResult.httpFailure(404, "Custom errors for all"))
+    check(result is HttpFailure)
+    assertThat(result.code).isEqualTo(404)
+    assertThat(result.error).isEqualTo("Custom errors for all")
   }
 
   @Test
@@ -133,6 +154,12 @@ class ApiResultTest {
     val result = runBlocking { service.badEndpointWithErrorBody() }
     check(result is UnknownFailure)
     assertThat(result.error).isInstanceOf(BadEndpointException::class.java)
+
+    // Assert tags
+    assertThat(result.request()).isNotNull()
+    assertThat(result.response()).isNotNull()
+    // ApiResult.Failure.ApiFailure<E>.request(
+    // ApiResult.Failure.NetworkFailure.request(): Request
   }
 
   @Test
@@ -142,7 +169,9 @@ class ApiResultTest {
 
     server.enqueue(response)
     val result = runBlocking { service.testEndpointWithErrorBody() }
-    assertThat(result).isEqualTo(ApiResult.httpFailure(404, null))
+    check(result is HttpFailure)
+    assertThat(result.code).isEqualTo(404)
+    assertThat(result.error).isNull()
   }
 
   @Test
@@ -155,7 +184,10 @@ class ApiResultTest {
     server.enqueue(response)
     val result = runBlocking { service.testEndpoint() }
     check(result is ApiFailure)
-    assertThat(result).isEqualTo(ApiResult.apiFailure(errorMessage))
+    assertThat(result.error).isEqualTo(errorMessage)
+
+    // Assert tags
+    assertThat(result.request()).isNotNull()
   }
 
   @Test
@@ -168,7 +200,7 @@ class ApiResultTest {
     server.enqueue(response)
     val result = runBlocking { service.customErrorTypeEndpoint() }
     check(result is ApiFailure)
-    assertThat(result).isEqualTo(ApiResult.apiFailure(ErrorMarker.MARKER))
+    assertThat(result.error).isEqualTo(ErrorMarker.MARKER)
   }
 
   @Test
@@ -181,23 +213,26 @@ class ApiResultTest {
     server.enqueue(response)
     val result = runBlocking { service.unknownErrorTypeEndpoint() }
     check(result is ApiFailure)
-    assertThat(result).isEqualTo(ApiResult.apiFailure(null))
+    assertThat(result.error).isNull()
   }
 
   @Test
   fun networkFailure() {
     server.enqueue(MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AFTER_REQUEST))
     val result = runBlocking { service.testEndpoint() }
-    assertThat(result).isInstanceOf(ApiResult.Failure.NetworkFailure::class.java)
-    assertThat((result as ApiResult.Failure.NetworkFailure).error).isInstanceOf(IOException::class.java)
+    check(result is NetworkFailure)
+    assertThat(result.error).isInstanceOf(IOException::class.java)
+
+    // Assert tags
+    assertThat(result.request()).isNotNull()
   }
 
   @Test
   fun networkFailureUnit() {
     server.enqueue(MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AFTER_REQUEST))
     val result = runBlocking { service.unitEndpoint() }
-    assertThat(result).isInstanceOf(ApiResult.Failure.NetworkFailure::class.java)
-    assertThat((result as ApiResult.Failure.NetworkFailure).error).isInstanceOf(IOException::class.java)
+    check(result is NetworkFailure)
+    assertThat(result.error).isInstanceOf(IOException::class.java)
   }
 
   @Test
@@ -245,6 +280,18 @@ class ApiResultTest {
     } catch (e: IllegalArgumentException) {
       assertThat(e).hasMessageThat().contains("Must be a 4xx or 5xx code")
     }
+  }
+
+  @Test
+  fun tags() {
+    // ApiResult.Success<T>.response():
+    // ApiResult.Success<T>.request():
+    // ApiResult.Failure.HttpFailure<E>.response(
+    // ApiResult.Failure.HttpFailure<E>.request(
+    // ApiResult.Failure.UnknownFailure.response(): Response
+    // ApiResult.Failure.UnknownFailure.request(): Request
+    // ApiResult.Failure.ApiFailure<E>.request(
+    // ApiResult.Failure.NetworkFailure.request(): Request
   }
 
   interface TestApi {

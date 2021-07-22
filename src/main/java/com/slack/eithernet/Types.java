@@ -30,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
 import static com.slack.eithernet.Util.EMPTY_TYPE_ARRAY;
 
 /** Factory methods for types. */
-public final class Types {
+final class Types {
   private Types() {}
 
   /**
