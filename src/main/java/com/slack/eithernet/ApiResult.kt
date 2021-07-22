@@ -281,6 +281,7 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
   ) : CallAdapter<ApiResult<*, *>, Call<ApiResult<*, *>>> {
     override fun adapt(call: Call<ApiResult<*, *>>): Call<ApiResult<*, *>> {
       return object : Call<ApiResult<*, *>> by call {
+        @Suppress("LongMethod")
         override fun enqueue(callback: Callback<ApiResult<*, *>>) {
           call.enqueue(
             object : Callback<ApiResult<*, *>> {
