@@ -11,71 +11,61 @@ public final class com/slack/eithernet/ApiException : java/lang/Exception {
 
 public abstract interface class com/slack/eithernet/ApiResult {
 	public static final field Companion Lcom/slack/eithernet/ApiResult$Companion;
+	public abstract fun getTags ()Ljava/util/Map;
 }
 
 public final class com/slack/eithernet/ApiResult$Companion {
+	public final fun apiFailure ()Lcom/slack/eithernet/ApiResult$Failure$ApiFailure;
 	public final fun apiFailure (Ljava/lang/Object;)Lcom/slack/eithernet/ApiResult$Failure$ApiFailure;
-	public static synthetic fun apiFailure$default (Lcom/slack/eithernet/ApiResult$Companion;Ljava/lang/Object;ILjava/lang/Object;)Lcom/slack/eithernet/ApiResult$Failure$ApiFailure;
+	public final fun apiFailure (Ljava/lang/Object;Ljava/util/Map;)Lcom/slack/eithernet/ApiResult$Failure$ApiFailure;
+	public static synthetic fun apiFailure$default (Lcom/slack/eithernet/ApiResult$Companion;Ljava/lang/Object;Ljava/util/Map;ILjava/lang/Object;)Lcom/slack/eithernet/ApiResult$Failure$ApiFailure;
+	public final fun httpFailure (I)Lcom/slack/eithernet/ApiResult$Failure$HttpFailure;
 	public final fun httpFailure (ILjava/lang/Object;)Lcom/slack/eithernet/ApiResult$Failure$HttpFailure;
-	public static synthetic fun httpFailure$default (Lcom/slack/eithernet/ApiResult$Companion;ILjava/lang/Object;ILjava/lang/Object;)Lcom/slack/eithernet/ApiResult$Failure$HttpFailure;
-	public final fun networkFailure (Ljava/io/IOException;)Lcom/slack/eithernet/ApiResult$Failure$NetworkFailure;
+	public final fun httpFailure (ILjava/lang/Object;Ljava/util/Map;)Lcom/slack/eithernet/ApiResult$Failure$HttpFailure;
+	public static synthetic fun httpFailure$default (Lcom/slack/eithernet/ApiResult$Companion;ILjava/lang/Object;Ljava/util/Map;ILjava/lang/Object;)Lcom/slack/eithernet/ApiResult$Failure$HttpFailure;
+	public final fun networkFailure (Ljava/io/IOException;Ljava/util/Map;)Lcom/slack/eithernet/ApiResult$Failure$NetworkFailure;
+	public static synthetic fun networkFailure$default (Lcom/slack/eithernet/ApiResult$Companion;Ljava/io/IOException;Ljava/util/Map;ILjava/lang/Object;)Lcom/slack/eithernet/ApiResult$Failure$NetworkFailure;
 	public final fun success (Ljava/lang/Object;)Lcom/slack/eithernet/ApiResult$Success;
+	public final fun success (Ljava/lang/Object;Ljava/util/Map;)Lcom/slack/eithernet/ApiResult$Success;
+	public static synthetic fun success$default (Lcom/slack/eithernet/ApiResult$Companion;Ljava/lang/Object;Ljava/util/Map;ILjava/lang/Object;)Lcom/slack/eithernet/ApiResult$Success;
 	public final fun unknownFailure (Ljava/lang/Throwable;)Lcom/slack/eithernet/ApiResult$Failure$UnknownFailure;
+	public final fun unknownFailure (Ljava/lang/Throwable;Ljava/util/Map;)Lcom/slack/eithernet/ApiResult$Failure$UnknownFailure;
+	public static synthetic fun unknownFailure$default (Lcom/slack/eithernet/ApiResult$Companion;Ljava/lang/Throwable;Ljava/util/Map;ILjava/lang/Object;)Lcom/slack/eithernet/ApiResult$Failure$UnknownFailure;
 }
 
 public abstract interface class com/slack/eithernet/ApiResult$Failure : com/slack/eithernet/ApiResult {
 }
 
 public final class com/slack/eithernet/ApiResult$Failure$ApiFailure : com/slack/eithernet/ApiResult$Failure {
-	public final fun component1 ()Ljava/lang/Object;
-	public final fun copy (Ljava/lang/Object;)Lcom/slack/eithernet/ApiResult$Failure$ApiFailure;
-	public static synthetic fun copy$default (Lcom/slack/eithernet/ApiResult$Failure$ApiFailure;Ljava/lang/Object;ILjava/lang/Object;)Lcom/slack/eithernet/ApiResult$Failure$ApiFailure;
-	public fun equals (Ljava/lang/Object;)Z
 	public final fun getError ()Ljava/lang/Object;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
+	public fun getTags ()Ljava/util/Map;
+	public final fun withTags (Ljava/util/Map;)Lcom/slack/eithernet/ApiResult$Failure$ApiFailure;
 }
 
 public final class com/slack/eithernet/ApiResult$Failure$HttpFailure : com/slack/eithernet/ApiResult$Failure {
-	public final fun component1 ()I
-	public final fun component2 ()Ljava/lang/Object;
-	public final fun copy (ILjava/lang/Object;)Lcom/slack/eithernet/ApiResult$Failure$HttpFailure;
-	public static synthetic fun copy$default (Lcom/slack/eithernet/ApiResult$Failure$HttpFailure;ILjava/lang/Object;ILjava/lang/Object;)Lcom/slack/eithernet/ApiResult$Failure$HttpFailure;
-	public fun equals (Ljava/lang/Object;)Z
 	public final fun getCode ()I
 	public final fun getError ()Ljava/lang/Object;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
+	public fun getTags ()Ljava/util/Map;
+	public final fun withTags (Ljava/util/Map;)Lcom/slack/eithernet/ApiResult$Failure$HttpFailure;
 }
 
 public final class com/slack/eithernet/ApiResult$Failure$NetworkFailure : com/slack/eithernet/ApiResult$Failure {
-	public final fun component1 ()Ljava/io/IOException;
-	public final fun copy (Ljava/io/IOException;)Lcom/slack/eithernet/ApiResult$Failure$NetworkFailure;
-	public static synthetic fun copy$default (Lcom/slack/eithernet/ApiResult$Failure$NetworkFailure;Ljava/io/IOException;ILjava/lang/Object;)Lcom/slack/eithernet/ApiResult$Failure$NetworkFailure;
-	public fun equals (Ljava/lang/Object;)Z
 	public final fun getError ()Ljava/io/IOException;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
+	public fun getTags ()Ljava/util/Map;
+	public final fun withTags (Ljava/util/Map;)Lcom/slack/eithernet/ApiResult$Failure$NetworkFailure;
 }
 
 public final class com/slack/eithernet/ApiResult$Failure$UnknownFailure : com/slack/eithernet/ApiResult$Failure {
-	public final fun component1 ()Ljava/lang/Throwable;
-	public final fun copy (Ljava/lang/Throwable;)Lcom/slack/eithernet/ApiResult$Failure$UnknownFailure;
-	public static synthetic fun copy$default (Lcom/slack/eithernet/ApiResult$Failure$UnknownFailure;Ljava/lang/Throwable;ILjava/lang/Object;)Lcom/slack/eithernet/ApiResult$Failure$UnknownFailure;
-	public fun equals (Ljava/lang/Object;)Z
 	public final fun getError ()Ljava/lang/Throwable;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
+	public fun getTags ()Ljava/util/Map;
+	public final fun withTags (Ljava/util/Map;)Lcom/slack/eithernet/ApiResult$Failure$UnknownFailure;
 }
 
 public final class com/slack/eithernet/ApiResult$Success : com/slack/eithernet/ApiResult {
-	public final fun component1 ()Ljava/lang/Object;
-	public final fun copy (Ljava/lang/Object;)Lcom/slack/eithernet/ApiResult$Success;
-	public static synthetic fun copy$default (Lcom/slack/eithernet/ApiResult$Success;Ljava/lang/Object;ILjava/lang/Object;)Lcom/slack/eithernet/ApiResult$Success;
-	public fun equals (Ljava/lang/Object;)Z
 	public final fun getResponse ()Ljava/lang/Object;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
+	public fun getTags ()Ljava/util/Map;
+	public final fun getValue ()Ljava/lang/Object;
+	public final fun withTags (Ljava/util/Map;)Lcom/slack/eithernet/ApiResult$Success;
 }
 
 public final class com/slack/eithernet/ApiResultCallAdapterFactory : retrofit2/CallAdapter$Factory {
@@ -102,13 +92,14 @@ public abstract interface annotation class com/slack/eithernet/StatusCode : java
 	public abstract fun value ()I
 }
 
-public final class com/slack/eithernet/Types {
-	public static fun arrayOf (Ljava/lang/reflect/Type;)Ljava/lang/reflect/GenericArrayType;
-	public static fun equals (Ljava/lang/reflect/Type;Ljava/lang/reflect/Type;)Z
-	public static fun getRawType (Ljava/lang/reflect/Type;)Ljava/lang/Class;
-	public static fun newParameterizedType (Ljava/lang/reflect/Type;[Ljava/lang/reflect/Type;)Ljava/lang/reflect/ParameterizedType;
-	public static fun newParameterizedTypeWithOwner (Ljava/lang/reflect/Type;Ljava/lang/reflect/Type;[Ljava/lang/reflect/Type;)Ljava/lang/reflect/ParameterizedType;
-	public static fun subtypeOf (Ljava/lang/reflect/Type;)Ljava/lang/reflect/WildcardType;
-	public static fun supertypeOf (Ljava/lang/reflect/Type;)Ljava/lang/reflect/WildcardType;
+public final class com/slack/eithernet/TagsKt {
+	public static final fun request (Lcom/slack/eithernet/ApiResult$Failure$ApiFailure;)Lokhttp3/Request;
+	public static final fun request (Lcom/slack/eithernet/ApiResult$Failure$HttpFailure;)Lokhttp3/Request;
+	public static final fun request (Lcom/slack/eithernet/ApiResult$Failure$NetworkFailure;)Lokhttp3/Request;
+	public static final fun request (Lcom/slack/eithernet/ApiResult$Failure$UnknownFailure;)Lokhttp3/Request;
+	public static final fun request (Lcom/slack/eithernet/ApiResult$Success;)Lokhttp3/Request;
+	public static final fun response (Lcom/slack/eithernet/ApiResult$Failure$HttpFailure;)Lretrofit2/Response;
+	public static final fun response (Lcom/slack/eithernet/ApiResult$Failure$UnknownFailure;)Lretrofit2/Response;
+	public static final fun response (Lcom/slack/eithernet/ApiResult$Success;)Lretrofit2/Response;
 }
 
