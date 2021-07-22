@@ -21,6 +21,7 @@ import com.slack.eithernet.ApiResult.Failure.HttpFailure
 import com.slack.eithernet.ApiResult.Failure.NetworkFailure
 import com.slack.eithernet.ApiResult.Failure.UnknownFailure
 import com.slack.eithernet.ApiResult.Success
+import okhttp3.Request
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.CallAdapter
@@ -31,6 +32,8 @@ import retrofit2.Retrofit
 import java.io.IOException
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
+import kotlin.DeprecationLevel.ERROR
+import kotlin.reflect.KClass
 
 /**
  * Represents a result from a traditional HTTP API. [ApiResult] has two sealed subtypes: [Success]
@@ -58,9 +61,23 @@ import java.lang.reflect.Type
  */
 public sealed interface ApiResult<out T, out E> {
 
-  /** A successful result with the data available in [response]. */
+  /** Extra metadata associated with the result such as original requests, responses, etc. */
+  public val tags: Map<KClass<*>, Any>
 
-  public data class Success<T : Any> internal constructor(public val response: T) : ApiResult<T, Nothing>
+  /** A successful result with the data available in [response]. */
+  public class Success<T : Any> internal constructor(
+    public val value: T,
+    public override val tags: Map<KClass<*>, Any>
+  ) : ApiResult<T, Nothing> {
+
+    /** Returns a new copy of this with the given [tags]. */
+    public fun withTags(tags: Map<KClass<*>, Any>): Success<T> {
+      return Success(value, tags)
+    }
+
+    @Deprecated("Use value. This will be removed in 1.0", ReplaceWith("value"), ERROR)
+    public val response: T get() = value
+  }
 
   /** Represents a failure of some sort. */
   public sealed interface Failure<out E> : ApiResult<Nothing, E> {
@@ -71,9 +88,15 @@ public sealed interface ApiResult<out T, out E> {
      * non-recoverable and should be used as signal or logging before attempting to gracefully
      * degrade or retry.
      */
-    public data class NetworkFailure internal constructor(
+    public class NetworkFailure internal constructor(
       public val error: IOException,
-    ) : Failure<Nothing>
+      public override val tags: Map<KClass<*>, Any>
+    ) : Failure<Nothing> {
+      /** Returns a new copy of this with the given [tags]. */
+      public fun withTags(tags: Map<KClass<*>, Any>): NetworkFailure {
+        return NetworkFailure(error, tags)
+      }
+    }
 
     /**
      * An unknown failure caused by a given [error]. This error is opaque, as the actual type could
@@ -81,9 +104,15 @@ public sealed interface ApiResult<out T, out E> {
      * to be a non-recoverable and should be used as signal or logging before attempting to
      * gracefully degrade or retry.
      */
-    public data class UnknownFailure internal constructor(
+    public class UnknownFailure internal constructor(
       public val error: Throwable,
-    ) : Failure<Nothing>
+      public override val tags: Map<KClass<*>, Any>
+    ) : Failure<Nothing> {
+      /** Returns a new copy of this with the given [tags]. */
+      public fun withTags(tags: Map<KClass<*>, Any>): UnknownFailure {
+        return UnknownFailure(error, tags)
+      }
+    }
 
     /**
      * An HTTP failure. This indicates a 4xx or 5xx response. The [code] is available for reference.
@@ -91,10 +120,16 @@ public sealed interface ApiResult<out T, out E> {
      * @property code The HTTP status code.
      * @property error An optional [error][E]. This would be from the error body of the response.
      */
-    public data class HttpFailure<out E> internal constructor(
+    public class HttpFailure<E> internal constructor(
       public val code: Int,
       public val error: E?,
-    ) : Failure<E>
+      public override val tags: Map<KClass<*>, Any>
+    ) : Failure<E> {
+      /** Returns a new copy of this with the given [tags]. */
+      public fun withTags(tags: Map<KClass<*>, Any>): HttpFailure<E> {
+        return HttpFailure(code, error, tags)
+      }
+    }
 
     /**
      * An API failure. This indicates a 2xx response where [ApiException] was thrown
@@ -105,7 +140,15 @@ public sealed interface ApiResult<out T, out E> {
      *
      * @property error An optional [error][E].
      */
-    public data class ApiFailure<out E> internal constructor(public val error: E?) : Failure<E>
+    public class ApiFailure<E> internal constructor(
+      public val error: E?,
+      public override val tags: Map<KClass<*>, Any>
+    ) : Failure<E> {
+      /** Returns a new copy of this with the given [tags]. */
+      public fun withTags(tags: Map<KClass<*>, Any>): ApiFailure<E> {
+        return ApiFailure(error, tags)
+      }
+    }
   }
 
   public companion object {
@@ -114,22 +157,42 @@ public sealed interface ApiResult<out T, out E> {
     private val HTTP_FAILURE_RANGE = 400..599
 
     /** Returns a new [Success] with given [value]. */
-    public fun <T : Any> success(value: T): Success<T> = Success(value)
+    @JvmOverloads
+    public fun <T : Any> success(
+      value: T,
+      tags: Map<KClass<*>, Any> = emptyMap()
+    ): Success<T> = Success(value, tags)
 
     /** Returns a new [HttpFailure] with given [code] and optional [error]. */
-    public fun <E> httpFailure(code: Int, error: E? = null): HttpFailure<E> {
+    @JvmOverloads
+    public fun <E> httpFailure(
+      code: Int,
+      error: E? = null,
+      tags: Map<KClass<*>, Any> = emptyMap()
+    ): HttpFailure<E> {
       checkHttpFailureCode(code)
-      return HttpFailure(code, error)
+      return HttpFailure(code, error, tags)
     }
 
     /** Returns a new [ApiFailure] with given [error]. */
-    public fun <E> apiFailure(error: E? = null): ApiFailure<E> = ApiFailure(error)
+    @JvmOverloads
+    public fun <E> apiFailure(
+      error: E? = null,
+      tags: Map<KClass<*>, Any> = emptyMap()
+    ): ApiFailure<E> = ApiFailure(error, tags)
 
     /** Returns a new [NetworkFailure] with given [error]. */
-    public fun networkFailure(error: IOException): NetworkFailure = NetworkFailure(error)
+    public fun networkFailure(
+      error: IOException,
+      tags: Map<KClass<*>, Any> = emptyMap()
+    ): NetworkFailure = NetworkFailure(error, tags)
 
     /** Returns a new [UnknownFailure] with given [error]. */
-    public fun unknownFailure(error: Throwable): UnknownFailure = UnknownFailure(error)
+    @JvmOverloads
+    public fun unknownFailure(
+      error: Throwable,
+      tags: Map<KClass<*>, Any> = emptyMap()
+    ): UnknownFailure = UnknownFailure(error, tags)
 
     internal fun checkHttpFailureCode(code: Int) {
       require(code !in HTTP_SUCCESS_RANGE) {
@@ -176,7 +239,7 @@ public object ApiResultConverterFactory : Converter.Factory() {
     private val delegate: Converter<ResponseBody, Any>,
   ) : Converter<ResponseBody, ApiResult<*, *>> {
     override fun convert(value: ResponseBody): ApiResult<*, *>? {
-      return delegate.convert(value)?.let { ApiResult.success(it) }
+      return delegate.convert(value)?.let(ApiResult.Companion::success)
     }
   }
 }
@@ -224,13 +287,37 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
               override fun onFailure(call: Call<ApiResult<*, *>>, t: Throwable) {
                 when (t) {
                   is ApiException -> {
-                    callback.onResponse(call, Response.success(ApiResult.apiFailure(t.error)))
+                    callback.onResponse(
+                      call,
+                      Response.success(
+                        ApiResult.apiFailure(
+                          error = t.error,
+                          tags = mapOf(Request::class to call.request())
+                        )
+                      )
+                    )
                   }
                   is IOException -> {
-                    callback.onResponse(call, Response.success(ApiResult.networkFailure(t)))
+                    callback.onResponse(
+                      call,
+                      Response.success(
+                        ApiResult.networkFailure(
+                          error = t,
+                          tags = mapOf(Request::class to call.request())
+                        ),
+                      )
+                    )
                   }
                   else -> {
-                    callback.onResponse(call, Response.success(ApiResult.unknownFailure(t)))
+                    callback.onResponse(
+                      call,
+                      Response.success(
+                        ApiResult.unknownFailure(
+                          error = t,
+                          tags = mapOf(Request::class to call.request())
+                        ),
+                      )
+                    )
                   }
                 }
               }
@@ -240,7 +327,16 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                 response: Response<ApiResult<*, *>>,
               ) {
                 if (response.isSuccessful) {
-                  callback.onResponse(call, response)
+                  // Repackage the initial result with new tags with this call's request + response
+                  val tags = mapOf(
+                    Request::class to call.request(),
+                    Response::class to response
+                  )
+                  val withTag = when (val result = response.body()) {
+                    is Success -> result.withTags(result.tags + tags)
+                    else -> null
+                  }
+                  callback.onResponse(call, Response.success(withTag))
                 } else {
                   var errorBody: Any? = null
                   if (decodeErrorBody) {
@@ -256,14 +352,36 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                         retrofit.responseBodyConverter<Any>(errorType, nextAnnotations)
                           .convert(responseBody)
                       } catch (e: Throwable) {
-                        callback.onResponse(call, Response.success(ApiResult.unknownFailure(e)))
+                        @Suppress("UNCHECKED_CAST")
+                        callback.onResponse(
+                          call,
+                          Response.success(
+                            ApiResult.unknownFailure(
+                              error = e,
+                              tags = mapOf(
+                                Request::class to call.request(),
+                                Response::class to response
+                              )
+                            )
+                          )
+                        )
                         return
                       }
                     }
                   }
+                  @Suppress("UNCHECKED_CAST")
                   callback.onResponse(
                     call,
-                    Response.success(ApiResult.httpFailure(response.code(), errorBody))
+                    Response.success(
+                      ApiResult.httpFailure(
+                        code = response.code(),
+                        error = errorBody,
+                        tags = mapOf(
+                          Request::class to call.request(),
+                          Response::class to response
+                        )
+                      )
+                    )
                   )
                 }
               }
