@@ -59,7 +59,7 @@ import kotlin.reflect.KClass
  * Usually, user code for this could just simply show a generic error message for a [Failure]
  * case, but a sealed class is exposed for more specific error messaging.
  */
-public sealed interface ApiResult<out T, out E> {
+public sealed interface ApiResult<out T : Any, out E : Any> {
 
   /** Extra metadata associated with the result such as original requests, responses, etc. */
   public val tags: Map<KClass<*>, Any>
@@ -80,7 +80,7 @@ public sealed interface ApiResult<out T, out E> {
   }
 
   /** Represents a failure of some sort. */
-  public sealed interface Failure<out E> : ApiResult<Nothing, E> {
+  public sealed interface Failure<E : Any> : ApiResult<Nothing, E> {
 
     /**
      * A network failure caused by a given [error]. This error is opaque, as the actual type could
@@ -120,7 +120,7 @@ public sealed interface ApiResult<out T, out E> {
      * @property code The HTTP status code.
      * @property error An optional [error][E]. This would be from the error body of the response.
      */
-    public class HttpFailure<E> internal constructor(
+    public class HttpFailure<E : Any> internal constructor(
       public val code: Int,
       public val error: E?,
       public override val tags: Map<KClass<*>, Any>
@@ -140,7 +140,7 @@ public sealed interface ApiResult<out T, out E> {
      *
      * @property error An optional [error][E].
      */
-    public class ApiFailure<E> internal constructor(
+    public class ApiFailure<E : Any> internal constructor(
       public val error: E?,
       public override val tags: Map<KClass<*>, Any>
     ) : Failure<E> {
@@ -165,7 +165,7 @@ public sealed interface ApiResult<out T, out E> {
 
     /** Returns a new [HttpFailure] with given [code] and optional [error]. */
     @JvmOverloads
-    public fun <E> httpFailure(
+    public fun <E : Any> httpFailure(
       code: Int,
       error: E? = null,
       tags: Map<KClass<*>, Any> = emptyMap()
@@ -176,7 +176,7 @@ public sealed interface ApiResult<out T, out E> {
 
     /** Returns a new [ApiFailure] with given [error]. */
     @JvmOverloads
-    public fun <E> apiFailure(
+    public fun <E : Any> apiFailure(
       error: E? = null,
       tags: Map<KClass<*>, Any> = emptyMap()
     ): ApiFailure<E> = ApiFailure(error, tags)
