@@ -70,7 +70,7 @@ public fun Array<out Annotation>.errorType(): Pair<ResultType, Array<Annotation>
   return nextAnnotations(ResultType::class.java)
 }
 
-private fun <A> Array<out Annotation>.nextAnnotations(type: Class<A>): Pair<A, Array<Annotation>>? {
+private fun <A : Any> Array<out Annotation>.nextAnnotations(type: Class<A>): Pair<A, Array<Annotation>>? {
   var nextIndex = 0
   val theseAnnotations = this
   var resultType: A? = null
