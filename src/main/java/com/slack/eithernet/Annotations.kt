@@ -19,6 +19,7 @@ import com.slack.eithernet.Util.canonicalize
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import java.lang.reflect.WildcardType
+import kotlin.reflect.KClass
 
 /**
  * Returns a [Pair] of a [StatusCode] and subset of these annotations without that [StatusCode]
@@ -169,3 +170,12 @@ private fun createResultType(
   typeArgs: Array<ResultType>,
   isArray: Boolean
 ): ResultType = ResultTypeImpl(ownerType, rawType, typeArgs, isArray)
+
+private fun createResultType(
+  ownerType: KClass<*>,
+  typeArgs: Array<ResultType>,
+  rawType: KClass<*>,
+  isArray: Boolean
+): ResultType {
+  return ResultType(ownerType, typeArgs, rawType, isArray)
+}

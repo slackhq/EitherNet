@@ -19,10 +19,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URL
 
 plugins {
-  kotlin("jvm") version "1.5.31"
+  kotlin("jvm") version "1.6.0-RC"
   `java-test-fixtures`
   id("org.jetbrains.dokka") version "1.5.30"
-  id("com.google.devtools.ksp") version "1.5.31-1.0.0"
+  id("com.google.devtools.ksp") version "1.6.0-M1-1.0.0"
   id("com.diffplug.spotless") version "5.15.0"
   id("com.vanniktech.maven.publish") version "0.18.0"
   id("io.gitlab.arturbosch.detekt") version "1.18.1"
