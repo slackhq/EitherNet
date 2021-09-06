@@ -9,7 +9,7 @@ public final class com/slack/eithernet/ApiException : java/lang/Exception {
 	public final fun getError ()Ljava/lang/Object;
 }
 
-public abstract class com/slack/eithernet/ApiResult {
+public abstract interface class com/slack/eithernet/ApiResult {
 	public static final field Companion Lcom/slack/eithernet/ApiResult$Companion;
 }
 
@@ -25,42 +25,32 @@ public final class com/slack/eithernet/ApiResult$Companion {
 	public final fun unknownFailure (Ljava/lang/Throwable;)Lcom/slack/eithernet/ApiResult$Failure$UnknownFailure;
 }
 
-public abstract class com/slack/eithernet/ApiResult$Failure : com/slack/eithernet/ApiResult {
+public abstract interface class com/slack/eithernet/ApiResult$Failure : com/slack/eithernet/ApiResult {
 }
 
 public final class com/slack/eithernet/ApiResult$Failure$ApiFailure : com/slack/eithernet/ApiResult$Failure {
 	public final fun getError ()Ljava/lang/Object;
-	public fun getTags ()Ljava/util/Map;
-	public synthetic fun getTags$retrofit_api_result ()Ljava/util/Map;
 	public final fun withTags (Ljava/util/Map;)Lcom/slack/eithernet/ApiResult$Failure$ApiFailure;
 }
 
 public final class com/slack/eithernet/ApiResult$Failure$HttpFailure : com/slack/eithernet/ApiResult$Failure {
 	public final fun getCode ()I
 	public final fun getError ()Ljava/lang/Object;
-	public fun getTags ()Ljava/util/Map;
-	public synthetic fun getTags$retrofit_api_result ()Ljava/util/Map;
 	public final fun withTags (Ljava/util/Map;)Lcom/slack/eithernet/ApiResult$Failure$HttpFailure;
 }
 
 public final class com/slack/eithernet/ApiResult$Failure$NetworkFailure : com/slack/eithernet/ApiResult$Failure {
 	public final fun getError ()Ljava/io/IOException;
-	public fun getTags ()Ljava/util/Map;
-	public synthetic fun getTags$retrofit_api_result ()Ljava/util/Map;
 	public final fun withTags (Ljava/util/Map;)Lcom/slack/eithernet/ApiResult$Failure$NetworkFailure;
 }
 
 public final class com/slack/eithernet/ApiResult$Failure$UnknownFailure : com/slack/eithernet/ApiResult$Failure {
 	public final fun getError ()Ljava/lang/Throwable;
-	public fun getTags ()Ljava/util/Map;
-	public synthetic fun getTags$retrofit_api_result ()Ljava/util/Map;
 	public final fun withTags (Ljava/util/Map;)Lcom/slack/eithernet/ApiResult$Failure$UnknownFailure;
 }
 
 public final class com/slack/eithernet/ApiResult$Success : com/slack/eithernet/ApiResult {
 	public final fun getResponse ()Ljava/lang/Object;
-	public fun getTags ()Ljava/util/Map;
-	public synthetic fun getTags$retrofit_api_result ()Ljava/util/Map;
 	public final fun getValue ()Ljava/lang/Object;
 	public final fun withTags (Ljava/util/Map;)Lcom/slack/eithernet/ApiResult$Success;
 }
