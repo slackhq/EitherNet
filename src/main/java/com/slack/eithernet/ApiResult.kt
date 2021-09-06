@@ -330,8 +330,7 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                 if (response.isSuccessful) {
                   // Repackage the initial result with new tags with this call's request + response
                   val tags = mapOf(
-                    Request::class to call.request(),
-                    Response::class to response
+                    okhttp3.Response::class to response.raw()
                   )
                   val withTag = when (val result = response.body()) {
                     is Success -> result.withTags(result.tags + tags)
@@ -360,8 +359,7 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                             ApiResult.unknownFailure(
                               error = e,
                               tags = mapOf(
-                                Request::class to call.request(),
-                                Response::class to response
+                                okhttp3.Response::class to response.raw()
                               )
                             )
                           )
@@ -378,8 +376,7 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                         code = response.code(),
                         error = errorBody,
                         tags = mapOf(
-                          Request::class to call.request(),
-                          Response::class to response
+                          okhttp3.Response::class to response.raw()
                         )
                       )
                     )

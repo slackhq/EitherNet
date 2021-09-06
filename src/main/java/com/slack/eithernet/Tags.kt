@@ -17,40 +17,18 @@
 package com.slack.eithernet
 
 import okhttp3.Request
-import retrofit2.Response
+import okhttp3.Response
 
 /*
  * Common tags added automatically to different ApiResult types.
  */
 
-public fun <T : Any> ApiResult.Success<T>.response(): Response<ApiResult<T, Nothing>>? {
-  return tags[Response::class] as? Response<ApiResult<T, Nothing>>
+/** Returns the original [Response] used for this call. */
+public fun ApiResult<*, *>.response(): Response? {
+  return tags[Response::class] as? Response
 }
 
-public fun <T : Any> ApiResult.Success<T>.request(): Request? {
-  return tags[Request::class] as? Request
-}
-
-public fun <E : Any> ApiResult.Failure.HttpFailure<E>.response(): Response<ApiResult<Nothing, E>>? {
-  return tags[Response::class] as? Response<ApiResult<Nothing, E>>
-}
-
-public fun <E : Any> ApiResult.Failure.HttpFailure<E>.request(): Request? {
-  return tags[Request::class] as? Request
-}
-
-public fun ApiResult.Failure.UnknownFailure.response(): Response<ApiResult<Nothing, Nothing>>? {
-  return tags[Response::class] as? Response<ApiResult<Nothing, Nothing>>
-}
-
-public fun ApiResult.Failure.UnknownFailure.request(): Request? {
-  return tags[Request::class] as? Request
-}
-
-public fun <E : Any> ApiResult.Failure.ApiFailure<E>.request(): Request? {
-  return tags[Request::class] as? Request
-}
-
-public fun ApiResult.Failure.NetworkFailure.request(): Request? {
-  return tags[Request::class] as? Request
+/** Returns the original [Request] used for this call. */
+public fun ApiResult<*, *>.request(): Request? {
+  return response()?.request() ?: tags[Request::class] as? Request
 }
