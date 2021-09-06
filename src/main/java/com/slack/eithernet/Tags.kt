@@ -18,17 +18,26 @@ package com.slack.eithernet
 
 import okhttp3.Request
 import okhttp3.Response
+import kotlin.reflect.KClass
 
 /*
  * Common tags added automatically to different ApiResult types.
  */
 
+/**
+ * Returns the tag attached with [T] as a key, or null if no tag is attached with that
+ * key.
+ */
+public inline fun <reified T : Any> ApiResult<*, *>.tag(): T? = tag(T::class)
+
+/**
+ * Returns the tag attached with [klass] as a key, or null if no tag is attached with that
+ * key.
+ */
+public fun <T : Any> ApiResult<*, *>.tag(klass: KClass<T>): T? = tags[klass] as? T
+
 /** Returns the original [Response] used for this call. */
-public fun ApiResult<*, *>.response(): Response? {
-  return tags[Response::class] as? Response
-}
+public fun ApiResult<*, *>.response(): Response? = tag()
 
 /** Returns the original [Request] used for this call. */
-public fun ApiResult<*, *>.request(): Request? {
-  return response()?.request() ?: tags[Request::class] as? Request
-}
+public fun ApiResult<*, *>.request(): Request? = response()?.request() ?: tag()

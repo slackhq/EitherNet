@@ -59,16 +59,16 @@ import kotlin.reflect.KClass
  * Usually, user code for this could just simply show a generic error message for a [Failure]
  * case, but a sealed class is exposed for more specific error messaging.
  */
-public sealed interface ApiResult<out T : Any, out E : Any> {
+public sealed class ApiResult<out T : Any, out E : Any> {
 
   /** Extra metadata associated with the result such as original requests, responses, etc. */
-  public val tags: Map<KClass<*>, Any>
+  internal abstract val tags: Map<KClass<*>, Any>
 
   /** A successful result with the data available in [response]. */
   public class Success<T : Any> internal constructor(
     public val value: T,
     public override val tags: Map<KClass<*>, Any>
-  ) : ApiResult<T, Nothing> {
+  ) : ApiResult<T, Nothing>() {
 
     /** Returns a new copy of this with the given [tags]. */
     public fun withTags(tags: Map<KClass<*>, Any>): Success<T> {
@@ -80,7 +80,7 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
   }
 
   /** Represents a failure of some sort. */
-  public sealed interface Failure<E : Any> : ApiResult<Nothing, E> {
+  public sealed class Failure<E : Any> : ApiResult<Nothing, E>() {
 
     /**
      * A network failure caused by a given [error]. This error is opaque, as the actual type could
@@ -91,7 +91,7 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
     public class NetworkFailure internal constructor(
       public val error: IOException,
       public override val tags: Map<KClass<*>, Any>
-    ) : Failure<Nothing> {
+    ) : Failure<Nothing>() {
       /** Returns a new copy of this with the given [tags]. */
       public fun withTags(tags: Map<KClass<*>, Any>): NetworkFailure {
         return NetworkFailure(error, tags)
@@ -107,7 +107,7 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
     public class UnknownFailure internal constructor(
       public val error: Throwable,
       public override val tags: Map<KClass<*>, Any>
-    ) : Failure<Nothing> {
+    ) : Failure<Nothing>() {
       /** Returns a new copy of this with the given [tags]. */
       public fun withTags(tags: Map<KClass<*>, Any>): UnknownFailure {
         return UnknownFailure(error, tags)
@@ -124,7 +124,7 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
       public val code: Int,
       public val error: E?,
       public override val tags: Map<KClass<*>, Any>
-    ) : Failure<E> {
+    ) : Failure<E>() {
       /** Returns a new copy of this with the given [tags]. */
       public fun withTags(tags: Map<KClass<*>, Any>): HttpFailure<E> {
         return HttpFailure(code, error, tags)
@@ -143,7 +143,7 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
     public class ApiFailure<E : Any> internal constructor(
       public val error: E?,
       public override val tags: Map<KClass<*>, Any>
-    ) : Failure<E> {
+    ) : Failure<E>() {
       /** Returns a new copy of this with the given [tags]. */
       public fun withTags(tags: Map<KClass<*>, Any>): ApiFailure<E> {
         return ApiFailure(error, tags)
