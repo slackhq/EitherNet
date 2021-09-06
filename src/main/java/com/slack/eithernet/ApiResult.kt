@@ -32,6 +32,7 @@ import retrofit2.Retrofit
 import java.io.IOException
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
+import java.util.Collections.unmodifiableMap
 import kotlin.DeprecationLevel.ERROR
 import kotlin.reflect.KClass
 
@@ -72,7 +73,7 @@ public sealed class ApiResult<out T : Any, out E : Any> {
 
     /** Returns a new copy of this with the given [tags]. */
     public fun withTags(tags: Map<KClass<*>, Any>): Success<T> {
-      return Success(value, tags)
+      return Success(value, unmodifiableMap(tags.toMap()))
     }
 
     @Deprecated("Use value. This will be removed in 1.0", ReplaceWith("value"), ERROR)
@@ -94,7 +95,7 @@ public sealed class ApiResult<out T : Any, out E : Any> {
     ) : Failure<Nothing>() {
       /** Returns a new copy of this with the given [tags]. */
       public fun withTags(tags: Map<KClass<*>, Any>): NetworkFailure {
-        return NetworkFailure(error, tags)
+        return NetworkFailure(error, unmodifiableMap(tags.toMap()))
       }
     }
 
@@ -110,7 +111,7 @@ public sealed class ApiResult<out T : Any, out E : Any> {
     ) : Failure<Nothing>() {
       /** Returns a new copy of this with the given [tags]. */
       public fun withTags(tags: Map<KClass<*>, Any>): UnknownFailure {
-        return UnknownFailure(error, tags)
+        return UnknownFailure(error, unmodifiableMap(tags.toMap()))
       }
     }
 
@@ -127,7 +128,7 @@ public sealed class ApiResult<out T : Any, out E : Any> {
     ) : Failure<E>() {
       /** Returns a new copy of this with the given [tags]. */
       public fun withTags(tags: Map<KClass<*>, Any>): HttpFailure<E> {
-        return HttpFailure(code, error, tags)
+        return HttpFailure(code, error, unmodifiableMap(tags.toMap()))
       }
     }
 
@@ -146,7 +147,7 @@ public sealed class ApiResult<out T : Any, out E : Any> {
     ) : Failure<E>() {
       /** Returns a new copy of this with the given [tags]. */
       public fun withTags(tags: Map<KClass<*>, Any>): ApiFailure<E> {
-        return ApiFailure(error, tags)
+        return ApiFailure(error, unmodifiableMap(tags.toMap()))
       }
     }
   }
