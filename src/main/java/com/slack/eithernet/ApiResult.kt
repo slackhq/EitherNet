@@ -158,42 +158,27 @@ public sealed class ApiResult<out T : Any, out E : Any> {
     private val HTTP_FAILURE_RANGE = 400..599
 
     /** Returns a new [Success] with given [value]. */
-    @JvmOverloads
-    public fun <T : Any> success(
-      value: T,
-      tags: Map<KClass<*>, Any> = emptyMap()
-    ): Success<T> = Success(value, tags)
+    public fun <T : Any> success(value: T): Success<T> = Success(value, emptyMap())
 
     /** Returns a new [HttpFailure] with given [code] and optional [error]. */
     @JvmOverloads
     public fun <E : Any> httpFailure(
       code: Int,
       error: E? = null,
-      tags: Map<KClass<*>, Any> = emptyMap()
     ): HttpFailure<E> {
       checkHttpFailureCode(code)
-      return HttpFailure(code, error, tags)
+      return HttpFailure(code, error, emptyMap())
     }
 
     /** Returns a new [ApiFailure] with given [error]. */
     @JvmOverloads
-    public fun <E : Any> apiFailure(
-      error: E? = null,
-      tags: Map<KClass<*>, Any> = emptyMap()
-    ): ApiFailure<E> = ApiFailure(error, tags)
+    public fun <E : Any> apiFailure(error: E? = null): ApiFailure<E> = ApiFailure(error, emptyMap())
 
     /** Returns a new [NetworkFailure] with given [error]. */
-    public fun networkFailure(
-      error: IOException,
-      tags: Map<KClass<*>, Any> = emptyMap()
-    ): NetworkFailure = NetworkFailure(error, tags)
+    public fun networkFailure(error: IOException): NetworkFailure = NetworkFailure(error, emptyMap())
 
     /** Returns a new [UnknownFailure] with given [error]. */
-    @JvmOverloads
-    public fun unknownFailure(
-      error: Throwable,
-      tags: Map<KClass<*>, Any> = emptyMap()
-    ): UnknownFailure = UnknownFailure(error, tags)
+    public fun unknownFailure(error: Throwable): UnknownFailure = UnknownFailure(error, emptyMap())
 
     internal fun checkHttpFailureCode(code: Int) {
       require(code !in HTTP_SUCCESS_RANGE) {
@@ -292,7 +277,7 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                     callback.onResponse(
                       call,
                       Response.success(
-                        ApiResult.apiFailure(
+                        ApiFailure(
                           error = t.error,
                           tags = mapOf(Request::class to call.request())
                         )
@@ -303,7 +288,7 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                     callback.onResponse(
                       call,
                       Response.success(
-                        ApiResult.networkFailure(
+                        NetworkFailure(
                           error = t,
                           tags = mapOf(Request::class to call.request())
                         ),
@@ -314,7 +299,7 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                     callback.onResponse(
                       call,
                       Response.success(
-                        ApiResult.unknownFailure(
+                        UnknownFailure(
                           error = t,
                           tags = mapOf(Request::class to call.request())
                         ),
@@ -357,7 +342,7 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                         callback.onResponse(
                           call,
                           Response.success(
-                            ApiResult.unknownFailure(
+                            UnknownFailure(
                               error = e,
                               tags = mapOf(
                                 okhttp3.Response::class to response.raw()
@@ -373,7 +358,7 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                   callback.onResponse(
                     call,
                     Response.success(
-                      ApiResult.httpFailure(
+                      HttpFailure(
                         code = response.code(),
                         error = errorBody,
                         tags = mapOf(
