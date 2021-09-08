@@ -16,41 +16,42 @@
 @file:Suppress("UNCHECKED_CAST")
 package com.slack.eithernet
 
+import com.slack.eithernet.ApiResult.Failure.ApiFailure
+import com.slack.eithernet.ApiResult.Failure.HttpFailure
+import com.slack.eithernet.ApiResult.Failure.NetworkFailure
+import com.slack.eithernet.ApiResult.Failure.UnknownFailure
+import com.slack.eithernet.ApiResult.Success
 import okhttp3.Request
-import retrofit2.Response
+import okhttp3.Response
+import kotlin.reflect.KClass
 
 /*
  * Common tags added automatically to different ApiResult types.
  */
 
-public fun <T : Any> ApiResult.Success<T>.response(): Response<ApiResult<T, Nothing>>? {
-  return tags[Response::class] as? Response<ApiResult<T, Nothing>>
+/**
+ * Returns the tag attached with [T] as a key, or null if no tag is attached with that
+ * key.
+ */
+public inline fun <reified T : Any> ApiResult<*, *>.tag(): T? = tag(T::class)
+
+/**
+ * Returns the tag attached with [klass] as a key, or null if no tag is attached with that
+ * key.
+ */
+public fun <T : Any> ApiResult<*, *>.tag(klass: KClass<T>): T? {
+  val tags = when (this) {
+    is ApiFailure -> tags
+    is HttpFailure -> tags
+    is NetworkFailure -> tags
+    is UnknownFailure -> tags
+    is Success -> tags
+  }
+  return tags[klass] as? T
 }
 
-public fun <T : Any> ApiResult.Success<T>.request(): Request? {
-  return tags[Request::class] as? Request
-}
+/** Returns the original [Response] used for this call. */
+public fun ApiResult<*, *>.response(): Response? = tag()
 
-public fun <E : Any> ApiResult.Failure.HttpFailure<E>.response(): Response<ApiResult<Nothing, E>>? {
-  return tags[Response::class] as? Response<ApiResult<Nothing, E>>
-}
-
-public fun <E : Any> ApiResult.Failure.HttpFailure<E>.request(): Request? {
-  return tags[Request::class] as? Request
-}
-
-public fun ApiResult.Failure.UnknownFailure.response(): Response<ApiResult<Nothing, Nothing>>? {
-  return tags[Response::class] as? Response<ApiResult<Nothing, Nothing>>
-}
-
-public fun ApiResult.Failure.UnknownFailure.request(): Request? {
-  return tags[Request::class] as? Request
-}
-
-public fun <E : Any> ApiResult.Failure.ApiFailure<E>.request(): Request? {
-  return tags[Request::class] as? Request
-}
-
-public fun ApiResult.Failure.NetworkFailure.request(): Request? {
-  return tags[Request::class] as? Request
-}
+/** Returns the original [Request] used for this call. */
+public fun ApiResult<*, *>.request(): Request? = response()?.request() ?: tag()

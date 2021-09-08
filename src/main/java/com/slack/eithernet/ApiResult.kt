@@ -32,6 +32,7 @@ import retrofit2.Retrofit
 import java.io.IOException
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
+import java.util.Collections.unmodifiableMap
 import kotlin.DeprecationLevel.ERROR
 import kotlin.reflect.KClass
 
@@ -61,14 +62,14 @@ import kotlin.reflect.KClass
  */
 public sealed interface ApiResult<out T : Any, out E : Any> {
 
-  /** Extra metadata associated with the result such as original requests, responses, etc. */
-  public val tags: Map<KClass<*>, Any>
-
   /** A successful result with the data available in [response]. */
   public class Success<T : Any> internal constructor(
     public val value: T,
-    public override val tags: Map<KClass<*>, Any>
+    tags: Map<KClass<*>, Any>
   ) : ApiResult<T, Nothing> {
+
+    /** Extra metadata associated with the result such as original requests, responses, etc. */
+    internal val tags: Map<KClass<*>, Any> = unmodifiableMap(tags.toMap())
 
     /** Returns a new copy of this with the given [tags]. */
     public fun withTags(tags: Map<KClass<*>, Any>): Success<T> {
@@ -90,11 +91,15 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
      */
     public class NetworkFailure internal constructor(
       public val error: IOException,
-      public override val tags: Map<KClass<*>, Any>
+      tags: Map<KClass<*>, Any>
     ) : Failure<Nothing> {
+
+      /** Extra metadata associated with the result such as original requests, responses, etc. */
+      internal val tags: Map<KClass<*>, Any> = unmodifiableMap(tags.toMap())
+
       /** Returns a new copy of this with the given [tags]. */
       public fun withTags(tags: Map<KClass<*>, Any>): NetworkFailure {
-        return NetworkFailure(error, tags)
+        return NetworkFailure(error, unmodifiableMap(tags.toMap()))
       }
     }
 
@@ -106,11 +111,15 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
      */
     public class UnknownFailure internal constructor(
       public val error: Throwable,
-      public override val tags: Map<KClass<*>, Any>
+      tags: Map<KClass<*>, Any>
     ) : Failure<Nothing> {
+
+      /** Extra metadata associated with the result such as original requests, responses, etc. */
+      internal val tags: Map<KClass<*>, Any> = unmodifiableMap(tags.toMap())
+
       /** Returns a new copy of this with the given [tags]. */
       public fun withTags(tags: Map<KClass<*>, Any>): UnknownFailure {
-        return UnknownFailure(error, tags)
+        return UnknownFailure(error, unmodifiableMap(tags.toMap()))
       }
     }
 
@@ -123,11 +132,15 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
     public class HttpFailure<E : Any> internal constructor(
       public val code: Int,
       public val error: E?,
-      public override val tags: Map<KClass<*>, Any>
+      tags: Map<KClass<*>, Any>
     ) : Failure<E> {
+
+      /** Extra metadata associated with the result such as original requests, responses, etc. */
+      internal val tags: Map<KClass<*>, Any> = unmodifiableMap(tags.toMap())
+
       /** Returns a new copy of this with the given [tags]. */
       public fun withTags(tags: Map<KClass<*>, Any>): HttpFailure<E> {
-        return HttpFailure(code, error, tags)
+        return HttpFailure(code, error, unmodifiableMap(tags.toMap()))
       }
     }
 
@@ -142,11 +155,15 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
      */
     public class ApiFailure<E : Any> internal constructor(
       public val error: E?,
-      public override val tags: Map<KClass<*>, Any>
+      tags: Map<KClass<*>, Any>
     ) : Failure<E> {
+
+      /** Extra metadata associated with the result such as original requests, responses, etc. */
+      internal val tags: Map<KClass<*>, Any> = unmodifiableMap(tags.toMap())
+
       /** Returns a new copy of this with the given [tags]. */
       public fun withTags(tags: Map<KClass<*>, Any>): ApiFailure<E> {
-        return ApiFailure(error, tags)
+        return ApiFailure(error, unmodifiableMap(tags.toMap()))
       }
     }
   }
@@ -157,42 +174,27 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
     private val HTTP_FAILURE_RANGE = 400..599
 
     /** Returns a new [Success] with given [value]. */
-    @JvmOverloads
-    public fun <T : Any> success(
-      value: T,
-      tags: Map<KClass<*>, Any> = emptyMap()
-    ): Success<T> = Success(value, tags)
+    public fun <T : Any> success(value: T): Success<T> = Success(value, emptyMap())
 
     /** Returns a new [HttpFailure] with given [code] and optional [error]. */
     @JvmOverloads
     public fun <E : Any> httpFailure(
       code: Int,
       error: E? = null,
-      tags: Map<KClass<*>, Any> = emptyMap()
     ): HttpFailure<E> {
       checkHttpFailureCode(code)
-      return HttpFailure(code, error, tags)
+      return HttpFailure(code, error, emptyMap())
     }
 
     /** Returns a new [ApiFailure] with given [error]. */
     @JvmOverloads
-    public fun <E : Any> apiFailure(
-      error: E? = null,
-      tags: Map<KClass<*>, Any> = emptyMap()
-    ): ApiFailure<E> = ApiFailure(error, tags)
+    public fun <E : Any> apiFailure(error: E? = null): ApiFailure<E> = ApiFailure(error, emptyMap())
 
     /** Returns a new [NetworkFailure] with given [error]. */
-    public fun networkFailure(
-      error: IOException,
-      tags: Map<KClass<*>, Any> = emptyMap()
-    ): NetworkFailure = NetworkFailure(error, tags)
+    public fun networkFailure(error: IOException): NetworkFailure = NetworkFailure(error, emptyMap())
 
     /** Returns a new [UnknownFailure] with given [error]. */
-    @JvmOverloads
-    public fun unknownFailure(
-      error: Throwable,
-      tags: Map<KClass<*>, Any> = emptyMap()
-    ): UnknownFailure = UnknownFailure(error, tags)
+    public fun unknownFailure(error: Throwable): UnknownFailure = UnknownFailure(error, emptyMap())
 
     internal fun checkHttpFailureCode(code: Int) {
       require(code !in HTTP_SUCCESS_RANGE) {
@@ -291,7 +293,7 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                     callback.onResponse(
                       call,
                       Response.success(
-                        ApiResult.apiFailure(
+                        ApiFailure(
                           error = t.error,
                           tags = mapOf(Request::class to call.request())
                         )
@@ -302,7 +304,7 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                     callback.onResponse(
                       call,
                       Response.success(
-                        ApiResult.networkFailure(
+                        NetworkFailure(
                           error = t,
                           tags = mapOf(Request::class to call.request())
                         ),
@@ -313,7 +315,7 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                     callback.onResponse(
                       call,
                       Response.success(
-                        ApiResult.unknownFailure(
+                        UnknownFailure(
                           error = t,
                           tags = mapOf(Request::class to call.request())
                         ),
@@ -330,8 +332,7 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                 if (response.isSuccessful) {
                   // Repackage the initial result with new tags with this call's request + response
                   val tags = mapOf(
-                    Request::class to call.request(),
-                    Response::class to response
+                    okhttp3.Response::class to response.raw()
                   )
                   val withTag = when (val result = response.body()) {
                     is Success -> result.withTags(result.tags + tags)
@@ -357,11 +358,10 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                         callback.onResponse(
                           call,
                           Response.success(
-                            ApiResult.unknownFailure(
+                            UnknownFailure(
                               error = e,
                               tags = mapOf(
-                                Request::class to call.request(),
-                                Response::class to response
+                                okhttp3.Response::class to response.raw()
                               )
                             )
                           )
@@ -374,12 +374,11 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                   callback.onResponse(
                     call,
                     Response.success(
-                      ApiResult.httpFailure(
+                      HttpFailure(
                         code = response.code(),
                         error = errorBody,
                         tags = mapOf(
-                          Request::class to call.request(),
-                          Response::class to response
+                          okhttp3.Response::class to response.raw()
                         )
                       )
                     )
