@@ -13,6 +13,8 @@ Stable release!
 * `ApiResult` subtypes are no longer `data` classes since many of their underlying properties don't reliably implement equals/hashCode/immutability.
 * The deprecated `ApiResult.response` property is now removed.
 
+Thanks to [@okamayana](https://github.com/okamayana) for contributing to this release!
+
 1.0.0-rc01
 ----------
 
