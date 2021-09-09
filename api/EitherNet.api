@@ -50,7 +50,6 @@ public final class com/slack/eithernet/ApiResult$Failure$UnknownFailure : com/sl
 }
 
 public final class com/slack/eithernet/ApiResult$Success : com/slack/eithernet/ApiResult {
-	public final fun getResponse ()Ljava/lang/Object;
 	public final fun getValue ()Ljava/lang/Object;
 	public final fun withTags (Ljava/util/Map;)Lcom/slack/eithernet/ApiResult$Success;
 }

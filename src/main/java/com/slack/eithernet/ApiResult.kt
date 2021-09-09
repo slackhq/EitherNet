@@ -33,7 +33,6 @@ import java.io.IOException
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import java.util.Collections.unmodifiableMap
-import kotlin.DeprecationLevel.ERROR
 import kotlin.reflect.KClass
 
 /**
@@ -75,9 +74,6 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
     public fun withTags(tags: Map<KClass<*>, Any>): Success<T> {
       return Success(value, tags)
     }
-
-    @Deprecated("Use value. This will be removed in 1.0", ReplaceWith("value"), ERROR)
-    public val response: T get() = value
   }
 
   /** Represents a failure of some sort. */
