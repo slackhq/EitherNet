@@ -19,12 +19,12 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URL
 
 plugins {
-  kotlin("jvm") version "1.5.21"
+  kotlin("jvm") version "1.5.30"
   id("org.jetbrains.dokka") version "1.5.0"
-  id("com.diffplug.spotless") version "5.14.1"
+  id("com.diffplug.spotless") version "5.15.0"
   id("com.vanniktech.maven.publish") version "0.17.0"
-  id("io.gitlab.arturbosch.detekt") version "1.17.0"
-  id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.6.0"
+  id("io.gitlab.arturbosch.detekt") version "1.18.1"
+  id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.7.1"
 }
 
 repositories {
@@ -100,7 +100,7 @@ spotless {
 
 val moshiVersion = "1.12.0"
 val retrofitVersion = "2.9.0"
-val okhttpVersion = "4.9.0"
+val okhttpVersion = "4.9.1"
 val coroutinesVersion = "1.5.1"
 dependencies {
   implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
@@ -113,5 +113,5 @@ dependencies {
   testImplementation("com.squareup.moshi:moshi:$moshiVersion")
   testImplementation("com.squareup.moshi:moshi-kotlin:$moshiVersion")
   testImplementation("junit:junit:4.13.2")
-  testImplementation("com.google.truth:truth:1.1.2")
+  testImplementation("com.google.truth:truth:1.1.3")
 }
