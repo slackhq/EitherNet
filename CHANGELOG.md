@@ -9,6 +9,7 @@ _2021-09-9_
 Stable release!
 
 * **Fix:** Embed proguard rules to keep relevant generics information on `ApiResult`. This is important for new versions of R8, which otherwise strips this information.
+* **Fix:** Require `ApiResult` type arguments to be non-null (i.e. `T : Any`).
 * **New:** Add a tags API for breadcrumbing information in `ApiResult`. We expose a few APIs through here, namely the original OkHttp `Request` or `Response` instances when relevant.
 * `ApiResult` subtypes are no longer `data` classes since many of their underlying properties don't reliably implement equals/hashCode/immutability.
 * The deprecated `ApiResult.response` property is now removed.
