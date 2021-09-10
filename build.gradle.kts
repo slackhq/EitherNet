@@ -101,7 +101,7 @@ spotless {
 val moshiVersion = "1.12.0"
 val retrofitVersion = "2.9.0"
 val okhttpVersion = "4.9.1"
-val coroutinesVersion = "1.5.1"
+val coroutinesVersion = "1.5.2"
 dependencies {
   implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
 
