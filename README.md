@@ -146,12 +146,84 @@ class ErrorConverterFactory : Converter.Factory() {
 }
 ```
 
+## Testing
+
+EitherNet ships with a [Test Fixtures](https://docs.gradle.org/current/userguide/java_testing.html#sec:java_test_fixtures)
+artifact containing a `EitherNetController` API to allow for easy testing with EitherNet APIs. This
+is similar to OkHttp’s `MockWebServer`, where results can be enqueued for specific endpoints.
+
+Simply create a new controller instance in your test using one of the `newEitherNetController()` functions.
+
+```kotlin
+val controller = newEitherNetController<PandaApi>() // reified type
+```
+
+Then you can access the underlying faked `api` property from it and pass that on to whatever’s being tested.
+
+
+```kotlin
+// Take the api instance from the controller and pass it to whatever's being tested
+val provider = PandaDataProvider(controller.api)
+```
+
+Finally, enqueue results for endpoints as needed.
+
+```kotlin
+// Later in a test you can enqueue results for specific endpoints
+controller.enqueue(PandaApi::getPandas, ApiResult.success("Po"))
+```
+
+You can also optionally pass in full suspend functions if you need dynamic behavior
+
+```kotlin
+controller.enqueue(PandaApi::getPandas) {
+  // This is a suspend function!
+  delay(1000)
+  ApiResult.success("Po")
+}
+```
+
+In instrumentation tests with DI, you can provide the controller and its underlying API in a test
+module and replace the standard one. This works particularly well with [Anvil](https://github.com/square/anvil).
+
+```kotlin
+@ContributesTo(
+  scope = UserScope::class,
+  replaces = [PandaApiModule::class] // Replace the standard module
+)
+@Module
+object TestPandaApiModule {
+  @Provides
+  fun providePandaApiController(): EitherNetController<PandaApi> = newEitherNetController()
+
+  @Provides
+  fun providePandaApi(
+    controller: EitherNetController<PandaApi>
+  ): PandaApi = controller.api
+}
+```
+
+Then you can inject the controller in your test while users of `PandaApi` will get your test instance.
+
+### Java Interop
+
+For Java interop, there is a limited API available at `JavaEitherNetControllers.enqueueFromJava`.
+
+### Validation
+
+`EitherNetController` will run some small validation on API endpoints under the hood. If you want to
+add your own validations on top of this, you can provide implementations of `ApiValidator` via
+`ServiceLoader`. See `ApiValidator`'s docs for more information.
+
 ## Installation
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.slack.eithernet/eithernet.svg)](https://mvnrepository.com/artifact/com.slack.eithernet/eithernet)
 ```gradle
 dependencies {
   implementation("com.slack.eithernet:eithernet:<version>")
+
+  // Test fixtures
+  testImplementation(testFixtures("com.slack.eithernet:eithernet:<version>"))
 }
 ```
 

@@ -67,6 +67,12 @@ public final class com/slack/eithernet/ApiResultConverterFactory : retrofit2/Con
 public abstract interface annotation class com/slack/eithernet/DecodeErrorBody : java/lang/annotation/Annotation {
 }
 
+public abstract interface annotation class com/slack/eithernet/ExperimentalEitherNetApi : java/lang/annotation/Annotation {
+}
+
+public abstract interface annotation class com/slack/eithernet/InternalEitherNetApi : java/lang/annotation/Annotation {
+}
+
 public abstract interface annotation class com/slack/eithernet/ResultType : java/lang/annotation/Annotation {
 	public abstract fun isArray ()Z
 	public abstract fun ownerType ()Ljava/lang/Class;
