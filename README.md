@@ -205,7 +205,15 @@ object TestPandaApiModule {
 
 Then you can inject the controller in your test while users of `PandaApi` will get your test instance.
 
+### Java Interop
+
 For Java interop, there is a limited API available at `JavaEitherNetControllers.enqueueFromJava`.
+
+### Validation
+
+`EitherNetController` will run some small validation on API endpoints under the hood. If you want to
+add your own validations on top of this, you can provide implementations of `ApiValidator` via
+`ServiceLoader`. See `ApiValidator`'s docs for more information.
 
 ## Installation
 
