@@ -40,9 +40,7 @@ controller.enqueue(PandaApi::getPandas) {
 }
 ```
 
-See its section in our README for full more details.
-
-
+See its [section in our README](https://github.com/slackhq/EitherNet#testing) for full more details.
 
 1.0.0
 -----
