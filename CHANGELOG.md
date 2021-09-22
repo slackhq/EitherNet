@@ -1,6 +1,49 @@
 Changelog
 =========
 
+1.1.0
+-----
+
+_2021-09-22_
+
+* Update Kotlin to `1.5.31`
+* **New:** This release introduces a new `EitherNetController` API for testing EitherNet APIs via [Test Fixtures](https://docs.gradle.org/current/userguide/java_testing.html#sec:java_test_fixtures). This is similar to OkHttp’s `MockWebServer`, where results can be enqueued for specific endpoints.
+
+Simply create a new controller instance in your test using one of the `newEitherNetController()` functions.
+
+```kotlin
+val controller = newEitherNetController<PandaApi>() // reified type
+```
+
+Then you can access the underlying faked `api` property from it and pass that on to whatever’s being tested.
+
+
+```kotlin
+// Take the api instance from the controller and pass it to whatever's being tested
+val provider = PandaDataProvider(controller.api)
+```
+
+Finally, enqueue results for endpoints as needed.
+
+```kotlin
+// Later in a test you can enqueue results for specific endpoints
+controller.enqueue(PandaApi::getPandas, ApiResult.success("Po"))
+```
+
+You can also optionally pass in full suspend functions if you need dynamic behavior
+
+```kotlin
+controller.enqueue(PandaApi::getPandas) {
+  // This is a suspend function!
+  delay(1000)
+  ApiResult.success("Po")
+}
+```
+
+See its section in our README for full more details.
+
+
+
 1.0.0
 -----
 

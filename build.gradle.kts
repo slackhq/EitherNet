@@ -19,10 +19,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URL
 
 plugins {
-  kotlin("jvm") version "1.5.30"
+  kotlin("jvm") version "1.5.31"
   `java-test-fixtures`
-  id("org.jetbrains.dokka") version "1.5.30"
-  id("com.google.devtools.ksp") version "1.5.30-1.0.0"
+  id("org.jetbrains.dokka") version "1.5.31"
+  id("com.google.devtools.ksp") version "1.5.31-1.0.0"
   id("com.diffplug.spotless") version "5.15.0"
   id("com.vanniktech.maven.publish") version "0.18.0"
   id("io.gitlab.arturbosch.detekt") version "1.18.1"
@@ -110,7 +110,7 @@ spotless {
 val moshiVersion = "1.12.0"
 val retrofitVersion = "2.9.0"
 val okhttpVersion = "4.9.0"
-val coroutinesVersion = "1.5.1"
+val coroutinesVersion = "1.5.2"
 dependencies {
   implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
 
@@ -123,7 +123,7 @@ dependencies {
   testImplementation("com.squareup.moshi:moshi-kotlin:$moshiVersion")
   testImplementation("junit:junit:4.13.2")
   testImplementation("com.google.truth:truth:1.1.3")
-  testImplementation("org.jetbrains.kotlin:kotlin-test:1.5.30")
+  testImplementation("org.jetbrains.kotlin:kotlin-test:1.5.31")
   testImplementation("com.google.auto.service:auto-service:1.0")
   kspTest("dev.zacsweers.autoservice:auto-service-ksp:1.0.0")
 
@@ -133,5 +133,5 @@ dependencies {
   testFixturesImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
   // For access to Types
   testFixturesImplementation("com.squareup.moshi:moshi:1.12.0")
-  testFixturesApi("org.jetbrains.kotlin:kotlin-reflect:1.5.30")
+  testFixturesApi("org.jetbrains.kotlin:kotlin-reflect:1.5.31")
 }
