@@ -27,6 +27,7 @@ import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.Callback
 import retrofit2.Converter
+import retrofit2.HttpException
 import retrofit2.Response
 import retrofit2.Retrofit
 import java.io.IOException
@@ -80,6 +81,11 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
   public sealed interface Failure<E : Any> : ApiResult<Nothing, E> {
 
     /**
+     * Cause of failure. Useful for logging and when there is no distinct handling between some Failure subtypes.
+     */
+    public val exception: Throwable
+
+    /**
      * A network failure caused by a given [error]. This error is opaque, as the actual type could
      * be from a number of sources (connectivity, etc). This event is generally considered to be a
      * non-recoverable and should be used as signal or logging before attempting to gracefully
@@ -89,6 +95,8 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
       public val error: IOException,
       tags: Map<KClass<*>, Any>
     ) : Failure<Nothing> {
+
+      override val exception: IOException get() = error
 
       /** Extra metadata associated with the result such as original requests, responses, etc. */
       internal val tags: Map<KClass<*>, Any> = unmodifiableMap(tags.toMap())
@@ -110,6 +118,8 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
       tags: Map<KClass<*>, Any>
     ) : Failure<Nothing> {
 
+      override val exception: Throwable get() = error
+
       /** Extra metadata associated with the result such as original requests, responses, etc. */
       internal val tags: Map<KClass<*>, Any> = unmodifiableMap(tags.toMap())
 
@@ -128,6 +138,7 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
     public class HttpFailure<E : Any> internal constructor(
       public val code: Int,
       public val error: E?,
+      override val exception: Exception,
       tags: Map<KClass<*>, Any>
     ) : Failure<E> {
 
@@ -136,7 +147,7 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
 
       /** Returns a new copy of this with the given [tags]. */
       public fun withTags(tags: Map<KClass<*>, Any>): HttpFailure<E> {
-        return HttpFailure(code, error, unmodifiableMap(tags.toMap()))
+        return HttpFailure(code, error, exception, unmodifiableMap(tags.toMap()))
       }
     }
 
@@ -151,6 +162,7 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
      */
     public class ApiFailure<E : Any> internal constructor(
       public val error: E?,
+      override val exception: ApiException,
       tags: Map<KClass<*>, Any>
     ) : Failure<E> {
 
@@ -159,7 +171,7 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
 
       /** Returns a new copy of this with the given [tags]. */
       public fun withTags(tags: Map<KClass<*>, Any>): ApiFailure<E> {
-        return ApiFailure(error, unmodifiableMap(tags.toMap()))
+        return ApiFailure(error, exception, unmodifiableMap(tags.toMap()))
       }
     }
   }
@@ -179,12 +191,13 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
       error: E? = null,
     ): HttpFailure<E> {
       checkHttpFailureCode(code)
-      return HttpFailure(code, error, emptyMap())
+      return HttpFailure(code, error, IllegalStateException("HTTP $code"), emptyMap())
     }
 
     /** Returns a new [ApiFailure] with given [error]. */
     @JvmOverloads
-    public fun <E : Any> apiFailure(error: E? = null): ApiFailure<E> = ApiFailure(error, emptyMap())
+    public fun <E : Any> apiFailure(error: E? = null): ApiFailure<E> =
+      ApiFailure(error, ApiException(error), emptyMap())
 
     /** Returns a new [NetworkFailure] with given [error]. */
     public fun networkFailure(error: IOException): NetworkFailure = NetworkFailure(error, emptyMap())
@@ -291,6 +304,7 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                       Response.success(
                         ApiFailure(
                           error = t.error,
+                          exception = t,
                           tags = mapOf(Request::class to call.request())
                         )
                       )
@@ -373,6 +387,7 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                       HttpFailure(
                         code = response.code(),
                         error = errorBody,
+                        exception = HttpException(response),
                         tags = mapOf(
                           okhttp3.Response::class to response.raw()
                         )

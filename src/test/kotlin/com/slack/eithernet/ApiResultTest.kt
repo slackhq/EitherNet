@@ -101,6 +101,7 @@ class ApiResultTest {
     check(result is HttpFailure)
     assertThat(result.code).isEqualTo(404)
     assertThat(result.error).isNull()
+    assertThat(result.exception).hasMessageThat().startsWith("HTTP 404")
 
     // Assert tags
     assertThat(result.request()).isNotNull()
@@ -185,6 +186,7 @@ class ApiResultTest {
     val result = runBlocking { service.testEndpoint() }
     check(result is ApiFailure)
     assertThat(result.error).isEqualTo(errorMessage)
+    assertThat(result.exception.error).isEqualTo(errorMessage)
 
     // Assert tags
     assertThat(result.request()).isNotNull()
@@ -280,6 +282,13 @@ class ApiResultTest {
     } catch (e: IllegalArgumentException) {
       assertThat(e).hasMessageThat().contains("Must be a 4xx or 5xx code")
     }
+  }
+
+  @Test
+  fun failure_exposes_exception() {
+    val exception = Exception()
+    val failure: ApiResult.Failure<Nothing> = ApiResult.unknownFailure(exception)
+    assertThat(failure.exception).isSameInstanceAs(exception)
   }
 
   @Test
