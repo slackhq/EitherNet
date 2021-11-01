@@ -169,4 +169,9 @@ private fun createResultType(
   rawType: Class<*>,
   typeArgs: Array<ResultType>,
   isArray: Boolean
-): ResultType = ResultType(ownerType.kotlin, typeArgs, rawType.kotlin, isArray)
+): ResultType = ResultType(
+  rawType = rawType.kotlin,
+  typeArgs = typeArgs,
+  ownerType = ownerType.kotlin,
+  isArray = isArray
+)
