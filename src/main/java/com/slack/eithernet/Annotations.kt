@@ -19,7 +19,6 @@ import com.slack.eithernet.Util.canonicalize
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import java.lang.reflect.WildcardType
-import kotlin.reflect.KClass
 
 /**
  * Returns a [Pair] of a [StatusCode] and subset of these annotations without that [StatusCode]
