@@ -69,6 +69,7 @@ internal inline fun <reified S : Any, reified E : Any> KFunction<ApiResult<S, E>
     "Type check failed! Expected error type of '$error' but found '${typeOf<E>()}'. Ensure that your result type matches the target endpoint as the IDE won't correctly infer this!"
   }
 }
+
 /**
  * Kotlin 1.6 introduces a new `platformTypeUpperBound` value to `KType.equals()` (under
  * [kotlin.jvm.internal.TypeReference]) that we can't control or access, so we compare these
