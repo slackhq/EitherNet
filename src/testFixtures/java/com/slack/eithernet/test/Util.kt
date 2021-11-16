@@ -22,6 +22,7 @@ import kotlin.coroutines.intrinsics.intercepted
 import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
 import kotlin.coroutines.resumeWithException
 import kotlin.reflect.KFunction
+import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
 internal typealias SuspendedResult = suspend (args: Array<Any>) -> ApiResult<*, *>
@@ -61,10 +62,22 @@ internal inline fun <reified S : Any, reified E : Any> KFunction<ApiResult<S, E>
   val (success, error) = type.arguments
     .map { it.type!! }
 
-  check(success == typeOf<S>()) {
+  check(success isEqualTo typeOf<S>()) {
     "Type check failed! Expected success type of '$success' but found '${typeOf<S>()}'. Ensure that your result type matches the target endpoint as the IDE won't correctly infer this!"
   }
-  check(error == typeOf<E>()) {
+  check(error isEqualTo typeOf<E>()) {
     "Type check failed! Expected error type of '$error' but found '${typeOf<E>()}'. Ensure that your result type matches the target endpoint as the IDE won't correctly infer this!"
   }
+}
+
+/**
+ * Kotlin 1.6 introduces a new `platformTypeUpperBound` value to `KType.equals()` (under
+ * [kotlin.jvm.internal.TypeReference]) that we can't control or access, so we compare these
+ * directly.
+ *
+ * https://youtrack.jetbrains.com/issue/KT-49318
+ */
+@PublishedApi
+internal infix fun KType.isEqualTo(other: KType): Boolean {
+  return classifier == other.classifier && arguments == other.arguments && isMarkedNullable == other.isMarkedNullable
 }

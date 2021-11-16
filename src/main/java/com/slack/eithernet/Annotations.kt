@@ -126,7 +126,7 @@ public fun ResultType.toType(): Type {
 
 internal fun createStatusCode(code: Int): StatusCode {
   ApiResult.checkHttpFailureCode(code)
-  return StatusCodeImpl(code)
+  return StatusCode(code)
 }
 
 internal fun createResultType(type: Type): ResultType {
@@ -168,4 +168,9 @@ private fun createResultType(
   rawType: Class<*>,
   typeArgs: Array<ResultType>,
   isArray: Boolean
-): ResultType = ResultTypeImpl(ownerType, rawType, typeArgs, isArray)
+): ResultType = ResultType(
+  rawType = rawType.kotlin,
+  typeArgs = typeArgs,
+  ownerType = ownerType.kotlin,
+  isArray = isArray
+)
