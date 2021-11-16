@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.2.0
+-----
+
+_2021-11-16_
+
+* Update to Kotlin `1.6.0`
+* **New:** Directly instantiate intermediate EitherNet annotations. This is an internal change only.
+
 1.1.0
 -----
 
