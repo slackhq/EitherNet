@@ -32,5 +32,5 @@ jobs:
         run: ./gradlew build check
 
       - name: Publish (default branch only)
-        if: github.repository == 'slackhq/EitherNet' && github.ref == 'refs/heads/main' && matrix.java-version == '11'
+        if: github.repository == 'slackhq/EitherNet' && github.ref == 'refs/heads/main'
         run: ./gradlew publishAllPublicationsToMavenCentralRepository -PmavenCentralUsername=${{ secrets.SONATYPEUSERNAME }} -PmavenCentralPassword=${{ secrets.SONATYPEPASSWORD }}
