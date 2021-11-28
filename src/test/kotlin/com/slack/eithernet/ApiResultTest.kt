@@ -21,7 +21,6 @@ import com.slack.eithernet.ApiResult.Failure.HttpFailure
 import com.slack.eithernet.ApiResult.Failure.NetworkFailure
 import com.slack.eithernet.ApiResult.Failure.UnknownFailure
 import com.slack.eithernet.ApiResult.Success
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
