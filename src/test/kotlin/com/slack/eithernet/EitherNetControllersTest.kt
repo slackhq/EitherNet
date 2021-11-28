@@ -25,6 +25,7 @@ import com.slack.eithernet.test.newEitherNetController
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
 import org.junit.Test
 import kotlin.reflect.KClass
@@ -37,7 +38,7 @@ import kotlin.test.fail
 class EitherNetControllersTest {
 
   @Test
-  fun happyPath() {
+  fun happyPath() = runTest {
     val testApi = newEitherNetController<PandaApi>()
     val api = testApi.api
 
@@ -45,43 +46,43 @@ class EitherNetControllersTest {
       ApiResult.success("Po")
     }
 
-    val result = runBlocking { api.getPandas() }
+    val result = api.getPandas()
     check(result is Success)
     assertThat(result.value).isEqualTo("Po")
   }
 
   @Test
-  fun happyPath_scalar() {
+  fun happyPath_scalar() = runTest {
     val testApi = newEitherNetController<PandaApi>()
     val api = testApi.api
 
     testApi.enqueue(PandaApi::getPandas, ApiResult.success("Po"))
 
-    val result = runBlocking { api.getPandas() }
+    val result = api.getPandas()
     check(result is Success)
     assertThat(result.value).isEqualTo("Po")
   }
 
   @Test
-  fun functionWithParams() {
+  fun functionWithParams() = runTest {
     val testApi = newEitherNetController<PandaApi>()
     val api = testApi.api
 
     testApi.enqueue(PandaApi::getPandasWithParams, ApiResult.success("Po"))
 
-    val result = runBlocking { api.getPandasWithParams(1) }
+    val result = api.getPandasWithParams(1)
     check(result is Success)
     assertThat(result.value).isEqualTo("Po")
   }
 
   @Test
-  fun failure() {
+  fun failure() = runTest {
     val testApi = newEitherNetController<PandaApi>()
     val api = testApi.api
 
     testApi.enqueue(PandaApi::getPandas, ApiResult.httpFailure(404))
 
-    val result = runBlocking { api.getPandas() }
+    val result = api.getPandas()
     check(result is HttpFailure)
     assertThat(result.code).isEqualTo(404)
   }
@@ -128,14 +129,14 @@ class EitherNetControllersTest {
   }
 
   @Test
-  fun unstubbed_failure() {
+  fun unstubbed_failure() = runTest {
     val testApi = newEitherNetController<PandaApi>()
     val api = testApi.api
 
     testApi.enqueue(PandaApi::getPandasWithParams, ApiResult.success("Po"))
 
     try {
-      runBlocking { api.getPandas() }
+      api.getPandas()
       fail()
     } catch (e: IllegalStateException) {
       assertThat(e).hasMessageThat().contains("No result enqueued for getPandas.")

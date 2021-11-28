@@ -22,6 +22,7 @@ import com.slack.eithernet.ApiResult.Failure.NetworkFailure
 import com.slack.eithernet.ApiResult.Failure.UnknownFailure
 import com.slack.eithernet.ApiResult.Success
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import okhttp3.mockwebserver.MockResponse
@@ -63,13 +64,13 @@ class ApiResultTest {
   }
 
   @Test
-  fun success() {
+  fun success() = runTest {
     val response = MockResponse()
       .setResponseCode(200)
       .setBody("Response!")
 
     server.enqueue(response)
-    val result = runBlocking { service.testEndpoint() }
+    val result = service.testEndpoint()
     check(result is Success)
     assertThat(result.value).isEqualTo("Response!")
 
@@ -79,25 +80,25 @@ class ApiResultTest {
   }
 
   @Test
-  fun successWithUnit() {
+  fun successWithUnit() = runTest {
     val response = MockResponse()
       .setResponseCode(200)
       .setBody("Ignored!")
 
     server.enqueue(response)
-    val result = runBlocking { service.unitEndpoint() }
+    val result = service.unitEndpoint()
     check(result is Success)
     assertThat(result.value).isEqualTo(Unit)
   }
 
   @Test
-  fun failureWithUnit() {
+  fun failureWithUnit() = runTest {
     val response = MockResponse()
       .setResponseCode(404)
       .setBody("Ignored errors!")
 
     server.enqueue(response)
-    val result = runBlocking { service.unitEndpoint() }
+    val result = service.unitEndpoint()
     check(result is HttpFailure)
     assertThat(result.code).isEqualTo(404)
     assertThat(result.error).isNull()
@@ -108,50 +109,50 @@ class ApiResultTest {
   }
 
   @Test
-  fun apiHttpFailure() {
+  fun apiHttpFailure() = runTest {
     val response = MockResponse()
       .setResponseCode(404)
 
     server.enqueue(response)
-    val result = runBlocking { service.testEndpoint() }
+    val result = service.testEndpoint()
     check(result is HttpFailure)
     assertThat(result.code).isEqualTo(404)
     assertThat(result.error).isNull()
   }
 
   @Test
-  fun apiHttpFailure_5xx() {
+  fun apiHttpFailure_5xx() = runTest {
     val response = MockResponse()
       .setResponseCode(500)
 
     server.enqueue(response)
-    val result = runBlocking { service.testEndpoint() }
+    val result = service.testEndpoint()
     check(result is HttpFailure)
     assertThat(result.code).isEqualTo(500)
     assertThat(result.error).isNull()
   }
 
   @Test
-  fun apiHttpFailure_withBody() {
+  fun apiHttpFailure_withBody() = runTest {
     val response = MockResponse()
       .setResponseCode(404)
       .setBody("Custom errors for all")
 
     server.enqueue(response)
-    val result = runBlocking { service.testEndpointWithErrorBody() }
+    val result = service.testEndpointWithErrorBody()
     check(result is HttpFailure)
     assertThat(result.code).isEqualTo(404)
     assertThat(result.error).isEqualTo("Custom errors for all")
   }
 
   @Test
-  fun apiHttpFailure_withBodyEncodingIssue() {
+  fun apiHttpFailure_withBodyEncodingIssue() = runTest {
     val response = MockResponse()
       .setResponseCode(404)
       .setBody("Custom errors for all")
 
     server.enqueue(response)
-    val result = runBlocking { service.badEndpointWithErrorBody() }
+    val result = service.badEndpointWithErrorBody()
     check(result is UnknownFailure)
     assertThat(result.error).isInstanceOf(BadEndpointException::class.java)
 
@@ -163,26 +164,26 @@ class ApiResultTest {
   }
 
   @Test
-  fun apiHttpFailure_withBody_missingBody() {
+  fun apiHttpFailure_withBody_missingBody() = runTest {
     val response = MockResponse()
       .setResponseCode(404)
 
     server.enqueue(response)
-    val result = runBlocking { service.testEndpointWithErrorBody() }
+    val result = service.testEndpointWithErrorBody()
     check(result is HttpFailure)
     assertThat(result.code).isEqualTo(404)
     assertThat(result.error).isNull()
   }
 
   @Test
-  fun apiFailure() {
+  fun apiFailure() = runTest {
     val errorMessage = "${ErrorConverterFactory.ERROR_MARKER}This is an error message."
     val response = MockResponse()
       .setResponseCode(200)
       .setBody(errorMessage)
 
     server.enqueue(response)
-    val result = runBlocking { service.testEndpoint() }
+    val result = service.testEndpoint()
     check(result is ApiFailure)
     assertThat(result.error).isEqualTo(errorMessage)
 
@@ -191,35 +192,35 @@ class ApiResultTest {
   }
 
   @Test
-  fun apiFailure_customMarker() {
+  fun apiFailure_customMarker() = runTest {
     val errorMessage = "${ErrorConverterFactory.ERROR_MARKER}The rest of this is ignored."
     val response = MockResponse()
       .setResponseCode(200)
       .setBody(errorMessage)
 
     server.enqueue(response)
-    val result = runBlocking { service.customErrorTypeEndpoint() }
+    val result = service.customErrorTypeEndpoint()
     check(result is ApiFailure)
     assertThat(result.error).isEqualTo(ErrorMarker.MARKER)
   }
 
   @Test
-  fun apiFailure_unknownErrorType() {
+  fun apiFailure_unknownErrorType() = runTest {
     val errorMessage = "${ErrorConverterFactory.ERROR_MARKER}The rest of this is ignored."
     val response = MockResponse()
       .setResponseCode(200)
       .setBody(errorMessage)
 
     server.enqueue(response)
-    val result = runBlocking { service.unknownErrorTypeEndpoint() }
+    val result = service.unknownErrorTypeEndpoint()
     check(result is ApiFailure)
     assertThat(result.error).isNull()
   }
 
   @Test
-  fun networkFailure() {
+  fun networkFailure() = runTest {
     server.enqueue(MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AFTER_REQUEST))
-    val result = runBlocking { service.testEndpoint() }
+    val result = service.testEndpoint()
     check(result is NetworkFailure)
     assertThat(result.error).isInstanceOf(IOException::class.java)
 
@@ -228,22 +229,22 @@ class ApiResultTest {
   }
 
   @Test
-  fun networkFailureUnit() {
+  fun networkFailureUnit() = runTest {
     server.enqueue(MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AFTER_REQUEST))
-    val result = runBlocking { service.unitEndpoint() }
+    val result = service.unitEndpoint()
     check(result is NetworkFailure)
     assertThat(result.error).isInstanceOf(IOException::class.java)
   }
 
   @Test
-  fun unknownFailure() {
+  fun unknownFailure() = runTest {
     // Triggers an encoding failure
     server.enqueue(
       MockResponse()
         .setResponseCode(200)
         .setBody("")
     )
-    val result = runBlocking { service.badEndpoint() }
+    val result = service.badEndpoint()
     assertThat(result).isInstanceOf(UnknownFailure::class.java)
     assertThat((result as UnknownFailure).error)
       .isInstanceOf(BadEndpointException::class.java)
