@@ -56,6 +56,7 @@ tasks.withType<KotlinCompile>().configureEach {
     )
     if (taskName == "compileTestKotlin") {
       argsList += "-Xopt-in=kotlin.ExperimentalStdlibApi"
+      argsList += "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
       // Enable new jvmdefault behavior
       // https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/
       argsList += "-Xjvm-default=all"
@@ -122,7 +123,8 @@ dependencies {
   implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
 
   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
-  testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
+  // TODO switch to regular version after non-RC
+  testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0-RC")
   testImplementation("com.squareup.retrofit2:converter-scalars:$retrofitVersion")
   testImplementation("com.squareup.okhttp3:okhttp:$okhttpVersion")
   testImplementation("com.squareup.okhttp3:mockwebserver:$okhttpVersion")
