@@ -26,9 +26,7 @@ If applicable, add screenshots to help explain your problem.
 
 #### Reproducible in:
 
-{project_name} version:
-
-{platform_name} version:
+Project version:
 
 OS version(s):
 
