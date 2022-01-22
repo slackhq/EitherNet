@@ -16,7 +16,6 @@
 package com.slack.eithernet.test
 
 import com.slack.eithernet.ApiResult
-import com.slack.eithernet.ExperimentalEitherNetApi
 import com.slack.eithernet.InternalEitherNetApi
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
@@ -40,7 +39,6 @@ import kotlin.reflect.jvm.javaMethod
  *
  * For Java interop, there is a limited API available at [enqueueFromJava].
  */
-@ExperimentalEitherNetApi
 interface EitherNetController<T : Any> {
   /** The underlying API implementation that should be passed into the thing being tested. */
   val api: T
@@ -56,7 +54,6 @@ interface EitherNetController<T : Any> {
 }
 
 /** Enqueues a suspended [resultBody]. */
-@ExperimentalEitherNetApi
 inline fun <reified T : Any, reified S : Any, reified E : Any> EitherNetController<T>.enqueue(
   ref: KFunction<ApiResult<S, E>>,
   noinline resultBody: suspend (args: Array<Any>) -> ApiResult<S, E>
@@ -72,7 +69,6 @@ inline fun <reified T : Any, reified S : Any, reified E : Any> EitherNetControll
 }
 
 /** Enqueues a scalar [result] instance. */
-@ExperimentalEitherNetApi
 inline fun <reified T : Any, reified S : Any, reified E : Any> EitherNetController<T>.enqueue(
   ref: KFunction<ApiResult<S, E>>,
   result: ApiResult<S, E>

@@ -34,7 +34,6 @@ import kotlin.reflect.full.hasAnnotation
 import kotlin.test.assertFailsWith
 import kotlin.test.fail
 
-@ExperimentalEitherNetApi
 class EitherNetControllersTest {
 
   @Test
@@ -256,7 +255,6 @@ class EitherNetControllersTest {
 /** Example of a marker annotation for a validator to require */
 annotation class SlackEndpoint
 
-@ExperimentalEitherNetApi
 @AutoService(ApiValidator::class)
 class SlackEndpointValidator : ApiValidator {
   override fun validate(apiClass: KClass<*>, function: KFunction<*>, errors: MutableList<String>) {

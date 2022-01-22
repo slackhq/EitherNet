@@ -24,7 +24,6 @@ import kotlin.reflect.KFunction
  * A simple callback API for validating APIs in [EitherNetController]. Implementations of this can
  * be supplied via [ServiceLoader].
  */
-@ExperimentalEitherNetApi
 fun interface ApiValidator {
   /**
    * Callback to validate a given [function] from the given [apiClass].

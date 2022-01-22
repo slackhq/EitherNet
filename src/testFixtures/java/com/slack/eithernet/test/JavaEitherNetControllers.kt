@@ -18,11 +18,9 @@
 package com.slack.eithernet.test
 
 import com.slack.eithernet.ApiResult
-import com.slack.eithernet.ExperimentalEitherNetApi
 import com.slack.eithernet.InternalEitherNetApi
 
 /** Enqueues a suspended [resultBody]. Note that this is not safe and only available for Java. */
-@ExperimentalEitherNetApi
 fun <T : Any, S : Any, E : Any> EitherNetController<T>.enqueueFromJava(
   clazz: Class<T>,
   methodName: String,
