@@ -49,7 +49,7 @@ val api = Retrofit.Builder()
   .create<TestApi>()
 ```
 
-If you don't have custom error return types, simply use `Nothing` for the error type.
+If you don't have custom error return types, simply use `Unit` for the error type.
 
 ### Decoding Error Bodies
 
