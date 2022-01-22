@@ -32,19 +32,16 @@ import kotlin.reflect.javaType
 import kotlin.reflect.jvm.javaMethod
 
 /** Returns a new [EitherNetController] for API service type [T]. */
-@ExperimentalEitherNetApi
 inline fun <reified T : Any> newEitherNetController(): EitherNetController<T> {
   return newEitherNetController(T::class)
 }
 
 /** Returns a new [EitherNetController] for API service type [T]. */
-@ExperimentalEitherNetApi
 fun <T : Any> newEitherNetController(service: Class<T>): EitherNetController<T> {
   return newEitherNetController(service.kotlin)
 }
 
 /** Returns a new [EitherNetController] for API service type [T]. */
-@ExperimentalEitherNetApi
 fun <T : Any> newEitherNetController(service: KClass<T>): EitherNetController<T> {
   service.validateApi()
   // Get functions with retrofit annotations
