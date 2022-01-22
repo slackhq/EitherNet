@@ -19,11 +19,11 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URL
 
 plugins {
-  kotlin("jvm") version "1.6.0"
+  kotlin("jvm") version "1.6.10"
   `java-test-fixtures`
-  id("org.jetbrains.dokka") version "1.5.31"
-  id("com.google.devtools.ksp") version "1.6.0-1.0.1"
-  id("com.diffplug.spotless") version "6.0.0"
+  id("org.jetbrains.dokka") version "1.6.0"
+  id("com.google.devtools.ksp") version "1.6.10-1.0.2"
+  id("com.diffplug.spotless") version "6.2.0"
   id("com.vanniktech.maven.publish") version "0.18.0"
   id("io.gitlab.arturbosch.detekt") version "1.18.1"
   id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.8.0"
@@ -118,13 +118,12 @@ apiValidation {
 val moshiVersion = "1.12.0"
 val retrofitVersion = "2.9.0"
 val okhttpVersion = "4.9.0"
-val coroutinesVersion = "1.5.2"
+val coroutinesVersion = "1.6.0"
 dependencies {
   implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
 
   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
-  // TODO switch to regular version after non-RC
-  testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0-RC")
+  testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
   testImplementation("com.squareup.retrofit2:converter-scalars:$retrofitVersion")
   testImplementation("com.squareup.okhttp3:okhttp:$okhttpVersion")
   testImplementation("com.squareup.okhttp3:mockwebserver:$okhttpVersion")
@@ -132,7 +131,7 @@ dependencies {
   testImplementation("com.squareup.moshi:moshi-kotlin:$moshiVersion")
   testImplementation("junit:junit:4.13.2")
   testImplementation("com.google.truth:truth:1.1.3")
-  testImplementation("org.jetbrains.kotlin:kotlin-test:1.5.31")
+  testImplementation("org.jetbrains.kotlin:kotlin-test:1.6.10")
   testImplementation("com.google.auto.service:auto-service:1.0")
   kspTest("dev.zacsweers.autoservice:auto-service-ksp:1.0.0")
 
@@ -142,5 +141,5 @@ dependencies {
   testFixturesImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
   // For access to Types
   testFixturesImplementation("com.squareup.moshi:moshi:1.12.0")
-  testFixturesApi("org.jetbrains.kotlin:kotlin-reflect:1.5.31")
+  testFixturesApi("org.jetbrains.kotlin:kotlin-reflect:1.6.10")
 }
