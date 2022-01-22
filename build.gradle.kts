@@ -21,7 +21,7 @@ import java.net.URL
 plugins {
   kotlin("jvm") version "1.6.10"
   `java-test-fixtures`
-  id("org.jetbrains.dokka") version "1.6.0"
+  id("org.jetbrains.dokka") version "1.6.10"
   id("com.google.devtools.ksp") version "1.6.10-1.0.2"
   id("com.diffplug.spotless") version "6.2.0"
   id("com.vanniktech.maven.publish") version "0.18.0"
