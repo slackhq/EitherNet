@@ -104,7 +104,7 @@ spotless {
     ktlint(ktlintVersion).userData(ktlintUserData)
     trimTrailingWhitespace()
     endWithNewline()
-    licenseHeaderFile("spotless/spotless.kt", "(import|plugins|buildscript|dependencies|pluginManagement)")
+    licenseHeaderFile("spotless/spotless.kt", "(import|plugins|buildscript|dependencies|pluginManagement|rootProject)")
   }
 }
 

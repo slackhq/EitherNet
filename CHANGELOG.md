@@ -1,6 +1,15 @@
 Changelog
 =========
 
+1.2.1
+-----
+
+_2022-01-23_
+
+* Update to Kotlin `1.6.10`.
+* Promote test-fixtures APIs to stable.
+* **Fix:** test-fixtures artifact module metadata using the wrong artifact ID. They should correctly resolve when using Gradle's `testFixtures(...)` syntax.
+
 1.2.0
 -----
 
