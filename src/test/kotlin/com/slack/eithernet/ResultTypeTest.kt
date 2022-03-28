@@ -62,7 +62,7 @@ class ResultTypeTest {
   }
 
   @Test
-  fun errorType() {
+  fun errorType_present() {
     val annotations = Array<Annotation>(4) {
       ResultTypeTest::class.java.getAnnotation(SampleAnnotation::class.java)
     }
@@ -74,7 +74,15 @@ class ResultTypeTest {
   }
 
   @Test
-  fun statusCode() {
+  fun errorType_absent() {
+    val annotations = Array<Annotation>(4) {
+      ResultTypeTest::class.java.getAnnotation(SampleAnnotation::class.java)
+    }
+    assertThat(annotations.errorType()).isNull()
+  }
+
+  @Test
+  fun statusCode_present() {
     val annotations = Array<Annotation>(4) {
       ResultTypeTest::class.java.getAnnotation(SampleAnnotation::class.java)
     }
@@ -83,6 +91,14 @@ class ResultTypeTest {
     val (statusCode, nextAnnotations) = annotations.statusCode() ?: error("No annotation found")
     assertThat(nextAnnotations.size).isEqualTo(3)
     assertThat(statusCode).isSameInstanceAs(statusCodeAnnotation)
+  }
+
+  @Test
+  fun statusCode_absent() {
+    val annotations = Array<Annotation>(4) {
+      ResultTypeTest::class.java.getAnnotation(SampleAnnotation::class.java)
+    }
+    assertThat(annotations.statusCode()).isNull()
   }
 
   private class A

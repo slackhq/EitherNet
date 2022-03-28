@@ -80,7 +80,7 @@ private fun <A : Any> Array<out Annotation>.nextAnnotations(type: Class<A>): Pai
     if (type.isInstance(next)) {
       @Suppress("UNCHECKED_CAST")
       resultType = next as A
-    } else {
+    } else if (nextIndex < nextAnnotations.size) {
       nextAnnotations[nextIndex] = next
       nextIndex++
     }
