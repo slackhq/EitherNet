@@ -90,7 +90,7 @@ private fun <A : Any> Array<out Annotation>.nextAnnotations(type: Class<A>): Pai
     @Suppress("UNCHECKED_CAST")
     resultType to (nextAnnotations as Array<Annotation>)
   } else {
-    null to theseAnnotations
+    null
   }
 }
 
