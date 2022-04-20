@@ -19,14 +19,14 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URL
 
 plugins {
-  kotlin("jvm") version "1.6.10"
+  kotlin("jvm") version "1.6.21"
   `java-test-fixtures`
-  id("org.jetbrains.dokka") version "1.6.10"
-  id("com.google.devtools.ksp") version "1.6.10-1.0.4"
-  id("com.diffplug.spotless") version "6.2.0"
+  id("org.jetbrains.dokka") version "1.6.20"
+  id("com.google.devtools.ksp") version "1.6.20-1.0.5"
+  id("com.diffplug.spotless") version "6.4.2"
   id("com.vanniktech.maven.publish") version "0.19.0"
-  id("io.gitlab.arturbosch.detekt") version "1.18.1"
-  id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.8.0"
+  id("io.gitlab.arturbosch.detekt") version "1.20.0"
+  id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.9.0"
 }
 
 repositories {
@@ -52,11 +52,11 @@ tasks.withType<KotlinCompile>().configureEach {
     jvmTarget = "1.8"
     val argsList = mutableListOf(
       "-progressive",
-      "-Xopt-in=kotlin.RequiresOptIn"
+      "-opt-in=kotlin.RequiresOptIn"
     )
     if (taskName == "compileTestKotlin") {
-      argsList += "-Xopt-in=kotlin.ExperimentalStdlibApi"
-      argsList += "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
+      argsList += "-opt-in=kotlin.ExperimentalStdlibApi"
+      argsList += "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
       // Enable new jvmdefault behavior
       // https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/
       argsList += "-Xjvm-default=all"
@@ -106,13 +106,6 @@ spotless {
     endWithNewline()
     licenseHeaderFile("spotless/spotless.kt", "(import|plugins|buildscript|dependencies|pluginManagement|rootProject)")
   }
-}
-
-apiValidation {
-  // Exclude directly instantiated annotations
-  // https://github.com/Kotlin/binary-compatibility-validator/issues/71
-  ignoredClasses.add("com/slack/eithernet/AnnotationsKt\$annotationImpl\$com_slack_eithernet_ResultType\$0")
-  ignoredClasses.add("com/slack/eithernet/AnnotationsKt\$annotationImpl\$com_slack_eithernet_StatusCode\$0")
 }
 
 val moshiVersion = "1.12.0"

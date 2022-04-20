@@ -1,3 +1,9 @@
+public final class com/slack/eithernet/AnnotationsKt {
+	public static final fun errorType ([Ljava/lang/annotation/Annotation;)Lkotlin/Pair;
+	public static final fun statusCode ([Ljava/lang/annotation/Annotation;)Lkotlin/Pair;
+	public static final fun toType (Lcom/slack/eithernet/ResultType;)Ljava/lang/reflect/Type;
+}
+
 public final class com/slack/eithernet/ApiException : java/lang/Exception {
 	public fun <init> (Ljava/lang/Object;)V
 	public final fun getError ()Ljava/lang/Object;
