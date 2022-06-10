@@ -37,10 +37,8 @@ internal open class Platform(private val hasJava8Types: Boolean) {
       try {
         // Because the service interface might not be public, we need to use a MethodHandle lookup
         // that ignores the visibility of the declaringClass.
-        lookupConstructor = Lookup::class.java.getDeclaredConstructor(
-          Class::class.java,
-          Int::class.javaPrimitiveType
-        )
+        lookupConstructor =
+          Lookup::class.java.getDeclaredConstructor(Class::class.java, Int::class.javaPrimitiveType)
         lookupConstructor.setAccessible(true)
       } catch (ignored: NoClassDefFoundError) {
         // Android API 24 or 25 where Lookup doesn't exist. Calling default methods on non-public
@@ -65,17 +63,13 @@ internal open class Platform(private val hasJava8Types: Boolean) {
     obj: Any,
     vararg args: Any
   ): Any? {
-    val lookup = if (lookupConstructor != null) {
-      lookupConstructor.newInstance(
-        declaringClass,
-        -1 /* trusted */
-      )
-    } else {
-      MethodHandles.lookup()
-    }
-    return lookup.unreflectSpecial(method, declaringClass)
-      .bindTo(obj)
-      .invokeWithArguments(*args)
+    val lookup =
+      if (lookupConstructor != null) {
+        lookupConstructor.newInstance(declaringClass, -1 /* trusted */)
+      } else {
+        MethodHandles.lookup()
+      }
+    return lookup.unreflectSpecial(method, declaringClass).bindTo(obj).invokeWithArguments(*args)
   }
 
   internal class Android : Platform(VERSION.SDK_INT >= 24) {
@@ -95,9 +89,7 @@ internal open class Platform(private val hasJava8Types: Boolean) {
   }
 
   companion object {
-    val INSTANCE by lazy {
-      findPlatform()
-    }
+    val INSTANCE by lazy { findPlatform() }
 
     private fun findPlatform(): Platform {
       return if ("Dalvik" == System.getProperty("java.vm.name")) {

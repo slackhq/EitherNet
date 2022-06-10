@@ -23,15 +23,16 @@ import kotlin.annotation.AnnotationTarget.PROPERTY
 import kotlin.annotation.AnnotationTarget.TYPEALIAS
 
 /**
- * Marks declarations that are **internal** in EitherNet API, which means that they should not be used outside of
- * `com.slack.eithernet`, because their signatures and semantics will change between future releases without any
- * warnings and without providing any migration aids.
+ * Marks declarations that are **internal** in EitherNet API, which means that they should not be
+ * used outside of `com.slack.eithernet`, because their signatures and semantics will change between
+ * future releases without any warnings and without providing any migration aids.
  */
 @Retention(BINARY)
 @Target(CLASS, FUNCTION, TYPEALIAS, PROPERTY)
 @RequiresOptIn(
   level = ERROR,
-  message = "This is an internal EitherNet API that " +
-    "should not be used from outside of EitherNet. No compatibility guarantees are provided."
+  message =
+    "This is an internal EitherNet API that " +
+      "should not be used from outside of EitherNet. No compatibility guarantees are provided."
 )
 public annotation class InternalEitherNetApi

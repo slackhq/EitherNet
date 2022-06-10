@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 @file:Suppress("UNCHECKED_CAST")
+
 package com.slack.eithernet
 
 import com.slack.eithernet.ApiResult.Failure.ApiFailure
@@ -21,32 +22,27 @@ import com.slack.eithernet.ApiResult.Failure.HttpFailure
 import com.slack.eithernet.ApiResult.Failure.NetworkFailure
 import com.slack.eithernet.ApiResult.Failure.UnknownFailure
 import com.slack.eithernet.ApiResult.Success
+import kotlin.reflect.KClass
 import okhttp3.Request
 import okhttp3.Response
-import kotlin.reflect.KClass
 
 /*
  * Common tags added automatically to different ApiResult types.
  */
 
-/**
- * Returns the tag attached with [T] as a key, or null if no tag is attached with that
- * key.
- */
+/** Returns the tag attached with [T] as a key, or null if no tag is attached with that key. */
 public inline fun <reified T : Any> ApiResult<*, *>.tag(): T? = tag(T::class)
 
-/**
- * Returns the tag attached with [klass] as a key, or null if no tag is attached with that
- * key.
- */
+/** Returns the tag attached with [klass] as a key, or null if no tag is attached with that key. */
 public fun <T : Any> ApiResult<*, *>.tag(klass: KClass<T>): T? {
-  val tags = when (this) {
-    is ApiFailure -> tags
-    is HttpFailure -> tags
-    is NetworkFailure -> tags
-    is UnknownFailure -> tags
-    is Success -> tags
-  }
+  val tags =
+    when (this) {
+      is ApiFailure -> tags
+      is HttpFailure -> tags
+      is NetworkFailure -> tags
+      is UnknownFailure -> tags
+      is Success -> tags
+    }
   return tags[klass] as? T
 }
 

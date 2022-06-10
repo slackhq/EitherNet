@@ -16,7 +16,6 @@
 package com.slack.eithernet.test
 
 import com.slack.eithernet.ApiResult
-import kotlinx.coroutines.Dispatchers
 import kotlin.coroutines.intrinsics.COROUTINE_SUSPENDED
 import kotlin.coroutines.intrinsics.intercepted
 import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
@@ -24,6 +23,7 @@ import kotlin.coroutines.resumeWithException
 import kotlin.reflect.KFunction
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
+import kotlinx.coroutines.Dispatchers
 
 internal typealias SuspendedResult = suspend (args: Array<Any>) -> ApiResult<*, *>
 
@@ -59,8 +59,7 @@ internal inline fun <reified S : Any, reified E : Any> KFunction<ApiResult<S, E>
   // Note that we don't use Moshi's nicer canonicalize APIs because it would lose the Kotlin type
   // information like nullability and intrinsic types.
   val type = returnType
-  val (success, error) = type.arguments
-    .map { it.type!! }
+  val (success, error) = type.arguments.map { it.type!! }
 
   check(success isEqualTo typeOf<S>()) {
     "Type check failed! Expected success type of '$success' but found '${typeOf<S>()}'. Ensure that your result type matches the target endpoint as the IDE won't correctly infer this!"
@@ -79,5 +78,7 @@ internal inline fun <reified S : Any, reified E : Any> KFunction<ApiResult<S, E>
  */
 @PublishedApi
 internal infix fun KType.isEqualTo(other: KType): Boolean {
-  return classifier == other.classifier && arguments == other.arguments && isMarkedNullable == other.isMarkedNullable
+  return classifier == other.classifier &&
+    arguments == other.arguments &&
+    isMarkedNullable == other.isMarkedNullable
 }

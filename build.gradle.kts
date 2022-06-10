@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 import io.gitlab.arturbosch.detekt.Detekt
+import java.net.URL
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import java.net.URL
 
 plugins {
-  kotlin("jvm") version "1.6.10"
+  kotlin("jvm") version "1.6.21"
   `java-test-fixtures`
-  id("org.jetbrains.dokka") version "1.6.10"
-  id("com.google.devtools.ksp") version "1.6.10-1.0.2"
-  id("com.diffplug.spotless") version "6.2.0"
-  id("com.vanniktech.maven.publish") version "0.18.0"
-  id("io.gitlab.arturbosch.detekt") version "1.18.1"
-  id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.8.0"
+  id("org.jetbrains.dokka") version "1.6.21"
+  id("com.google.devtools.ksp") version "1.6.21-1.0.6"
+  id("com.diffplug.spotless") version "6.7.1"
+  id("com.vanniktech.maven.publish") version "0.20.0"
+  id("io.gitlab.arturbosch.detekt") version "1.20.0"
+  id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.10.0"
 }
 
 repositories {
@@ -35,28 +35,19 @@ repositories {
 }
 
 pluginManager.withPlugin("java") {
-  configure<JavaPluginExtension> {
-    toolchain {
-      languageVersion.set(JavaLanguageVersion.of(17))
-    }
-  }
+  configure<JavaPluginExtension> { toolchain { languageVersion.set(JavaLanguageVersion.of(17)) } }
 
-  project.tasks.withType<JavaCompile>().configureEach {
-    options.release.set(8)
-  }
+  project.tasks.withType<JavaCompile>().configureEach { options.release.set(8) }
 }
 
 tasks.withType<KotlinCompile>().configureEach {
   val taskName = name
   kotlinOptions {
     jvmTarget = "1.8"
-    val argsList = mutableListOf(
-      "-progressive",
-      "-Xopt-in=kotlin.RequiresOptIn"
-    )
+    val argsList = mutableListOf("-progressive", "-opt-in=kotlin.RequiresOptIn")
     if (taskName == "compileTestKotlin") {
-      argsList += "-Xopt-in=kotlin.ExperimentalStdlibApi"
-      argsList += "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
+      argsList += "-opt-in=kotlin.ExperimentalStdlibApi"
+      argsList += "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
       // Enable new jvmdefault behavior
       // https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/
       argsList += "-Xjvm-default=all"
@@ -66,21 +57,15 @@ tasks.withType<KotlinCompile>().configureEach {
   }
 }
 
-tasks.withType<Detekt>().configureEach {
-  jvmTarget = "1.8"
-}
+tasks.withType<Detekt>().configureEach { jvmTarget = "1.8" }
 
-kotlin {
-  explicitApi()
-}
+kotlin { explicitApi() }
 
 tasks.named<DokkaTask>("dokkaHtml") {
   outputDirectory.set(rootDir.resolve("docs/0.x"))
   dokkaSourceSets.configureEach {
     skipDeprecated.set(true)
-    externalDocumentationLink {
-      url.set(URL("https://square.github.io/retrofit/2.x/retrofit/"))
-    }
+    externalDocumentationLink { url.set(URL("https://square.github.io/retrofit/2.x/retrofit/")) }
   }
 }
 
@@ -90,35 +75,31 @@ spotless {
     trimTrailingWhitespace()
     endWithNewline()
   }
-  val ktlintVersion = "0.41.0"
-  val ktlintUserData = mapOf("indent_size" to "2", "continuation_indent_size" to "2")
+  val ktfmtVersion = "0.38"
   kotlin {
     target("**/*.kt")
-    ktlint(ktlintVersion).userData(ktlintUserData)
+    ktfmt(ktfmtVersion).googleStyle()
     trimTrailingWhitespace()
     endWithNewline()
     licenseHeaderFile("spotless/spotless.kt")
     targetExclude("**/spotless.kt")
   }
   kotlinGradle {
-    ktlint(ktlintVersion).userData(ktlintUserData)
+    ktfmt(ktfmtVersion).googleStyle()
     trimTrailingWhitespace()
     endWithNewline()
-    licenseHeaderFile("spotless/spotless.kt", "(import|plugins|buildscript|dependencies|pluginManagement|rootProject)")
+    licenseHeaderFile(
+      "spotless/spotless.kt",
+      "(import|plugins|buildscript|dependencies|pluginManagement|rootProject)"
+    )
   }
-}
-
-apiValidation {
-  // Exclude directly instantiated annotations
-  // https://github.com/Kotlin/binary-compatibility-validator/issues/71
-  ignoredClasses.add("com/slack/eithernet/AnnotationsKt\$annotationImpl\$com_slack_eithernet_ResultType\$0")
-  ignoredClasses.add("com/slack/eithernet/AnnotationsKt\$annotationImpl\$com_slack_eithernet_StatusCode\$0")
 }
 
 val moshiVersion = "1.12.0"
 val retrofitVersion = "2.9.0"
 val okhttpVersion = "4.9.0"
 val coroutinesVersion = "1.6.0"
+
 dependencies {
   implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
 
