@@ -19,10 +19,10 @@ import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  kotlin("jvm") version "1.7.0"
+  kotlin("jvm") version "1.6.21"
   `java-test-fixtures`
   id("org.jetbrains.dokka") version "1.6.21"
-  id("com.google.devtools.ksp") version "1.7.0-1.0.6"
+  id("com.google.devtools.ksp") version "1.6.21-1.0.6"
   id("com.diffplug.spotless") version "6.7.1"
   id("com.vanniktech.maven.publish") version "0.20.0"
   id("io.gitlab.arturbosch.detekt") version "1.20.0"
