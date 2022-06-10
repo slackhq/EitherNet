@@ -19,14 +19,14 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URL
 
 plugins {
-  kotlin("jvm") version "1.6.21"
+  kotlin("jvm") version "1.7.0"
   `java-test-fixtures`
-  id("org.jetbrains.dokka") version "1.6.20"
-  id("com.google.devtools.ksp") version "1.6.20-1.0.5"
-  id("com.diffplug.spotless") version "6.4.2"
-  id("com.vanniktech.maven.publish") version "0.19.0"
+  id("org.jetbrains.dokka") version "1.6.21"
+  id("com.google.devtools.ksp") version "1.7.0-1.0.6"
+  id("com.diffplug.spotless") version "6.7.1"
+  id("com.vanniktech.maven.publish") version "0.20.0"
   id("io.gitlab.arturbosch.detekt") version "1.20.0"
-  id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.9.0"
+  id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.10.0"
 }
 
 repositories {
@@ -90,18 +90,17 @@ spotless {
     trimTrailingWhitespace()
     endWithNewline()
   }
-  val ktlintVersion = "0.41.0"
-  val ktlintUserData = mapOf("indent_size" to "2", "continuation_indent_size" to "2")
+  val ktfmtVersion = "0.38"
   kotlin {
     target("**/*.kt")
-    ktlint(ktlintVersion).userData(ktlintUserData)
+    ktfmt(ktfmtVersion)
     trimTrailingWhitespace()
     endWithNewline()
     licenseHeaderFile("spotless/spotless.kt")
     targetExclude("**/spotless.kt")
   }
   kotlinGradle {
-    ktlint(ktlintVersion).userData(ktlintUserData)
+    ktfmt(ktfmtVersion)
     trimTrailingWhitespace()
     endWithNewline()
     licenseHeaderFile("spotless/spotless.kt", "(import|plugins|buildscript|dependencies|pluginManagement|rootProject)")
