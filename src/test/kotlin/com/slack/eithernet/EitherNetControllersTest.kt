@@ -22,17 +22,17 @@ import com.slack.eithernet.ApiResult.Success
 import com.slack.eithernet.test.ApiValidator
 import com.slack.eithernet.test.enqueue
 import com.slack.eithernet.test.newEitherNetController
+import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
+import kotlin.reflect.full.hasAnnotation
+import kotlin.test.assertFailsWith
+import kotlin.test.fail
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
 import org.junit.Test
-import kotlin.reflect.KClass
-import kotlin.reflect.KFunction
-import kotlin.reflect.full.hasAnnotation
-import kotlin.test.assertFailsWith
-import kotlin.test.fail
 
 class EitherNetControllersTest {
 
@@ -41,9 +41,7 @@ class EitherNetControllersTest {
     val testApi = newEitherNetController<PandaApi>()
     val api = testApi.api
 
-    testApi.enqueue(PandaApi::getPandas) {
-      ApiResult.success("Po")
-    }
+    testApi.enqueue(PandaApi::getPandas) { ApiResult.success("Po") }
 
     val result = api.getPandas()
     check(result is Success)
@@ -116,14 +114,16 @@ class EitherNetControllersTest {
       newEitherNetController<BadApi>()
       fail()
     } catch (e: IllegalStateException) {
-      assertThat(e).hasMessageThat().contains(
-        """
+      assertThat(e)
+        .hasMessageThat()
+        .contains(
+          """
         Service errors found for BadApi
         - Function missingApiResult must return ApiResult for EitherNet to work.
         - Function missingSlackEndpoint is missing @SlackEndpoint annotation.
         - Function missingSuspend must be a suspend function for EitherNet to work.
         """.trimIndent()
-      )
+        )
     }
   }
 
@@ -153,11 +153,7 @@ class EitherNetControllersTest {
     }
 
     assertFailsWith<TimeoutCancellationException> {
-      runBlocking {
-        withTimeout(1000) {
-          api.getPandas()
-        }
-      }
+      runBlocking { withTimeout(1000) { api.getPandas() } }
     }
   }
 
@@ -167,14 +163,10 @@ class EitherNetControllersTest {
     val api = testApi.api
     val expected = Exception()
 
-    testApi.enqueue(PandaApi::getPandas) {
-      throw expected
-    }
+    testApi.enqueue(PandaApi::getPandas) { throw expected }
 
     try {
-      runBlocking {
-        api.getPandas()
-      }
+      runBlocking { api.getPandas() }
       fail()
     } catch (e: Exception) {
       assertThat(e).isSameInstanceAs(expected)
@@ -194,7 +186,8 @@ class EitherNetControllersTest {
       testApi.assertNoMoreQueuedResults()
       fail()
     } catch (e: AssertionError) {
-      assertThat(e).hasMessageThat()
+      assertThat(e)
+        .hasMessageThat()
         .isEqualTo(
           """
           Found unprocessed ApiResults:
@@ -204,9 +197,7 @@ class EitherNetControllersTest {
     }
 
     // Now process the result
-    runBlocking {
-      api.getPandas()
-    }
+    runBlocking { api.getPandas() }
 
     // Now it successfully asserts
     testApi.assertNoMoreQueuedResults()
@@ -214,40 +205,30 @@ class EitherNetControllersTest {
 
   // Cover for inherited APIs
   interface BaseApi {
-    @SlackEndpoint
-    suspend fun getPandas(): ApiResult<String, Unit>
+    @SlackEndpoint suspend fun getPandas(): ApiResult<String, Unit>
   }
 
   interface PandaApi : BaseApi {
-    @SlackEndpoint
-    suspend fun getPandasWithParams(count: Int): ApiResult<String, Unit>
+    @SlackEndpoint suspend fun getPandasWithParams(count: Int): ApiResult<String, Unit>
   }
 
   interface AnotherApi {
-    @SlackEndpoint
-    suspend fun getPandas(): ApiResult<String, Unit>
+    @SlackEndpoint suspend fun getPandas(): ApiResult<String, Unit>
   }
 
   interface BadApi {
     suspend fun missingSlackEndpoint(): ApiResult<String, Unit>
 
-    @SlackEndpoint
-    fun missingSuspend(): ApiResult<String, Unit>
+    @SlackEndpoint fun missingSuspend(): ApiResult<String, Unit>
 
-    @SlackEndpoint
-    suspend fun missingApiResult(): String
+    @SlackEndpoint suspend fun missingApiResult(): String
 
-    fun defaultMethodIsSkipped() {
-    }
+    fun defaultMethodIsSkipped() {}
 
-    @JvmSynthetic
-    fun syntheticMethodIsSkipped() {
-    }
+    @JvmSynthetic fun syntheticMethodIsSkipped() {}
 
     companion object {
-      @JvmStatic
-      fun staticMethodsIsSkipped() {
-      }
+      @JvmStatic fun staticMethodsIsSkipped() {}
     }
   }
 }

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import io.gitlab.arturbosch.detekt.Detekt
+import java.net.URL
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import java.net.URL
 
 plugins {
   kotlin("jvm") version "1.7.0"
@@ -35,25 +35,16 @@ repositories {
 }
 
 pluginManager.withPlugin("java") {
-  configure<JavaPluginExtension> {
-    toolchain {
-      languageVersion.set(JavaLanguageVersion.of(17))
-    }
-  }
+  configure<JavaPluginExtension> { toolchain { languageVersion.set(JavaLanguageVersion.of(17)) } }
 
-  project.tasks.withType<JavaCompile>().configureEach {
-    options.release.set(8)
-  }
+  project.tasks.withType<JavaCompile>().configureEach { options.release.set(8) }
 }
 
 tasks.withType<KotlinCompile>().configureEach {
   val taskName = name
   kotlinOptions {
     jvmTarget = "1.8"
-    val argsList = mutableListOf(
-      "-progressive",
-      "-opt-in=kotlin.RequiresOptIn"
-    )
+    val argsList = mutableListOf("-progressive", "-opt-in=kotlin.RequiresOptIn")
     if (taskName == "compileTestKotlin") {
       argsList += "-opt-in=kotlin.ExperimentalStdlibApi"
       argsList += "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
@@ -66,21 +57,15 @@ tasks.withType<KotlinCompile>().configureEach {
   }
 }
 
-tasks.withType<Detekt>().configureEach {
-  jvmTarget = "1.8"
-}
+tasks.withType<Detekt>().configureEach { jvmTarget = "1.8" }
 
-kotlin {
-  explicitApi()
-}
+kotlin { explicitApi() }
 
 tasks.named<DokkaTask>("dokkaHtml") {
   outputDirectory.set(rootDir.resolve("docs/0.x"))
   dokkaSourceSets.configureEach {
     skipDeprecated.set(true)
-    externalDocumentationLink {
-      url.set(URL("https://square.github.io/retrofit/2.x/retrofit/"))
-    }
+    externalDocumentationLink { url.set(URL("https://square.github.io/retrofit/2.x/retrofit/")) }
   }
 }
 
@@ -93,17 +78,20 @@ spotless {
   val ktfmtVersion = "0.38"
   kotlin {
     target("**/*.kt")
-    ktfmt(ktfmtVersion)
+    ktfmt(ktfmtVersion).googleStyle()
     trimTrailingWhitespace()
     endWithNewline()
     licenseHeaderFile("spotless/spotless.kt")
     targetExclude("**/spotless.kt")
   }
   kotlinGradle {
-    ktfmt(ktfmtVersion)
+    ktfmt(ktfmtVersion).googleStyle()
     trimTrailingWhitespace()
     endWithNewline()
-    licenseHeaderFile("spotless/spotless.kt", "(import|plugins|buildscript|dependencies|pluginManagement|rootProject)")
+    licenseHeaderFile(
+      "spotless/spotless.kt",
+      "(import|plugins|buildscript|dependencies|pluginManagement|rootProject)"
+    )
   }
 }
 
@@ -111,6 +99,7 @@ val moshiVersion = "1.12.0"
 val retrofitVersion = "2.9.0"
 val okhttpVersion = "4.9.0"
 val coroutinesVersion = "1.6.0"
+
 dependencies {
   implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
 

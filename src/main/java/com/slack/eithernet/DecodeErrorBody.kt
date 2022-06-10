@@ -24,6 +24,4 @@ import kotlin.annotation.AnnotationTarget.FUNCTION
  *
  * This API should be considered read-only.
  */
-@Target(FUNCTION)
-@Retention(RUNTIME)
-public annotation class DecodeErrorBody
+@Target(FUNCTION) @Retention(RUNTIME) public annotation class DecodeErrorBody

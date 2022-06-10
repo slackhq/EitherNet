@@ -36,11 +36,12 @@ internal class RealEitherNetController<T : Any>(
     val errors = mutableListOf<String>()
     orchestrator.endpoints.forEach { (endpoint, resultsQueue) ->
       if (resultsQueue.isNotEmpty()) {
-        val directObject = if (resultsQueue.size == 1) {
-          "result"
-        } else {
-          "results"
-        }
+        val directObject =
+          if (resultsQueue.size == 1) {
+            "result"
+          } else {
+            "results"
+          }
         errors += "-- ${endpoint.name}() has ${resultsQueue.size} unprocessed $directObject"
       }
     }

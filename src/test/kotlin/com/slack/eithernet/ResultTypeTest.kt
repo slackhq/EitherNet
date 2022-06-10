@@ -16,42 +16,34 @@
 package com.slack.eithernet
 
 import com.google.common.truth.Truth.assertThat
-import org.junit.Test
 import java.lang.reflect.Type
 import kotlin.annotation.AnnotationRetention.RUNTIME
 import kotlin.reflect.KType
 import kotlin.reflect.javaType
 import kotlin.reflect.typeOf
+import org.junit.Test
 
-@Retention(RUNTIME)
-annotation class SampleAnnotation
+@Retention(RUNTIME) annotation class SampleAnnotation
 
 @SampleAnnotation
 class ResultTypeTest {
 
-  @Test
-  fun classType() = testType<String>()
+  @Test fun classType() = testType<String>()
 
-  @Test
-  fun parameterizedType() = testType<List<String>>()
+  @Test fun parameterizedType() = testType<List<String>>()
 
   @Test
   fun parameterizedTypeWithOwner() {
-    val typeWithOwner = Types.newParameterizedTypeWithOwner(
-      ResultTypeTest::class.java,
-      A::class.java,
-      B::class.java
-    )
+    val typeWithOwner =
+      Types.newParameterizedTypeWithOwner(ResultTypeTest::class.java, A::class.java, B::class.java)
     val annotation = createResultType(typeWithOwner)
     val created = annotation.toType()
     created.assertEqualTo(typeWithOwner)
   }
 
-  @Test
-  fun enumType() = testType<TestEnum>()
+  @Test fun enumType() = testType<TestEnum>()
 
-  @Test
-  fun array() = testType<Array<String>>()
+  @Test fun array() = testType<Array<String>>()
 
   @Test
   fun wildcard() {
@@ -63,9 +55,10 @@ class ResultTypeTest {
 
   @Test
   fun errorType_present() {
-    val annotations = Array<Annotation>(4) {
-      ResultTypeTest::class.java.getAnnotation(SampleAnnotation::class.java)
-    }
+    val annotations =
+      Array<Annotation>(4) {
+        ResultTypeTest::class.java.getAnnotation(SampleAnnotation::class.java)
+      }
     val resultTypeAnnotation = createResultType(String::class.java)
     annotations[0] = resultTypeAnnotation
     val (resultType, nextAnnotations) = annotations.errorType() ?: error("No annotation found")
@@ -75,17 +68,19 @@ class ResultTypeTest {
 
   @Test
   fun errorType_absent() {
-    val annotations = Array<Annotation>(4) {
-      ResultTypeTest::class.java.getAnnotation(SampleAnnotation::class.java)
-    }
+    val annotations =
+      Array<Annotation>(4) {
+        ResultTypeTest::class.java.getAnnotation(SampleAnnotation::class.java)
+      }
     assertThat(annotations.errorType()).isNull()
   }
 
   @Test
   fun statusCode_present() {
-    val annotations = Array<Annotation>(4) {
-      ResultTypeTest::class.java.getAnnotation(SampleAnnotation::class.java)
-    }
+    val annotations =
+      Array<Annotation>(4) {
+        ResultTypeTest::class.java.getAnnotation(SampleAnnotation::class.java)
+      }
     val statusCodeAnnotation = createStatusCode(404)
     annotations[0] = statusCodeAnnotation
     val (statusCode, nextAnnotations) = annotations.statusCode() ?: error("No annotation found")
@@ -95,9 +90,10 @@ class ResultTypeTest {
 
   @Test
   fun statusCode_absent() {
-    val annotations = Array<Annotation>(4) {
-      ResultTypeTest::class.java.getAnnotation(SampleAnnotation::class.java)
-    }
+    val annotations =
+      Array<Annotation>(4) {
+        ResultTypeTest::class.java.getAnnotation(SampleAnnotation::class.java)
+      }
     assertThat(annotations.statusCode()).isNull()
   }
 

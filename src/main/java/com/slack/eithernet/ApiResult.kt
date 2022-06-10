@@ -21,6 +21,11 @@ import com.slack.eithernet.ApiResult.Failure.HttpFailure
 import com.slack.eithernet.ApiResult.Failure.NetworkFailure
 import com.slack.eithernet.ApiResult.Failure.UnknownFailure
 import com.slack.eithernet.ApiResult.Success
+import java.io.IOException
+import java.lang.reflect.ParameterizedType
+import java.lang.reflect.Type
+import java.util.Collections.unmodifiableMap
+import kotlin.reflect.KClass
 import okhttp3.Request
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -29,20 +34,15 @@ import retrofit2.Callback
 import retrofit2.Converter
 import retrofit2.Response
 import retrofit2.Retrofit
-import java.io.IOException
-import java.lang.reflect.ParameterizedType
-import java.lang.reflect.Type
-import java.util.Collections.unmodifiableMap
-import kotlin.reflect.KClass
 
 /**
  * Represents a result from a traditional HTTP API. [ApiResult] has two sealed subtypes: [Success]
- * and [Failure]. [Success] is typed to [T] with no error type and [Failure] is typed to [E] with
- * no success type.
+ * and [Failure]. [Success] is typed to [T] with no error type and [Failure] is typed to [E] with no
+ * success type.
  *
  * [Failure] in turn is represented by four sealed subtypes of its own: [Failure.NetworkFailure],
- * [Failure.ApiFailure], [Failure.HttpFailure], and [Failure.UnknownFailure]. This allows for
- * simple handling of results through a consistent, non-exceptional flow via sealed `when` branches.
+ * [Failure.ApiFailure], [Failure.HttpFailure], and [Failure.UnknownFailure]. This allows for simple
+ * handling of results through a consistent, non-exceptional flow via sealed `when` branches.
  *
  * ```
  * when (val result = myApi.someEndpoint()) {
@@ -56,16 +56,14 @@ import kotlin.reflect.KClass
  * }
  * ```
  *
- * Usually, user code for this could just simply show a generic error message for a [Failure]
- * case, but a sealed class is exposed for more specific error messaging.
+ * Usually, user code for this could just simply show a generic error message for a [Failure] case,
+ * but a sealed class is exposed for more specific error messaging.
  */
 public sealed interface ApiResult<out T : Any, out E : Any> {
 
   /** A successful result with the data available in [response]. */
-  public class Success<T : Any> internal constructor(
-    public val value: T,
-    tags: Map<KClass<*>, Any>
-  ) : ApiResult<T, Nothing> {
+  public class Success<T : Any>
+  internal constructor(public val value: T, tags: Map<KClass<*>, Any>) : ApiResult<T, Nothing> {
 
     /** Extra metadata associated with the result such as original requests, responses, etc. */
     internal val tags: Map<KClass<*>, Any> = unmodifiableMap(tags.toMap())
@@ -85,10 +83,9 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
      * non-recoverable and should be used as signal or logging before attempting to gracefully
      * degrade or retry.
      */
-    public class NetworkFailure internal constructor(
-      public val error: IOException,
-      tags: Map<KClass<*>, Any>
-    ) : Failure<Nothing> {
+    public class NetworkFailure
+    internal constructor(public val error: IOException, tags: Map<KClass<*>, Any>) :
+      Failure<Nothing> {
 
       /** Extra metadata associated with the result such as original requests, responses, etc. */
       internal val tags: Map<KClass<*>, Any> = unmodifiableMap(tags.toMap())
@@ -105,10 +102,9 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
      * to be a non-recoverable and should be used as signal or logging before attempting to
      * gracefully degrade or retry.
      */
-    public class UnknownFailure internal constructor(
-      public val error: Throwable,
-      tags: Map<KClass<*>, Any>
-    ) : Failure<Nothing> {
+    public class UnknownFailure
+    internal constructor(public val error: Throwable, tags: Map<KClass<*>, Any>) :
+      Failure<Nothing> {
 
       /** Extra metadata associated with the result such as original requests, responses, etc. */
       internal val tags: Map<KClass<*>, Any> = unmodifiableMap(tags.toMap())
@@ -125,11 +121,9 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
      * @property code The HTTP status code.
      * @property error An optional [error][E]. This would be from the error body of the response.
      */
-    public class HttpFailure<E : Any> internal constructor(
-      public val code: Int,
-      public val error: E?,
-      tags: Map<KClass<*>, Any>
-    ) : Failure<E> {
+    public class HttpFailure<E : Any>
+    internal constructor(public val code: Int, public val error: E?, tags: Map<KClass<*>, Any>) :
+      Failure<E> {
 
       /** Extra metadata associated with the result such as original requests, responses, etc. */
       internal val tags: Map<KClass<*>, Any> = unmodifiableMap(tags.toMap())
@@ -141,18 +135,16 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
     }
 
     /**
-     * An API failure. This indicates a 2xx response where [ApiException] was thrown
-     * during response body conversion.
+     * An API failure. This indicates a 2xx response where [ApiException] was thrown during response
+     * body conversion.
      *
-     * An [ApiException], the [error] property will be best-effort populated with the
-     * value of the [ApiException.error] property.
+     * An [ApiException], the [error] property will be best-effort populated with the value of the
+     * [ApiException.error] property.
      *
      * @property error An optional [error][E].
      */
-    public class ApiFailure<E : Any> internal constructor(
-      public val error: E?,
-      tags: Map<KClass<*>, Any>
-    ) : Failure<E> {
+    public class ApiFailure<E : Any>
+    internal constructor(public val error: E?, tags: Map<KClass<*>, Any>) : Failure<E> {
 
       /** Extra metadata associated with the result such as original requests, responses, etc. */
       internal val tags: Map<KClass<*>, Any> = unmodifiableMap(tags.toMap())
@@ -187,7 +179,8 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
     public fun <E : Any> apiFailure(error: E? = null): ApiFailure<E> = ApiFailure(error, emptyMap())
 
     /** Returns a new [NetworkFailure] with given [error]. */
-    public fun networkFailure(error: IOException): NetworkFailure = NetworkFailure(error, emptyMap())
+    public fun networkFailure(error: IOException): NetworkFailure =
+      NetworkFailure(error, emptyMap())
 
     /** Returns a new [UnknownFailure] with given [error]. */
     public fun unknownFailure(error: Throwable): UnknownFailure = UnknownFailure(error, emptyMap())
@@ -205,12 +198,12 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
 }
 
 /**
- * A custom [Converter.Factory] for [ApiResult] responses. This creates a delegating adapter for the underlying type
- * of the result, and wraps successful results in a new [ApiResult].
+ * A custom [Converter.Factory] for [ApiResult] responses. This creates a delegating adapter for the
+ * underlying type of the result, and wraps successful results in a new [ApiResult].
  *
- * When delegating to a converter for the `Success` type, a [ResultType] annotation is added to
- * the forwarded annotations to allow for a downstream adapter to potentially contextually decode
- * the result and throw an [ApiException] with a decoded error type.
+ * When delegating to a converter for the `Success` type, a [ResultType] annotation is added to the
+ * forwarded annotations to allow for a downstream adapter to potentially contextually decode the
+ * result and throw an [ApiException] with a decoded error type.
  */
 public object ApiResultConverterFactory : Converter.Factory() {
 
@@ -225,11 +218,8 @@ public object ApiResultConverterFactory : Converter.Factory() {
     val errorType = type.actualTypeArguments[1]
     val errorResultType: Annotation = createResultType(errorType)
     val nextAnnotations = annotations + errorResultType
-    val delegateConverter = retrofit.nextResponseBodyConverter<Any>(
-      this,
-      successType,
-      nextAnnotations
-    )
+    val delegateConverter =
+      retrofit.nextResponseBodyConverter<Any>(this, successType, nextAnnotations)
     return ApiResultConverter(delegateConverter)
   }
 
@@ -263,12 +253,7 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
     }
 
     val decodeErrorBody = annotations.any { it is DecodeErrorBody }
-    return ApiResultCallAdapter(
-      retrofit,
-      apiResultType,
-      decodeErrorBody,
-      annotations
-    )
+    return ApiResultCallAdapter(retrofit, apiResultType, decodeErrorBody, annotations)
   }
 
   private class ApiResultCallAdapter(
@@ -289,10 +274,7 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                     callback.onResponse(
                       call,
                       Response.success(
-                        ApiFailure(
-                          error = t.error,
-                          tags = mapOf(Request::class to call.request())
-                        )
+                        ApiFailure(error = t.error, tags = mapOf(Request::class to call.request()))
                       )
                     )
                   }
@@ -300,10 +282,7 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                     callback.onResponse(
                       call,
                       Response.success(
-                        NetworkFailure(
-                          error = t,
-                          tags = mapOf(Request::class to call.request())
-                        ),
+                        NetworkFailure(error = t, tags = mapOf(Request::class to call.request())),
                       )
                     )
                   }
@@ -311,10 +290,7 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                     callback.onResponse(
                       call,
                       Response.success(
-                        UnknownFailure(
-                          error = t,
-                          tags = mapOf(Request::class to call.request())
-                        ),
+                        UnknownFailure(error = t, tags = mapOf(Request::class to call.request())),
                       )
                     )
                   }
@@ -326,14 +302,14 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                 response: Response<ApiResult<*, *>>,
               ) {
                 if (response.isSuccessful) {
-                  // Repackage the initial result with new tags with this call's request + response
-                  val tags = mapOf(
-                    okhttp3.Response::class to response.raw()
-                  )
-                  val withTag = when (val result = response.body()) {
-                    is Success -> result.withTags(result.tags + tags)
-                    else -> null
-                  }
+                  // Repackage the initial result with new tags with this call's request +
+                  // response
+                  val tags = mapOf(okhttp3.Response::class to response.raw())
+                  val withTag =
+                    when (val result = response.body()) {
+                      is Success -> result.withTags(result.tags + tags)
+                      else -> null
+                    }
                   callback.onResponse(call, Response.success(withTag))
                 } else {
                   var errorBody: Any? = null
@@ -346,24 +322,24 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                       val statusCode = createStatusCode(response.code())
                       val nextAnnotations = annotations + statusCode
                       @Suppress("TooGenericExceptionCaught")
-                      errorBody = try {
-                        retrofit.responseBodyConverter<Any>(errorType, nextAnnotations)
-                          .convert(responseBody)
-                      } catch (e: Throwable) {
-                        @Suppress("UNCHECKED_CAST")
-                        callback.onResponse(
-                          call,
-                          Response.success(
-                            UnknownFailure(
-                              error = e,
-                              tags = mapOf(
-                                okhttp3.Response::class to response.raw()
+                      errorBody =
+                        try {
+                          retrofit
+                            .responseBodyConverter<Any>(errorType, nextAnnotations)
+                            .convert(responseBody)
+                        } catch (e: Throwable) {
+                          @Suppress("UNCHECKED_CAST")
+                          callback.onResponse(
+                            call,
+                            Response.success(
+                              UnknownFailure(
+                                error = e,
+                                tags = mapOf(okhttp3.Response::class to response.raw())
                               )
                             )
                           )
-                        )
-                        return
-                      }
+                          return
+                        }
                     }
                   }
                   @Suppress("UNCHECKED_CAST")
@@ -373,9 +349,7 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                       HttpFailure(
                         code = response.code(),
                         error = errorBody,
-                        tags = mapOf(
-                          okhttp3.Response::class to response.raw()
-                        )
+                        tags = mapOf(okhttp3.Response::class to response.raw())
                       )
                     )
                   )

@@ -45,10 +45,11 @@ fun <T : Any> newEitherNetController(service: Class<T>): EitherNetController<T> 
 fun <T : Any> newEitherNetController(service: KClass<T>): EitherNetController<T> {
   service.validateApi()
   // Get functions with retrofit annotations
-  val endpoints = service.functions
-    .filter { it.isApplicable }
-    .map { createEndpointKey(it.javaMethod!!) } // We know javaMethod is present per the filter
-    .associateWithTo(ConcurrentHashMap()) { ArrayDeque<SuspendedResult>() }
+  val endpoints =
+    service.functions
+      .filter { it.isApplicable }
+      .map { createEndpointKey(it.javaMethod!!) } // We know javaMethod is present per the filter
+      .associateWithTo(ConcurrentHashMap()) { ArrayDeque<SuspendedResult>() }
   val orchestrator = EitherNetTestOrchestrator(endpoints)
   val proxy = newProxy(service.java, orchestrator)
   return RealEitherNetController(orchestrator, proxy)
@@ -63,7 +64,8 @@ private val KFunction<*>.isApplicable: Boolean
         !Modifier.isStatic(method.modifiers) &&
         !method.isSynthetic &&
         !method.isBridge
-    } ?: false
+    }
+      ?: false
   }
 
 @OptIn(ExperimentalStdlibApi::class, ExperimentalEitherNetApi::class)
@@ -122,9 +124,9 @@ internal fun <T> newProxy(service: Class<T>, orchestrator: EitherNetTestOrchestr
             "Last arg is not a Continuation, did you forget to add the 'suspend' modifier?"
           }
           val argsArray = Array(finalArgs.size - 1) { i -> finalArgs[i] }
-          val body = orchestrator.endpoints.getValue(key)
-            .removeFirstOrNull()
-            ?: error("No result enqueued for ${key.name}.")
+          val body =
+            orchestrator.endpoints.getValue(key).removeFirstOrNull()
+              ?: error("No result enqueued for ${key.name}.")
           CoroutineTransformer.transform(
             argsArray,
             body,

@@ -30,13 +30,9 @@ fun interface ApiValidator {
    *
    * If any errors are found, add a detailed description to [errors].
    */
-  fun validate(
-    apiClass: KClass<*>,
-    function: KFunction<*>,
-    errors: MutableList<String>
-  )
+  fun validate(apiClass: KClass<*>, function: KFunction<*>, errors: MutableList<String>)
 }
 
 @OptIn(ExperimentalEitherNetApi::class)
-internal fun loadValidators(): Set<ApiValidator> = ServiceLoader.load(ApiValidator::class.java)
-  .toSet()
+internal fun loadValidators(): Set<ApiValidator> =
+  ServiceLoader.load(ApiValidator::class.java).toSet()

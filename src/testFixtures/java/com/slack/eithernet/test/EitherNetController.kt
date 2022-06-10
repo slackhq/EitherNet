@@ -21,7 +21,8 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
 
 /**
- * This is a helper API returned by [newEitherNetController] to help with testing EitherNet endpoints.
+ * This is a helper API returned by [newEitherNetController] to help with testing EitherNet
+ * endpoints.
  *
  * Simple usage looks something like this:
  * ```
@@ -64,8 +65,7 @@ inline fun <reified T : Any, reified S : Any, reified E : Any> EitherNetControll
     "Given function ${ref.javaMethod?.declaringClass}.${ref.name} is not a member of target API $apiClass."
   }
   val key = createEndpointKey(ref.javaMethod!!)
-  @OptIn(InternalEitherNetApi::class)
-  unsafeEnqueue(key, resultBody)
+  @OptIn(InternalEitherNetApi::class) unsafeEnqueue(key, resultBody)
 }
 
 /** Enqueues a scalar [result] instance. */

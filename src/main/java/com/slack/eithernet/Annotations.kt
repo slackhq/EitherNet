@@ -22,9 +22,9 @@ import java.lang.reflect.WildcardType
 
 /**
  * Returns a [Pair] of a [StatusCode] and subset of these annotations without that [StatusCode]
- * instance. This should be used in a custom Retrofit [retrofit2.Converter.Factory] to know what
- * the given status code of a non-2xx response was when decoding the error body. This can be useful
- * for contextually decoding error bodies based on the status code.
+ * instance. This should be used in a custom Retrofit [retrofit2.Converter.Factory] to know what the
+ * given status code of a non-2xx response was when decoding the error body. This can be useful for
+ * contextually decoding error bodies based on the status code.
  *
  * ```
  * override fun responseBodyConverter(
@@ -50,8 +50,8 @@ public fun Array<out Annotation>.statusCode(): Pair<StatusCode, Array<Annotation
 
 /**
  * Returns a [Pair] of a [ResultType] and subset of these annotations without that [ResultType]
- * instance. This should be used in a custom Retrofit [retrofit2.Converter.Factory] to determine
- * the error type of an [ApiResult] for the given endpoint.
+ * instance. This should be used in a custom Retrofit [retrofit2.Converter.Factory] to determine the
+ * error type of an [ApiResult] for the given endpoint.
  *
  * ```
  * override fun responseBodyConverter(
@@ -70,7 +70,9 @@ public fun Array<out Annotation>.errorType(): Pair<ResultType, Array<Annotation>
   return nextAnnotations(ResultType::class.java)
 }
 
-private fun <A : Any> Array<out Annotation>.nextAnnotations(type: Class<A>): Pair<A, Array<Annotation>>? {
+private fun <A : Any> Array<out Annotation>.nextAnnotations(
+  type: Class<A>
+): Pair<A, Array<Annotation>>? {
   var nextIndex = 0
   val theseAnnotations = this
   var resultType: A? = null
@@ -147,9 +149,8 @@ internal fun createResultType(type: Type): ResultType {
     is ParameterizedType -> {
       ownerType = type.ownerType ?: Nothing::class.java
       rawType = Types.getRawType(type)
-      typeArgs = Array(type.actualTypeArguments.size) { i ->
-        createResultType(type.actualTypeArguments[i])
-      }
+      typeArgs =
+        Array(type.actualTypeArguments.size) { i -> createResultType(type.actualTypeArguments[i]) }
     }
     is WildcardType -> return createResultType(Util.removeSubtypeWildcard(type))
     else -> error("Unrecognized type: $type")
@@ -168,9 +169,10 @@ private fun createResultType(
   rawType: Class<*>,
   typeArgs: Array<ResultType>,
   isArray: Boolean
-): ResultType = ResultType(
-  rawType = rawType.kotlin,
-  typeArgs = typeArgs,
-  ownerType = ownerType.kotlin,
-  isArray = isArray
-)
+): ResultType =
+  ResultType(
+    rawType = rawType.kotlin,
+    typeArgs = typeArgs,
+    ownerType = ownerType.kotlin,
+    isArray = isArray
+  )
