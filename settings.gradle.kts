@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// This is important because Gradle module metadata uses this in the pom artifact id of test fixtures!
 rootProject.name = "eithernet"
+// ^^ This is important because Gradle module metadata uses this in the pom artifact id of test
+// fixtures!
 
 pluginManagement {
   repositories {
