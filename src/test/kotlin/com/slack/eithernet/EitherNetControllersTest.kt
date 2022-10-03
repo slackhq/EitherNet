@@ -122,7 +122,8 @@ class EitherNetControllersTest {
         - Function missingApiResult must return ApiResult for EitherNet to work.
         - Function missingSlackEndpoint is missing @SlackEndpoint annotation.
         - Function missingSuspend must be a suspend function for EitherNet to work.
-        """.trimIndent()
+        """
+            .trimIndent()
         )
     }
   }
@@ -192,7 +193,8 @@ class EitherNetControllersTest {
           """
           Found unprocessed ApiResults:
           -- getPandas() has 1 unprocessed result
-          """.trimIndent()
+          """
+            .trimIndent()
         )
     }
 

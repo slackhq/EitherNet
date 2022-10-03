@@ -19,14 +19,14 @@ import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  kotlin("jvm") version "1.6.21"
+  kotlin("jvm") version "1.7.20"
   `java-test-fixtures`
-  id("org.jetbrains.dokka") version "1.6.21"
-  id("com.google.devtools.ksp") version "1.6.21-1.0.6"
-  id("com.diffplug.spotless") version "6.7.1"
+  id("org.jetbrains.dokka") version "1.7.10"
+  id("com.google.devtools.ksp") version "1.7.20-1.0.6"
+  id("com.diffplug.spotless") version "6.11.0"
   id("com.vanniktech.maven.publish") version "0.20.0"
   id("io.gitlab.arturbosch.detekt") version "1.20.0"
-  id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.10.0"
+  id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.11.1"
 }
 
 repositories {
@@ -75,7 +75,7 @@ spotless {
     trimTrailingWhitespace()
     endWithNewline()
   }
-  val ktfmtVersion = "0.38"
+  val ktfmtVersion = "0.41"
   kotlin {
     target("**/*.kt")
     ktfmt(ktfmtVersion).googleStyle()
@@ -95,10 +95,10 @@ spotless {
   }
 }
 
-val moshiVersion = "1.12.0"
+val moshiVersion = "1.14.0"
 val retrofitVersion = "2.9.0"
 val okhttpVersion = "4.9.0"
-val coroutinesVersion = "1.6.0"
+val coroutinesVersion = "1.6.4"
 
 dependencies {
   implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
@@ -112,7 +112,7 @@ dependencies {
   testImplementation("com.squareup.moshi:moshi-kotlin:$moshiVersion")
   testImplementation("junit:junit:4.13.2")
   testImplementation("com.google.truth:truth:1.1.3")
-  testImplementation("org.jetbrains.kotlin:kotlin-test:1.6.10")
+  testImplementation("org.jetbrains.kotlin:kotlin-test:1.7.20")
   testImplementation("com.google.auto.service:auto-service:1.0")
   kspTest("dev.zacsweers.autoservice:auto-service-ksp:1.0.0")
 
@@ -121,6 +121,6 @@ dependencies {
   testFixturesCompileOnly("com.google.android:android:4.1.1.4")
   testFixturesImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
   // For access to Types
-  testFixturesImplementation("com.squareup.moshi:moshi:1.12.0")
-  testFixturesApi("org.jetbrains.kotlin:kotlin-reflect:1.6.10")
+  testFixturesImplementation("com.squareup.moshi:moshi:$moshiVersion")
+  testFixturesApi("org.jetbrains.kotlin:kotlin-reflect:1.7.20")
 }
