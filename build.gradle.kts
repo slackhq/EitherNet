@@ -19,14 +19,14 @@ import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  kotlin("jvm") version "1.7.20"
+  kotlin("jvm") version libs.versions.kotlin.get()
   `java-test-fixtures`
-  id("org.jetbrains.dokka") version "1.7.10"
-  id("com.google.devtools.ksp") version "1.7.20-1.0.6"
-  id("com.diffplug.spotless") version "6.11.0"
-  id("com.vanniktech.maven.publish") version "0.20.0"
-  id("io.gitlab.arturbosch.detekt") version "1.20.0"
-  id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.11.1"
+  alias(libs.plugins.dokka)
+  alias(libs.plugins.ksp)
+  alias(libs.plugins.spotless)
+  alias(libs.plugins.mavenPublish)
+  alias(libs.plugins.detekt)
+  alias(libs.plugins.binaryCompatibilityValidator)
 }
 
 repositories {
@@ -37,13 +37,13 @@ repositories {
 pluginManager.withPlugin("java") {
   configure<JavaPluginExtension> { toolchain { languageVersion.set(JavaLanguageVersion.of(17)) } }
 
-  project.tasks.withType<JavaCompile>().configureEach { options.release.set(8) }
+  project.tasks.withType<JavaCompile>().configureEach { options.release.set(11) }
 }
 
 tasks.withType<KotlinCompile>().configureEach {
   val taskName = name
   kotlinOptions {
-    jvmTarget = "1.8"
+    jvmTarget = "11"
     val argsList = mutableListOf("-progressive", "-opt-in=kotlin.RequiresOptIn")
     if (taskName == "compileTestKotlin") {
       argsList += "-opt-in=kotlin.ExperimentalStdlibApi"
@@ -57,7 +57,7 @@ tasks.withType<KotlinCompile>().configureEach {
   }
 }
 
-tasks.withType<Detekt>().configureEach { jvmTarget = "1.8" }
+tasks.withType<Detekt>().configureEach { jvmTarget = "11" }
 
 kotlin { explicitApi() }
 
@@ -69,13 +69,13 @@ tasks.named<DokkaTask>("dokkaHtml") {
   }
 }
 
+val ktfmtVersion = libs.versions.ktfmt.get()
 spotless {
   format("misc") {
     target("*.md", ".gitignore")
     trimTrailingWhitespace()
     endWithNewline()
   }
-  val ktfmtVersion = "0.41"
   kotlin {
     target("**/*.kt")
     ktfmt(ktfmtVersion).googleStyle()
@@ -95,32 +95,27 @@ spotless {
   }
 }
 
-val moshiVersion = "1.14.0"
-val retrofitVersion = "2.9.0"
-val okhttpVersion = "4.9.0"
-val coroutinesVersion = "1.6.4"
-
 dependencies {
-  implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
+  implementation(libs.retrofit)
 
-  testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
-  testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
-  testImplementation("com.squareup.retrofit2:converter-scalars:$retrofitVersion")
-  testImplementation("com.squareup.okhttp3:okhttp:$okhttpVersion")
-  testImplementation("com.squareup.okhttp3:mockwebserver:$okhttpVersion")
-  testImplementation("com.squareup.moshi:moshi:$moshiVersion")
-  testImplementation("com.squareup.moshi:moshi-kotlin:$moshiVersion")
-  testImplementation("junit:junit:4.13.2")
-  testImplementation("com.google.truth:truth:1.1.3")
-  testImplementation("org.jetbrains.kotlin:kotlin-test:1.7.20")
-  testImplementation("com.google.auto.service:auto-service:1.0")
-  kspTest("dev.zacsweers.autoservice:auto-service-ksp:1.0.0")
+  testImplementation(libs.coroutines.core)
+  testImplementation(libs.coroutines.test)
+  testImplementation(libs.retrofit.converterScalars)
+  testImplementation(libs.okhttp)
+  testImplementation(libs.okhttp.mockwebserver)
+  testImplementation(libs.moshi)
+  testImplementation(libs.moshi.kotlin)
+  testImplementation(libs.junit)
+  testImplementation(libs.truth)
+  testImplementation(libs.kotlin.test)
+  testImplementation(libs.autoService.annotations)
+  kspTest(libs.autoService.ksp)
 
   // Android APIs access, gated at runtime
-  testFixturesCompileOnly("androidx.annotation:annotation:1.2.0")
-  testFixturesCompileOnly("com.google.android:android:4.1.1.4")
-  testFixturesImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+  testFixturesCompileOnly(libs.androidx.annotation)
+  testFixturesCompileOnly(libs.androidProcessingApi)
+  testFixturesImplementation(libs.coroutines.core)
   // For access to Types
-  testFixturesImplementation("com.squareup.moshi:moshi:$moshiVersion")
-  testFixturesApi("org.jetbrains.kotlin:kotlin-reflect:1.7.20")
+  testFixturesImplementation(libs.moshi)
+  testFixturesApi(libs.kotlin.reflect)
 }
