@@ -1,6 +1,7 @@
 [versions]
 coroutines = "1.6.4"
 kotlin = "1.8.0"
+jvmTarget = "11"
 ktfmt = "0.42"
 moshi = "1.14.0"
 okhttp = "4.9.0"
