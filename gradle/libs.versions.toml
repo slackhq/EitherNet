@@ -1,6 +1,6 @@
 [versions]
 coroutines = "1.6.4"
-kotlin = "1.7.21"
+kotlin = "1.8.0-Beta"
 ktfmt = "0.41"
 moshi = "1.14.0"
 okhttp = "4.9.0"
@@ -10,7 +10,7 @@ retrofit = "2.9.0"
 binaryCompatibilityValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.11.1" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version = "1.21.0" }
 dokka = { id = "org.jetbrains.dokka", version = "1.7.20" }
-ksp = { id = "com.google.devtools.ksp", version = "1.7.21-1.0.8" }
+ksp = { id = "com.google.devtools.ksp", version = "1.8.0-Beta-1.0.8" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.22.0" }
 spotless = { id = "com.diffplug.spotless", version = "6.11.0" }
 
