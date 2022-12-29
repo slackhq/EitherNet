@@ -46,7 +46,7 @@ val tomlJvmTarget = libs.versions.jvmTarget.get()
 tasks.withType<KotlinCompile>().configureEach {
   val taskName = name
   compilerOptions {
-    jvmTarget.set(JvmTarget.fromTarget(tomlJvmTarget))
+    jvmTarget.set(libs.versions.jvmTarget.map(JvmTarget::fromTarget))
     if (taskName == "compileTestKotlin") {
       freeCompilerArgs.add("-opt-in=kotlin.ExperimentalStdlibApi")
       freeCompilerArgs.add("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
