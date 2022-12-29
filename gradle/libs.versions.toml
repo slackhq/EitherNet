@@ -1,7 +1,7 @@
 [versions]
 coroutines = "1.6.4"
 kotlin = "1.7.21"
-ktfmt = "0.41"
+ktfmt = "0.42"
 moshi = "1.14.0"
 okhttp = "4.9.0"
 retrofit = "2.9.0"

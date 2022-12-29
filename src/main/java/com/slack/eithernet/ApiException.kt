@@ -19,6 +19,6 @@ package com.slack.eithernet
  * Represents a generic API error from a given endpoint.
  *
  * @see [ApiResult.Failure.ApiFailure] for full documentation for how this [error] property is used
- * and its caveats.
+ *   and its caveats.
  */
 public class ApiException(public val error: Any?) : Exception()
