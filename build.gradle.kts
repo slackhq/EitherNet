@@ -16,6 +16,7 @@
 import io.gitlab.arturbosch.detekt.Detekt
 import java.net.URL
 import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -40,24 +41,24 @@ pluginManager.withPlugin("java") {
   project.tasks.withType<JavaCompile>().configureEach { options.release.set(11) }
 }
 
+val tomlJvmTarget = libs.versions.jvmTarget.get()
+
 tasks.withType<KotlinCompile>().configureEach {
   val taskName = name
-  kotlinOptions {
-    jvmTarget = "11"
-    val argsList = mutableListOf("-progressive", "-opt-in=kotlin.RequiresOptIn")
+  compilerOptions {
+    jvmTarget.set(libs.versions.jvmTarget.map(JvmTarget::fromTarget))
     if (taskName == "compileTestKotlin") {
-      argsList += "-opt-in=kotlin.ExperimentalStdlibApi"
-      argsList += "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
+      freeCompilerArgs.add("-opt-in=kotlin.ExperimentalStdlibApi")
+      freeCompilerArgs.add("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
       // Enable new jvmdefault behavior
       // https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/
-      argsList += "-Xjvm-default=all"
+      freeCompilerArgs.add("-Xjvm-default=all")
     }
-    @Suppress("SuspiciousCollectionReassignment")
-    freeCompilerArgs += argsList
+    freeCompilerArgs.addAll("-progressive", "-opt-in=kotlin.RequiresOptIn")
   }
 }
 
-tasks.withType<Detekt>().configureEach { jvmTarget = "11" }
+tasks.withType<Detekt>().configureEach { jvmTarget = tomlJvmTarget }
 
 kotlin { explicitApi() }
 
