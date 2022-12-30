@@ -1,6 +1,16 @@
 Changelog
 =========
 
+1.3.0
+-----
+
+_2022-12-30_
+
+- Update to Kotlin `1.8.0`.
+- **Fix:** Fix exception on annotation traversal when target is not present
+- **Fix:** Publish test-fixtures artifact sources.
+- Update to JVM target 11.
+
 1.2.1
 -----
 
