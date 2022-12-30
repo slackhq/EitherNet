@@ -97,6 +97,11 @@ spotless {
   }
 }
 
+mavenPublishing {
+  publishToMavenCentral(automaticRelease = true)
+  signAllPublications()
+}
+
 dependencies {
   implementation(libs.retrofit)
 
