@@ -1,6 +1,13 @@
 Changelog
 =========
 
+1.3.1
+-----
+
+_2022-12-31_
+
+- Fix missing Gradle module metadata for test fixtures.
+
 1.3.0
 -----
 

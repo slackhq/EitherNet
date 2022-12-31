@@ -102,6 +102,10 @@ mavenPublishing {
   signAllPublications()
 }
 
+// Ref: https://github.com/slackhq/EitherNet/issues/58
+project.group = project.property("GROUP").toString()
+project.version = project.property("VERSION_NAME").toString()
+
 dependencies {
   implementation(libs.retrofit)
 
