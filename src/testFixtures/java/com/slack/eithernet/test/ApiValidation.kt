@@ -15,7 +15,6 @@
  */
 package com.slack.eithernet.test
 
-import com.slack.eithernet.ExperimentalEitherNetApi
 import java.util.ServiceLoader
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
