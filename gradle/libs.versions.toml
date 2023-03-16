@@ -1,8 +1,8 @@
 [versions]
 coroutines = "1.6.4"
-kotlin = "1.8.20-Beta"
+kotlin = "1.8.20-RC"
 jvmTarget = "11"
-ksp = "1.8.20-Beta-1.0.9"
+ksp = "1.8.20-RC-1.0.9"
 ktfmt = "0.42"
 moshi = "1.14.0"
 okhttp = "4.9.0"
