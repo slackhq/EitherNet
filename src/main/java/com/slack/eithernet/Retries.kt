@@ -47,13 +47,35 @@ import kotlinx.coroutines.delay
  *   attempts fail.
  */
 @Suppress("LongParameterList")
-public tailrec suspend fun <T : Any, E : Any> retryWithExponentialBackoff(
+public suspend fun <T : Any, E : Any> retryWithExponentialBackoff(
   maxAttempts: Int = 5,
   initialDelay: Duration = 1.seconds,
   delayFactor: Double = 2.0,
   maxDelay: Duration = 1.hours,
   jitterFactor: Double = 0.0,
-  attempt: Int = 0,
+  onFailure: ((attempt: Int, result: ApiResult.Failure<E>) -> Unit)? = null,
+  block: suspend () -> ApiResult<T, E>
+): ApiResult<T, E> {
+  return retryWithExponentialBackoff(
+    maxAttempts = maxAttempts,
+    initialDelay = initialDelay,
+    delayFactor = delayFactor,
+    maxDelay = maxDelay,
+    jitterFactor = jitterFactor,
+    onFailure = onFailure,
+    attempt = 0,
+    block = block
+  )
+}
+
+@Suppress("LongParameterList")
+private tailrec suspend fun <T : Any, E : Any> retryWithExponentialBackoff(
+  maxAttempts: Int,
+  initialDelay: Duration,
+  delayFactor: Double,
+  maxDelay: Duration,
+  jitterFactor: Double,
+  attempt: Int,
   onFailure: ((attempt: Int, result: ApiResult.Failure<E>) -> Unit)? = null,
   block: suspend () -> ApiResult<T, E>
 ): ApiResult<T, E> {
