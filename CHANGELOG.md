@@ -1,6 +1,33 @@
 Changelog
 =========
 
+1.4.0
+-----
+
+_2023-05-19_
+
+Happy new year!
+
+A common pattern in making network requests is to retry with exponential backoff. EitherNet now ships with a highly configurable `retryWithExponentialBackoff()` function for this case.
+
+```kotlin
+// Defaults for reference
+val result = retryWithExponentialBackoff(
+  maxAttempts = 3,
+  initialDelay = 500.milliseconds,
+  delayFactor = 2.0,
+  maxDelay = 10.seconds,
+  jitterFactor = 0.25,
+  onFailure = null, // Optional Failure callback for logging
+) {
+    api.getData()
+}
+```
+
+- Update to Kotlin `1.8.21`.
+- Update to Kotlin Coroutines `1.7.1`.
+- EitherNet now depends on `org.jetbrains.kotlinx:kotlinx-coroutines-core`.
+
 1.3.1
 -----
 
