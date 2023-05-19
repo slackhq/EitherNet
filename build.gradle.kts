@@ -109,6 +109,7 @@ project.version = project.property("VERSION_NAME").toString()
 
 dependencies {
   implementation(libs.retrofit)
+  implementation(libs.coroutines.core)
 
   testImplementation(libs.coroutines.core)
   testImplementation(libs.coroutines.test)
