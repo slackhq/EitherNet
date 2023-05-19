@@ -93,7 +93,7 @@ class RetriesTest {
     var attempts = 0
     val delays = mutableListOf<Long>()
     var lastAttemptTime = currentTime
-    retryWithExponentialBackoff(factor = 1.0, jitterFactor = 0.5) {
+    retryWithExponentialBackoff(delayFactor = 1.0, jitterFactor = 0.5) {
       attempts++
       if (attempts > 1) {
         val delay = currentTime - lastAttemptTime
@@ -111,7 +111,7 @@ class RetriesTest {
     var attempts = 0
     val delays = mutableListOf<Long>()
     var lastAttemptTime = currentTime
-    retryWithExponentialBackoff(factor = 1.0, jitterFactor = 0.0) {
+    retryWithExponentialBackoff(delayFactor = 1.0, jitterFactor = 0.0) {
       attempts++
       if (attempts > 1) {
         val delay = currentTime - lastAttemptTime

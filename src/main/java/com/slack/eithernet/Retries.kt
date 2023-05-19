@@ -25,8 +25,8 @@ import kotlinx.coroutines.delay
  *
  * @param maxAttempts The maximum number of times to retry the operation. Default is 5.
  * @param initialDelay The delay before the first retry. Default is 1 second.
- * @param factor The factor by which the delay should increase after each failed attempt. Default is
- *   2.0.
+ * @param delayFactor The factor by which the delay should increase after each failed attempt.
+ *   Default is 2.0.
  * @param maxDelay The maximum delay between retries. Default is [Duration.INFINITE].
  * @param jitterFactor The maximum factor of jitter to introduce. For example, a value of 0.1 will
  *   introduce up to 10% jitter. Default is 0.
@@ -36,7 +36,7 @@ import kotlinx.coroutines.delay
  *   attempts fail.
  *
  * This function will attempt the operation you give it up to [maxAttempts] times, multiplying the
- * delay between each attempt by [factor], starting from [initialDelay] and not exceeding
+ * delay between each attempt by [delayFactor], starting from [initialDelay] and not exceeding
  * [maxDelay]. If the operation continues to fail after [maxAttempts] times, it will return the last
  * failure result. If the operation succeeds at any point, it will immediately return the success
  * result.
@@ -48,7 +48,7 @@ import kotlinx.coroutines.delay
 public suspend fun <T : Any, E : Any> retryWithExponentialBackoff(
   maxAttempts: Int = 5,
   initialDelay: Duration = 1.seconds,
-  factor: Double = 2.0,
+  delayFactor: Double = 2.0,
   maxDelay: Duration = Duration.INFINITE,
   jitterFactor: Double = 0.0,
   onFailure: ((attempt: Int, result: ApiResult.Failure<E>) -> Unit)? = null,
@@ -66,7 +66,7 @@ public suspend fun <T : Any, E : Any> retryWithExponentialBackoff(
         } else {
           delay(currentDelay)
           // Compute a new delay using a combination of the factor and optional jitter.
-          currentDelay = (currentDelay * factor).coerceAtMost(maxDelay)
+          currentDelay = (currentDelay * delayFactor).coerceAtMost(maxDelay)
           if (jitterFactor != 0.0) {
             // Note that Random.nextDouble requires a range,
             // so we provide it with -jitterFactor to jitterFactor.
