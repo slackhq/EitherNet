@@ -156,7 +156,7 @@ val result = retryWithExponentialBackoff(
   maxAttempts = 5,
   initialDelay = 1.seconds,
   delayFactor = 2.0,
-  maxDelay = Duration.INFINITE,
+  maxDelay = 1.hours,
   jitterFactor = 0.0,
   onFailure = null, // Optional Failure callback w/ attempt
 ) {

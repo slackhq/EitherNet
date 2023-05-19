@@ -19,6 +19,7 @@ import kotlin.random.Random
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.hours
 
 /**
  * Retries a [block] of code with exponential backoff.
@@ -27,7 +28,7 @@ import kotlinx.coroutines.delay
  * @param initialDelay The delay before the first retry. Default is 1 second.
  * @param delayFactor The factor by which the delay should increase after each failed attempt.
  *   Default is 2.0.
- * @param maxDelay The maximum delay between retries. Default is [Duration.INFINITE].
+ * @param maxDelay The maximum delay between retries. Default is 1 hour.
  * @param jitterFactor The maximum factor of jitter to introduce. For example, a value of 0.1 will
  *   introduce up to 10% jitter. Default is 0.
  * @param onFailure An optional callback for failures, useful for logging.
@@ -50,7 +51,7 @@ public suspend fun <T : Any, E : Any> retryWithExponentialBackoff(
   maxAttempts: Int = 5,
   initialDelay: Duration = 1.seconds,
   delayFactor: Double = 2.0,
-  maxDelay: Duration = Duration.INFINITE,
+  maxDelay: Duration = 1.hours,
   jitterFactor: Double = 0.0,
   onFailure: ((attempt: Int, result: ApiResult.Failure<E>) -> Unit)? = null,
   block: suspend () -> ApiResult<T, E>
