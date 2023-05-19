@@ -146,6 +146,24 @@ class ErrorConverterFactory : Converter.Factory() {
 }
 ```
 
+### Retries
+
+A common pattern in making network requests is to retry with exponential backoff. EitherNet ships with a highly configurable `retryWithExponentialBackoff()` function for this case.
+
+```kotlin
+// Defaults for reference
+val result = retryWithExponentialBackoff(
+  maxAttempts = 3,
+  initialDelay = 500.milliseconds,
+  delayFactor = 2.0,
+  maxDelay = 10.seconds,
+  jitterFactor = 0.25,
+  onFailure = null, // Optional Failure callback for logging
+) {
+    api.getData()
+}
+```
+
 ## Testing
 
 EitherNet ships with a [Test Fixtures](https://docs.gradle.org/current/userguide/java_testing.html#sec:java_test_fixtures)
