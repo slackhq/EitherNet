@@ -80,5 +80,5 @@ public suspend fun <T : Any, E : Any> retryWithExponentialBackoff(
       }
     }
   }
-  return ApiResult.unknownFailure(RuntimeException("Max attempts reached"))
+  error("Not reachable")
 }
