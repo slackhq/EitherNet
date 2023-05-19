@@ -15,6 +15,7 @@
  */
 package com.slack.eithernet
 
+import kotlin.math.pow
 import kotlin.random.Random
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
@@ -42,43 +43,47 @@ import kotlinx.coroutines.delay
  * @param jitterFactor The maximum factor of jitter to introduce. For example, a value of 0.1 will
  *   introduce up to 10% jitter. Default is 0.
  * @param onFailure An optional callback for failures, useful for logging.
- *
  * @return The result of the operation if it's successful, or the last failure result if all
  *   attempts fail.
  */
-@Suppress("LongParameterList", "ReturnCount")
-public suspend fun <T : Any, E : Any> retryWithExponentialBackoff(
+@Suppress("LongParameterList")
+public tailrec suspend fun <T : Any, E : Any> retryWithExponentialBackoff(
   maxAttempts: Int = 5,
   initialDelay: Duration = 1.seconds,
   delayFactor: Double = 2.0,
   maxDelay: Duration = 1.hours,
   jitterFactor: Double = 0.0,
+  attempt: Int = 0,
   onFailure: ((attempt: Int, result: ApiResult.Failure<E>) -> Unit)? = null,
   block: suspend () -> ApiResult<T, E>
 ): ApiResult<T, E> {
   require(maxAttempts > 0) { "maxAttempts must be greater than 0" }
-  var currentDelay = initialDelay
-  repeat(maxAttempts) { attempt ->
-    when (val result = block()) {
-      is ApiResult.Success -> return result
-      is ApiResult.Failure -> {
-        onFailure?.invoke(attempt, result)
-        if (attempt == maxAttempts - 1) {
-          return result // return last failure
-        } else {
-          delay(currentDelay)
-          // Compute a new delay using a combination of the factor and optional jitter.
-          currentDelay = (currentDelay * delayFactor).coerceAtMost(maxDelay)
-          if (jitterFactor != 0.0) {
-            // Note that Random.nextDouble requires a range,
-            // so we provide it with -jitterFactor to jitterFactor.
-            // It also cannot be 0, so only do this if jitter is non-zero
-            val jitter = 1 + Random.nextDouble(-jitterFactor, jitterFactor)
-            currentDelay = (currentDelay * jitter).coerceAtMost(maxDelay)
-          }
+
+  return when (val result = block()) {
+    is ApiResult.Success -> result
+    is ApiResult.Failure -> {
+      onFailure?.invoke(attempt, result)
+      if (attempt == maxAttempts - 1) {
+        result
+      } else {
+        var currentDelay = initialDelay * delayFactor.pow(attempt)
+        currentDelay = currentDelay.coerceAtMost(maxDelay)
+        if (jitterFactor != 0.0) {
+          val jitter = 1 + Random.nextDouble(-jitterFactor, jitterFactor)
+          currentDelay = (currentDelay * jitter).coerceAtMost(maxDelay)
         }
+        delay(currentDelay)
+        retryWithExponentialBackoff(
+          maxAttempts = maxAttempts,
+          initialDelay = initialDelay,
+          delayFactor = delayFactor,
+          maxDelay = maxDelay,
+          jitterFactor = jitterFactor,
+          attempt = attempt + 1,
+          onFailure = onFailure,
+          block = block
+        )
       }
     }
   }
-  error("Not reachable")
 }
