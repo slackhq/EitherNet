@@ -45,6 +45,7 @@ import kotlinx.coroutines.delay
  * use case, you might want to customize the strategy, for example by handling certain kinds of
  * failures differently.
  */
+@Suppress("LongParameterList", "ReturnCount")
 public suspend fun <T : Any, E : Any> retryWithExponentialBackoff(
   maxAttempts: Int = 5,
   initialDelay: Duration = 1.seconds,
