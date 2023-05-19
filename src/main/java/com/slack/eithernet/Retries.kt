@@ -15,11 +15,12 @@
  */
 package com.slack.eithernet
 
-import kotlin.math.pow
+import kotlin.math.nextUp
 import kotlin.random.Random
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.times
 import kotlinx.coroutines.delay
 
 /**
@@ -41,13 +42,13 @@ import kotlinx.coroutines.delay
  *   Default is 2.0.
  * @param maxDelay The maximum delay between retries. Default is 1 hour.
  * @param jitterFactor The maximum factor of jitter to introduce. For example, a value of 0.1 will
- *   introduce up to 10% jitter. Default is 0.
+ *   introduce up to 10% jitter (both positive and negative). Default is 0.
  * @param onFailure An optional callback for failures, useful for logging.
  * @return The result of the operation if it's successful, or the last failure result if all
  *   attempts fail.
  */
 @Suppress("LongParameterList")
-public suspend fun <T : Any, E : Any> retryWithExponentialBackoff(
+public tailrec suspend fun <T : Any, E : Any> retryWithExponentialBackoff(
   maxAttempts: Int = 5,
   initialDelay: Duration = 1.seconds,
   delayFactor: Double = 2.0,
@@ -56,52 +57,25 @@ public suspend fun <T : Any, E : Any> retryWithExponentialBackoff(
   onFailure: ((attempt: Int, result: ApiResult.Failure<E>) -> Unit)? = null,
   block: suspend () -> ApiResult<T, E>
 ): ApiResult<T, E> {
-  return retryWithExponentialBackoff(
-    maxAttempts = maxAttempts,
-    initialDelay = initialDelay,
-    delayFactor = delayFactor,
-    maxDelay = maxDelay,
-    jitterFactor = jitterFactor,
-    onFailure = onFailure,
-    attempt = 0,
-    block = block
-  )
-}
-
-@Suppress("LongParameterList")
-private tailrec suspend fun <T : Any, E : Any> retryWithExponentialBackoff(
-  maxAttempts: Int,
-  initialDelay: Duration,
-  delayFactor: Double,
-  maxDelay: Duration,
-  jitterFactor: Double,
-  attempt: Int,
-  onFailure: ((attempt: Int, result: ApiResult.Failure<E>) -> Unit)? = null,
-  block: suspend () -> ApiResult<T, E>
-): ApiResult<T, E> {
   require(maxAttempts > 0) { "maxAttempts must be greater than 0" }
 
   return when (val result = block()) {
     is ApiResult.Success -> result
     is ApiResult.Failure -> {
-      onFailure?.invoke(attempt, result)
-      if (attempt == maxAttempts - 1) {
+      onFailure?.invoke(maxAttempts, result)
+      val attemptsRemaining = maxAttempts - 1
+      if (attemptsRemaining == 0) {
         result
       } else {
-        var currentDelay = initialDelay * delayFactor.pow(attempt)
-        currentDelay = currentDelay.coerceAtMost(maxDelay)
-        if (jitterFactor != 0.0) {
-          val jitter = 1 + Random.nextDouble(-jitterFactor, jitterFactor)
-          currentDelay = (currentDelay * jitter).coerceAtMost(maxDelay)
-        }
-        delay(currentDelay)
+        val jitter = 1 + Random.nextDouble(-jitterFactor, jitterFactor.nextUp())
+        val nextDelay = (initialDelay + initialDelay * jitter).coerceAtMost(maxDelay)
+        delay(nextDelay)
         retryWithExponentialBackoff(
-          maxAttempts = maxAttempts,
-          initialDelay = initialDelay,
+          maxAttempts = attemptsRemaining,
+          initialDelay = delayFactor * initialDelay,
           delayFactor = delayFactor,
           maxDelay = maxDelay,
           jitterFactor = jitterFactor,
-          attempt = attempt + 1,
           onFailure = onFailure,
           block = block
         )
