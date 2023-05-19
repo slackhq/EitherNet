@@ -15,7 +15,6 @@
  */
 package com.slack.eithernet.test
 
-import com.slack.eithernet.ExperimentalEitherNetApi
 import java.util.ServiceLoader
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -33,6 +32,5 @@ fun interface ApiValidator {
   fun validate(apiClass: KClass<*>, function: KFunction<*>, errors: MutableList<String>)
 }
 
-@OptIn(ExperimentalEitherNetApi::class)
 internal fun loadValidators(): Set<ApiValidator> =
   ServiceLoader.load(ApiValidator::class.java).toSet()
