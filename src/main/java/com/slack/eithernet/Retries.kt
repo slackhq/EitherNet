@@ -17,12 +17,22 @@ package com.slack.eithernet
 
 import kotlin.random.Random
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
-import kotlin.time.Duration.Companion.hours
 
 /**
  * Retries a [block] of code with exponential backoff.
+ *
+ * This function will attempt the operation you give it up to [maxAttempts] times, multiplying the
+ * delay between each attempt by [delayFactor], starting from [initialDelay] and not exceeding
+ * [maxDelay]. If the operation continues to fail after [maxAttempts] times, it will return the last
+ * failure result. If the operation succeeds at any point, it will immediately return the success
+ * result.
+ *
+ * Note: This uses a default exponential backoff strategy with optional jitter. Depending on your
+ * use case, you might want to customize the strategy, for example by handling certain kinds of
+ * failures differently.
  *
  * @param maxAttempts The maximum number of times to retry the operation. Default is 5.
  * @param initialDelay The delay before the first retry. Default is 1 second.
@@ -35,16 +45,6 @@ import kotlin.time.Duration.Companion.hours
  * @param block The block of code to retry. This block should return an [ApiResult].
  * @return The result of the operation if it's successful, or the last failure result if all
  *   attempts fail.
- *
- * This function will attempt the operation you give it up to [maxAttempts] times, multiplying the
- * delay between each attempt by [delayFactor], starting from [initialDelay] and not exceeding
- * [maxDelay]. If the operation continues to fail after [maxAttempts] times, it will return the last
- * failure result. If the operation succeeds at any point, it will immediately return the success
- * result.
- *
- * Note: This uses a default exponential backoff strategy with optional jitter. Depending on your
- * use case, you might want to customize the strategy, for example by handling certain kinds of
- * failures differently.
  */
 @Suppress("LongParameterList", "ReturnCount")
 public suspend fun <T : Any, E : Any> retryWithExponentialBackoff(
