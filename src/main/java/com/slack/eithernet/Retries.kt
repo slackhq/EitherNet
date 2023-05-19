@@ -42,7 +42,7 @@ import kotlinx.coroutines.delay
  * @param jitterFactor The maximum factor of jitter to introduce. For example, a value of 0.1 will
  *   introduce up to 10% jitter. Default is 0.
  * @param onFailure An optional callback for failures, useful for logging.
- * @param block The block of code to retry. This block should return an [ApiResult].
+ *
  * @return The result of the operation if it's successful, or the last failure result if all
  *   attempts fail.
  */
