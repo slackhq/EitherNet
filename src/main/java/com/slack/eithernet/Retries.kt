@@ -18,7 +18,7 @@ package com.slack.eithernet
 import kotlin.math.nextUp
 import kotlin.random.Random
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.times
 import kotlinx.coroutines.delay
@@ -36,24 +36,23 @@ import kotlinx.coroutines.delay
  * use case, you might want to customize the strategy, for example by handling certain kinds of
  * failures differently.
  *
- * @param maxAttempts The maximum number of times to retry the operation. Default is 5.
- * @param initialDelay The delay before the first retry. Default is 1 second.
+ * @param maxAttempts The maximum number of times to retry the operation.
+ * @param initialDelay The delay before the first retry.
  * @param delayFactor The factor by which the delay should increase after each failed attempt.
- *   Default is 2.0.
- * @param maxDelay The maximum delay between retries. Default is 1 hour.
+ * @param maxDelay The maximum delay between retries.
  * @param jitterFactor The maximum factor of jitter to introduce. For example, a value of 0.1 will
- *   introduce up to 10% jitter (both positive and negative). Default is 0.
+ *   introduce up to 10% jitter (both positive and negative).
  * @param onFailure An optional callback for failures, useful for logging.
  * @return The result of the operation if it's successful, or the last failure result if all
  *   attempts fail.
  */
 @Suppress("LongParameterList")
 public tailrec suspend fun <T : Any, E : Any> retryWithExponentialBackoff(
-  maxAttempts: Int = 5,
-  initialDelay: Duration = 1.seconds,
+  maxAttempts: Int = 3,
+  initialDelay: Duration = 500.milliseconds,
   delayFactor: Double = 2.0,
-  maxDelay: Duration = 1.hours,
-  jitterFactor: Double = 0.0,
+  maxDelay: Duration = 10.seconds,
+  jitterFactor: Double = 0.25,
   onFailure: ((attempt: Int, result: ApiResult.Failure<E>) -> Unit)? = null,
   block: suspend () -> ApiResult<T, E>
 ): ApiResult<T, E> {

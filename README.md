@@ -153,11 +153,11 @@ A common pattern in making network requests is to retry with exponential backoff
 ```kotlin
 // Defaults for reference
 val result = retryWithExponentialBackoff(
-  maxAttempts = 5,
-  initialDelay = 1.seconds,
+  maxAttempts = 3,
+  initialDelay = 500.milliseconds,
   delayFactor = 2.0,
-  maxDelay = 1.hours,
-  jitterFactor = 0.0,
+  maxDelay = 10.seconds,
+  jitterFactor = 0.25,
   onFailure = null, // Optional Failure callback w/ attempt
 ) {
     api.getData()
