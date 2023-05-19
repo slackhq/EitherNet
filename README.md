@@ -158,7 +158,7 @@ val result = retryWithExponentialBackoff(
   delayFactor = 2.0,
   maxDelay = 10.seconds,
   jitterFactor = 0.25,
-  onFailure = null, // Optional Failure callback w/ attempt
+  onFailure = null, // Optional Failure callback for logging
 ) {
     api.getData()
 }
