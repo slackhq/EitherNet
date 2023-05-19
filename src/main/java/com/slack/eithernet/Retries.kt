@@ -24,10 +24,10 @@ import kotlinx.coroutines.delay
  * Retries a [block] of code with exponential backoff.
  *
  * @param maxAttempts The maximum number of times to retry the operation. Default is 5.
- * @param initialDelay The delay before the first retry. Default is 100 milliseconds.
- * @param maxDelay The maximum delay between retries. Default is 10,000 milliseconds.
+ * @param initialDelay The delay before the first retry. Default is 1 second.
  * @param factor The factor by which the delay should increase after each failed attempt. Default is
  *   2.0.
+ * @param maxDelay The maximum delay between retries. Default is [Duration.INFINITE].
  * @param jitterFactor The maximum factor of jitter to introduce. For example, a value of 0.1 will
  *   introduce up to 10% jitter. Default is 0.
  * @param onFailure An optional callback for failures, useful for logging.
@@ -48,8 +48,8 @@ import kotlinx.coroutines.delay
 public suspend fun <T : Any, E : Any> retryWithExponentialBackoff(
   maxAttempts: Int = 5,
   initialDelay: Duration = 1.seconds,
-  maxDelay: Duration = 20.seconds,
   factor: Double = 2.0,
+  maxDelay: Duration = Duration.INFINITE,
   jitterFactor: Double = 0.0,
   onFailure: ((attempt: Int, result: ApiResult.Failure<E>) -> Unit)? = null,
   block: suspend () -> ApiResult<T, E>
