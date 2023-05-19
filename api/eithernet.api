@@ -81,8 +81,8 @@ public abstract interface annotation class com/slack/eithernet/ResultType : java
 }
 
 public final class com/slack/eithernet/RetriesKt {
-	public static final fun retryWithExponentialBackoff-3FA4DCs (IJDJDLkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun retryWithExponentialBackoff-3FA4DCs$default (IJDJDLkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static final fun retryWithExponentialBackoff-3FA4DCs (IJDJDLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun retryWithExponentialBackoff-3FA4DCs$default (IJDJDLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
 public abstract interface annotation class com/slack/eithernet/StatusCode : java/lang/annotation/Annotation {

@@ -56,12 +56,12 @@ class RetriesTest {
   @Test
   fun `log failed attempts`() = runTest {
     var attempts = 0
-    val recordedAttempts = mutableListOf<Int>()
+    val recordedAttempts = mutableListOf<ApiResult.Failure<Unit>>()
     val expectedException = RuntimeException("error")
     val result =
       retryWithExponentialBackoff<String, Unit>(
         maxAttempts = 3,
-        onFailure = { attempt, _ -> recordedAttempts.add(attempt) }
+        onFailure = { failure -> recordedAttempts.add(failure) }
       ) {
         attempts++
         ApiResult.unknownFailure(expectedException)

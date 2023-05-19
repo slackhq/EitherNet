@@ -53,7 +53,7 @@ public tailrec suspend fun <T : Any, E : Any> retryWithExponentialBackoff(
   delayFactor: Double = 2.0,
   maxDelay: Duration = 10.seconds,
   jitterFactor: Double = 0.25,
-  onFailure: ((attemptsRemaining: Int, result: ApiResult.Failure<E>) -> Unit)? = null,
+  onFailure: ((failure: ApiResult.Failure<E>) -> Unit)? = null,
   block: suspend () -> ApiResult<T, E>
 ): ApiResult<T, E> {
   require(maxAttempts > 0) { "maxAttempts must be greater than 0" }
@@ -62,7 +62,7 @@ public tailrec suspend fun <T : Any, E : Any> retryWithExponentialBackoff(
     is ApiResult.Success -> result
     is ApiResult.Failure -> {
       val attemptsRemaining = maxAttempts - 1
-      onFailure?.invoke(attemptsRemaining, result)
+      onFailure?.invoke(result)
       if (attemptsRemaining == 0) {
         result
       } else {
