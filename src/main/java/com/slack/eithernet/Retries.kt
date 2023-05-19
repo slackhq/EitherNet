@@ -30,6 +30,7 @@ import kotlinx.coroutines.delay
  *   2.0.
  * @param jitterFactor The maximum factor of jitter to introduce. For example, a value of 0.1 will
  *   introduce up to 10% jitter. Default is 0.
+ * @param onFailure An optional callback for failures, useful for logging.
  * @param block The block of code to retry. This block should return an [ApiResult].
  * @return The result of the operation if it's successful, or the last failure result if all
  *   attempts fail.
@@ -50,6 +51,7 @@ public suspend fun <T : Any, E : Any> retryWithExponentialBackoff(
   maxDelay: Duration = 20.seconds,
   factor: Double = 2.0,
   jitterFactor: Double = 0.0,
+  onFailure: ((attempt: Int, result: ApiResult.Failure<E>) -> Unit)? = null,
   block: suspend () -> ApiResult<T, E>
 ): ApiResult<T, E> {
   require(maxAttempts > 0) { "maxAttempts must be greater than 0" }
@@ -58,7 +60,7 @@ public suspend fun <T : Any, E : Any> retryWithExponentialBackoff(
     when (val result = block()) {
       is ApiResult.Success -> return result
       is ApiResult.Failure -> {
-        // TODO expose a logging hook here?
+        onFailure?.invoke(attempt, result)
         if (attempt == maxAttempts - 1) {
           return result // return last failure
         } else {

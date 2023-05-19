@@ -54,6 +54,25 @@ class RetriesTest {
   }
 
   @Test
+  fun `log failed attempts`() = runTest {
+    var attempts = 0
+    val recordedAttempts = mutableListOf<Int>()
+    val expectedException = RuntimeException("error")
+    val result =
+      retryWithExponentialBackoff<String, Unit>(
+        maxAttempts = 3,
+        onFailure = { attempt, _ -> recordedAttempts.add(attempt) }
+      ) {
+        attempts++
+        ApiResult.unknownFailure(expectedException)
+      }
+    check(result is ApiResult.Failure.UnknownFailure)
+    assertThat(result.error).isEqualTo(expectedException)
+    assertThat(attempts).isEqualTo(3)
+    assertThat(recordedAttempts).hasSize(3)
+  }
+
+  @Test
   fun `does not exceed max delay`() = runTest {
     var attempts = 0
     var lastAttemptTime = currentTime
