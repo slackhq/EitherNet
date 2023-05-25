@@ -66,6 +66,7 @@ tasks.compileTestKotlin {
   }
 }
 
+// https://github.com/google/ksp/issues/1387
 tasks.withType<KspTaskJvm>().configureEach { compilerOptions(kotlinCompilerOptions) }
 
 tasks.withType<Detekt>().configureEach { jvmTarget = tomlJvmTarget }
