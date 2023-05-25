@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import com.google.devtools.ksp.gradle.KspTaskJvm
 import io.gitlab.arturbosch.detekt.Detekt
 import java.net.URL
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 
 plugins {
   kotlin("jvm") version libs.versions.kotlin.get()
@@ -43,24 +44,31 @@ pluginManager.withPlugin("java") {
 
 val tomlJvmTarget = libs.versions.jvmTarget.get()
 
-tasks.withType<KotlinCompile>().configureEach {
-  val taskName = name
+val kotlinCompilerOptions: KotlinJvmCompilerOptions.() -> Unit = {
+  progressiveMode.set(true)
+  jvmTarget.set(libs.versions.jvmTarget.map(JvmTarget::fromTarget))
+}
+
+kotlin {
+  explicitApi()
+  compilerOptions(kotlinCompilerOptions)
+}
+
+tasks.compileTestKotlin {
   compilerOptions {
-    jvmTarget.set(libs.versions.jvmTarget.map(JvmTarget::fromTarget))
-    if (taskName == "compileTestKotlin") {
-      freeCompilerArgs.add("-opt-in=kotlin.ExperimentalStdlibApi")
-      freeCompilerArgs.add("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
-      // Enable new jvmdefault behavior
-      // https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/
-      freeCompilerArgs.add("-Xjvm-default=all")
-    }
-    freeCompilerArgs.addAll("-progressive", "-opt-in=kotlin.RequiresOptIn")
+    optIn.addAll(
+      "kotlin.ExperimentalStdlibApi",
+      "kotlinx.coroutines.ExperimentalCoroutinesApi",
+    )
+    // Enable new jvmdefault behavior
+    // https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/
+    freeCompilerArgs.add("-Xjvm-default=all")
   }
 }
 
-tasks.withType<Detekt>().configureEach { jvmTarget = tomlJvmTarget }
+tasks.withType<KspTaskJvm>().configureEach { compilerOptions(kotlinCompilerOptions) }
 
-kotlin { explicitApi() }
+tasks.withType<Detekt>().configureEach { jvmTarget = tomlJvmTarget }
 
 tasks.named<DokkaTask>("dokkaHtml") {
   outputDirectory.set(rootDir.resolve("docs/0.x"))
