@@ -31,10 +31,7 @@ plugins {
   alias(libs.plugins.binaryCompatibilityValidator)
 }
 
-repositories {
-  mavenCentral()
-  google() // for androidx.annotation
-}
+repositories { mavenCentral() }
 
 pluginManager.withPlugin("java") {
   configure<JavaPluginExtension> { toolchain { languageVersion.set(JavaLanguageVersion.of(17)) } }
@@ -139,7 +136,6 @@ dependencies {
   kspTest(libs.autoService.ksp)
 
   // Android APIs access, gated at runtime
-  testFixturesCompileOnly(libs.androidx.annotation)
   testFixturesCompileOnly(libs.androidProcessingApi)
   testFixturesImplementation(libs.coroutines.core)
   // For access to Types

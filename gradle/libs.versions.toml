@@ -18,7 +18,6 @@ spotless = { id = "com.diffplug.spotless", version = "6.18.0" }
 
 [libraries]
 androidProcessingApi =  "com.google.android:android:4.1.1.4"
-androidx-annotation = "androidx.annotation:annotation:1.2.0"
 autoService-annotations =  "com.google.auto.service:auto-service-annotations:1.0"
 autoService-ksp =  "dev.zacsweers.autoservice:auto-service-ksp:1.0.0"
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
