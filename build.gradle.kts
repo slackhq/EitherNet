@@ -42,6 +42,11 @@ pluginManager.withPlugin("java") {
   project.tasks.withType<JavaCompile>().configureEach { options.release.set(11) }
 }
 
+apiValidation {
+  // https://github.com/Kotlin/binary-compatibility-validator/issues/139
+  validationDisabled = findProperty("kotlin.experimental.tryK2") == "true"
+}
+
 val tomlJvmTarget = libs.versions.jvmTarget.get()
 
 val kotlinCompilerOptions: KotlinJvmCompilerOptions.() -> Unit = {
