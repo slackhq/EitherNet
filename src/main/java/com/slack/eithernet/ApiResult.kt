@@ -265,7 +265,7 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
 
     private companion object {
       private const val HTTP_NO_CONTENT = 204
-      private const val HTTP_RESET_CONTENT = 204
+      private const val HTTP_RESET_CONTENT = 205
     }
 
     override fun adapt(call: Call<ApiResult<*, *>>): Call<ApiResult<*, *>> {
