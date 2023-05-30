@@ -312,7 +312,8 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                         val responseCode = response.code()
                         if ((responseCode == 204 || responseCode == 205)
                             && apiResultType.actualTypeArguments[0] == Unit::class.java) {
-                          ApiResult.success(Unit).withTags(tags.toMap())
+                          @Suppress("UNCHECKED_CAST")
+                          ApiResult.success(Unit).withTags(tags as Map<KClass<*>, Any>)
                         } else {
                           null
                         }
