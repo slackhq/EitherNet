@@ -316,8 +316,10 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                       is Success -> result.withTags(result.tags + tags)
                       null -> {
                         val responseCode = response.code()
-                        if ((responseCode == HTTP_NO_CONTENT || responseCode == HTTP_RESET_CONTENT)
-                            && apiResultType.actualTypeArguments[0] == Unit::class.java) {
+                        if (
+                          (responseCode == HTTP_NO_CONTENT || responseCode == HTTP_RESET_CONTENT) &&
+                            apiResultType.actualTypeArguments[0] == Unit::class.java
+                        ) {
                           @Suppress("UNCHECKED_CAST")
                           ApiResult.success(Unit).withTags(tags as Map<KClass<*>, Any>)
                         } else {
