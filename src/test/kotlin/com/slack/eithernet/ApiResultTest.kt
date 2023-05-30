@@ -87,7 +87,7 @@ class ApiResultTest {
   }
 
   @Test
-  fun successWithUnitWithNullBody() = runTest {
+  fun successWithUnitWithNullBody_code204() = runTest {
     val response = MockResponse().setResponseCode(204)
 
     server.enqueue(response)
@@ -97,8 +97,26 @@ class ApiResultTest {
   }
 
   @Test(expected = NullPointerException::class)
-  fun successWithoutBody() = runTest {
+  fun successWithoutBody_code204() = runTest {
     val response = MockResponse().setResponseCode(204)
+
+    server.enqueue(response)
+    service.testEndpoint()
+  }
+
+  @Test
+  fun successWithUnitWithNullBody_code205() = runTest {
+    val response = MockResponse().setResponseCode(205)
+
+    server.enqueue(response)
+    val result = service.unitEndpoint()
+    check(result is Success)
+    assertThat(result.value).isEqualTo(Unit)
+  }
+
+  @Test(expected = NullPointerException::class)
+  fun successWithoutBody_code205() = runTest {
+    val response = MockResponse().setResponseCode(205)
 
     server.enqueue(response)
     service.testEndpoint()

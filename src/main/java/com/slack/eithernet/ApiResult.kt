@@ -309,9 +309,9 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                     when (val result = response.body()) {
                       is Success -> result.withTags(result.tags + tags)
                       null -> {
-                        val successType = apiResultType.actualTypeArguments[0]
                         val responseCode = response.code()
-                        if ((responseCode == 204 || responseCode == 205) && successType == Unit::class.java) {
+                        if ((responseCode == 204 || responseCode == 205)
+                            && apiResultType.actualTypeArguments[0] == Unit::class.java) {
                           ApiResult.success(Unit).withTags(emptyMap<KClass<*>, Any>() + tags)
                         } else {
                           null
