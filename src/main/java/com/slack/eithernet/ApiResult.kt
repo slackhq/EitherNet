@@ -312,7 +312,7 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                         val responseCode = response.code()
                         if ((responseCode == 204 || responseCode == 205)
                             && apiResultType.actualTypeArguments[0] == Unit::class.java) {
-                          ApiResult.success(Unit).withTags(emptyMap<KClass<*>, Any>() + tags)
+                          ApiResult.success(Unit).withTags(tags.toMap())
                         } else {
                           null
                         }
