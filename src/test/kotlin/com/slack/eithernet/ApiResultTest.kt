@@ -87,6 +87,16 @@ class ApiResultTest {
   }
 
   @Test
+  fun successWithUnitWithNullBody() = runTest {
+    val response = MockResponse().setResponseCode(204)
+
+    server.enqueue(response)
+    val result = service.unitEndpoint()
+    check(result is Success)
+    assertThat(result.value).isEqualTo(Unit)
+  }
+
+  @Test
   fun failureWithUnit() = runTest {
     val response = MockResponse().setResponseCode(404).setBody("Ignored errors!")
 

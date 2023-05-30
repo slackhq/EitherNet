@@ -308,6 +308,7 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                   val withTag =
                     when (val result = response.body()) {
                       is Success -> result.withTags(result.tags + tags)
+                      null -> ApiResult.success(Unit).withTags(emptyMap<KClass<*>, Any>() + tags)
                       else -> null
                     }
                   callback.onResponse(call, Response.success(withTag))
