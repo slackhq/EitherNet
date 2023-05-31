@@ -262,6 +262,12 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
     private val decodeErrorBody: Boolean,
     private val annotations: Array<Annotation>,
   ) : CallAdapter<ApiResult<*, *>, Call<ApiResult<*, *>>> {
+
+    private companion object {
+      private const val HTTP_NO_CONTENT = 204
+      private const val HTTP_RESET_CONTENT = 205
+    }
+
     override fun adapt(call: Call<ApiResult<*, *>>): Call<ApiResult<*, *>> {
       return object : Call<ApiResult<*, *>> by call {
         @Suppress("LongMethod")
@@ -308,6 +314,18 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                   val withTag =
                     when (val result = response.body()) {
                       is Success -> result.withTags(result.tags + tags)
+                      null -> {
+                        val responseCode = response.code()
+                        if (
+                          (responseCode == HTTP_NO_CONTENT || responseCode == HTTP_RESET_CONTENT) &&
+                            apiResultType.actualTypeArguments[0] == Unit::class.java
+                        ) {
+                          @Suppress("UNCHECKED_CAST")
+                          ApiResult.success(Unit).withTags(tags as Map<KClass<*>, Any>)
+                        } else {
+                          null
+                        }
+                      }
                       else -> null
                     }
                   callback.onResponse(call, Response.success(withTag))
