@@ -1,6 +1,15 @@
 Changelog
 =========
 
+1.4.1
+-----
+
+_2023-05-31_
+
+- **Enhancement**: Gracefully handle `Unit`-returning endpoints when encountering a 204 or 205 response code.
+
+Thanks to [@JDSM01](https://github.com/JDSM01) for contributing to this release!
+
 1.4.0
 -----
 
