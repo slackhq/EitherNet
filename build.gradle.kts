@@ -15,13 +15,13 @@
  */
 import com.google.devtools.ksp.gradle.KspTaskJvm
 import io.gitlab.arturbosch.detekt.Detekt
-import java.net.URL
+import java.net.URI
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 
 plugins {
-  kotlin("jvm") version libs.versions.kotlin.get()
+  alias(libs.plugins.kotlin.jvm)
   `java-test-fixtures`
   alias(libs.plugins.dokka)
   alias(libs.plugins.ksp)
@@ -33,18 +33,20 @@ plugins {
 
 repositories { mavenCentral() }
 
-pluginManager.withPlugin("java") {
-  configure<JavaPluginExtension> { toolchain { languageVersion.set(JavaLanguageVersion.of(17)) } }
+val tomlJvmTarget = libs.versions.jvmTarget.get()
 
-  project.tasks.withType<JavaCompile>().configureEach { options.release.set(11) }
+pluginManager.withPlugin("java") {
+  configure<JavaPluginExtension> {
+    toolchain { languageVersion.set(JavaLanguageVersion.of(libs.versions.jdk.get().toInt())) }
+  }
+
+  project.tasks.withType<JavaCompile>().configureEach { options.release.set(tomlJvmTarget.toInt()) }
 }
 
 apiValidation {
   // https://github.com/Kotlin/binary-compatibility-validator/issues/139
   validationDisabled = findProperty("kotlin.experimental.tryK2") == "true"
 }
-
-val tomlJvmTarget = libs.versions.jvmTarget.get()
 
 val kotlinCompilerOptions: KotlinJvmCompilerOptions.() -> Unit = {
   progressiveMode.set(true)
@@ -77,7 +79,9 @@ tasks.named<DokkaTask>("dokkaHtml") {
   outputDirectory.set(rootDir.resolve("docs/0.x"))
   dokkaSourceSets.configureEach {
     skipDeprecated.set(true)
-    externalDocumentationLink { url.set(URL("https://square.github.io/retrofit/2.x/retrofit/")) }
+    externalDocumentationLink {
+      url.set(URI("https://square.github.io/retrofit/2.x/retrofit/").toURL())
+    }
   }
 }
 
