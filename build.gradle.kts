@@ -33,10 +33,11 @@ plugins {
 repositories {
   mavenCentral()
   google() // for androidx.annotation
+  maven("https://oss.sonatype.org/content/repositories/snapshots/")
 }
 
 pluginManager.withPlugin("java") {
-  configure<JavaPluginExtension> { toolchain { languageVersion.set(JavaLanguageVersion.of(17)) } }
+  configure<JavaPluginExtension> { toolchain { languageVersion.set(JavaLanguageVersion.of(20)) } }
 
   project.tasks.withType<JavaCompile>().configureEach { options.release.set(11) }
 }
