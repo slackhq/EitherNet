@@ -22,11 +22,12 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ matrix.java-version }}-${{ hashFiles('checksum.txt') }}
           restore-keys: |
             ${{ runner.os }}-gradle-${{ matrix.java-version }}-
+
       - name: Configure JDK
         uses: actions/setup-java@v2
         with:
           distribution: 'zulu'
-          java-version: '17'
+          java-version: '20'
 
       - name: Test
         run: ./gradlew build check

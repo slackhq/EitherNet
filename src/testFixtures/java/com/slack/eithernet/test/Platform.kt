@@ -17,7 +17,6 @@ package com.slack.eithernet.test
 
 import android.annotation.SuppressLint
 import android.os.Build.VERSION
-import androidx.annotation.RequiresApi
 import java.lang.invoke.MethodHandles
 import java.lang.invoke.MethodHandles.Lookup
 import java.lang.reflect.Constructor
@@ -32,7 +31,6 @@ internal open class Platform(private val hasJava8Types: Boolean) {
 
   init {
     var lookupConstructor: Constructor<Lookup>? = null
-    @RequiresApi(26)
     if (hasJava8Types) {
       try {
         // Because the service interface might not be public, we need to use a MethodHandle lookup

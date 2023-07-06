@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import com.google.devtools.ksp.gradle.KspTaskJvm
 import io.gitlab.arturbosch.detekt.Detekt
-import java.net.URL
+import java.net.URI
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 
 plugins {
-  kotlin("jvm") version libs.versions.kotlin.get()
+  alias(libs.plugins.kotlin.jvm)
   `java-test-fixtures`
   alias(libs.plugins.dokka)
   alias(libs.plugins.ksp)
@@ -30,43 +31,57 @@ plugins {
   alias(libs.plugins.binaryCompatibilityValidator)
 }
 
-repositories {
-  mavenCentral()
-  google() // for androidx.annotation
-}
-
-pluginManager.withPlugin("java") {
-  configure<JavaPluginExtension> { toolchain { languageVersion.set(JavaLanguageVersion.of(17)) } }
-
-  project.tasks.withType<JavaCompile>().configureEach { options.release.set(11) }
-}
+repositories { mavenCentral() }
 
 val tomlJvmTarget = libs.versions.jvmTarget.get()
 
-tasks.withType<KotlinCompile>().configureEach {
-  val taskName = name
+pluginManager.withPlugin("java") {
+  configure<JavaPluginExtension> {
+    toolchain { languageVersion.set(JavaLanguageVersion.of(libs.versions.jdk.get().toInt())) }
+  }
+
+  project.tasks.withType<JavaCompile>().configureEach { options.release.set(tomlJvmTarget.toInt()) }
+}
+
+apiValidation {
+  // https://github.com/Kotlin/binary-compatibility-validator/issues/139
+  validationDisabled = findProperty("kotlin.experimental.tryK2") == "true"
+}
+
+val kotlinCompilerOptions: KotlinJvmCompilerOptions.() -> Unit = {
+  progressiveMode.set(true)
+  jvmTarget.set(libs.versions.jvmTarget.map(JvmTarget::fromTarget))
+}
+
+kotlin {
+  explicitApi()
+  compilerOptions(kotlinCompilerOptions)
+}
+
+tasks.compileTestKotlin {
   compilerOptions {
-    jvmTarget.set(libs.versions.jvmTarget.map(JvmTarget::fromTarget))
-    if (taskName == "compileTestKotlin") {
-      freeCompilerArgs.add("-opt-in=kotlin.ExperimentalStdlibApi")
-      freeCompilerArgs.add("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
-      // Enable new jvmdefault behavior
-      // https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/
-      freeCompilerArgs.add("-Xjvm-default=all")
-    }
-    freeCompilerArgs.addAll("-progressive", "-opt-in=kotlin.RequiresOptIn")
+    optIn.addAll(
+      "kotlin.ExperimentalStdlibApi",
+      "kotlinx.coroutines.ExperimentalCoroutinesApi",
+    )
+    // Enable new jvmdefault behavior
+    // https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/
+    freeCompilerArgs.add("-Xjvm-default=all")
   }
 }
 
-tasks.withType<Detekt>().configureEach { jvmTarget = tomlJvmTarget }
+// https://github.com/google/ksp/issues/1387
+tasks.withType<KspTaskJvm>().configureEach { compilerOptions(kotlinCompilerOptions) }
 
-kotlin { explicitApi() }
+tasks.withType<Detekt>().configureEach { jvmTarget = tomlJvmTarget }
 
 tasks.named<DokkaTask>("dokkaHtml") {
   outputDirectory.set(rootDir.resolve("docs/0.x"))
   dokkaSourceSets.configureEach {
     skipDeprecated.set(true)
-    externalDocumentationLink { url.set(URL("https://square.github.io/retrofit/2.x/retrofit/")) }
+    externalDocumentationLink {
+      url.set(URI("https://square.github.io/retrofit/2.x/retrofit/").toURL())
+    }
   }
 }
 
@@ -125,7 +140,6 @@ dependencies {
   kspTest(libs.autoService.ksp)
 
   // Android APIs access, gated at runtime
-  testFixturesCompileOnly(libs.androidx.annotation)
   testFixturesCompileOnly(libs.androidProcessingApi)
   testFixturesImplementation(libs.coroutines.core)
   // For access to Types
