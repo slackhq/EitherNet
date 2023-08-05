@@ -70,6 +70,13 @@ public abstract interface annotation class com/slack/eithernet/DecodeErrorBody :
 public abstract interface annotation class com/slack/eithernet/ExperimentalEitherNetApi : java/lang/annotation/Annotation {
 }
 
+public final class com/slack/eithernet/ExtensionsKt {
+	public static final fun fold (Lcom/slack/eithernet/ApiResult;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
+	public static final fun fold (Lcom/slack/eithernet/ApiResult;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
+	public static final fun successOrElse (Lcom/slack/eithernet/ApiResult;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
+	public static final fun successOrNull (Lcom/slack/eithernet/ApiResult;)Ljava/lang/Object;
+}
+
 public abstract interface annotation class com/slack/eithernet/InternalEitherNetApi : java/lang/annotation/Annotation {
 }
 
