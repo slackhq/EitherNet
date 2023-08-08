@@ -22,7 +22,7 @@ public fun <T : Any, E : Any> ApiResult<T, E>.successOrNull(): T? =
     else -> null
   }
 
-/** If [ApiResult.Success], returns the underlying [T] value. Otherwise, returns null. */
+/** If [ApiResult.Success], returns the underlying [T] value. Otherwise, returns the result of the [defaultValue] function. */
 public inline fun <T : Any, E : Any> ApiResult<T, E>.successOrElse(
   defaultValue: (ApiResult.Failure<E>) -> T
 ): T =
