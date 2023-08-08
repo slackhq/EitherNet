@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.5.0
+-----
+
+_2023-08-08_
+
+- **New**: Add new `successOrNull`, `successOrElse`, and `fold` functional extension APIs to `ApiResult`. These allow easy happy path-ing in user code to coerce results into a concrete value.
+- Update to Kotlin `1.9.0`.
+
 1.4.1
 -----
 
