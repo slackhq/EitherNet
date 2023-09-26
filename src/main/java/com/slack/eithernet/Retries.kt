@@ -23,6 +23,29 @@ import kotlin.time.Duration.Companion.seconds
 import kotlin.time.times
 import kotlinx.coroutines.delay
 
+@Suppress("LongParameterList")
+@Deprecated("Left for ABI compatibility", level = DeprecationLevel.HIDDEN)
+public suspend fun <T : Any, E : Any> retryWithExponentialBackoff(
+  maxAttempts: Int = 3,
+  initialDelay: Duration = 500.milliseconds,
+  delayFactor: Double = 2.0,
+  maxDelay: Duration = 10.seconds,
+  jitterFactor: Double = 0.25,
+  onFailure: ((failure: ApiResult.Failure<E>) -> Unit)? = null,
+  block: suspend () -> ApiResult<T, E>
+): ApiResult<T, E> {
+  return retryWithExponentialBackoff(
+    maxAttempts = maxAttempts,
+    initialDelay = delayFactor * initialDelay,
+    delayFactor = delayFactor,
+    maxDelay = maxDelay,
+    jitterFactor = jitterFactor,
+    onFailure = onFailure,
+    shouldRetry = { true },
+    block = block
+  )
+}
+
 /**
  * Retries a [block] of code with exponential backoff.
  *
@@ -43,6 +66,8 @@ import kotlinx.coroutines.delay
  * @param jitterFactor The maximum factor of jitter to introduce. For example, a value of 0.1 will
  *   introduce up to 10% jitter (both positive and negative).
  * @param onFailure An optional callback for failures, useful for logging.
+ * @param shouldRetry An optional callback for indicating whether to retry a failure. This can be
+ *   used to short-circuit attempts in the event of some non-retry-able condition.
  * @return The result of the operation if it's successful, or the last failure result if all
  *   attempts fail.
  */
@@ -54,6 +79,7 @@ public tailrec suspend fun <T : Any, E : Any> retryWithExponentialBackoff(
   maxDelay: Duration = 10.seconds,
   jitterFactor: Double = 0.25,
   onFailure: ((failure: ApiResult.Failure<E>) -> Unit)? = null,
+  shouldRetry: suspend ((failure: ApiResult.Failure<E>) -> Boolean) = { true },
   block: suspend () -> ApiResult<T, E>
 ): ApiResult<T, E> {
   require(maxAttempts > 0) { "maxAttempts must be greater than 0" }
@@ -63,7 +89,7 @@ public tailrec suspend fun <T : Any, E : Any> retryWithExponentialBackoff(
     is ApiResult.Failure -> {
       val attemptsRemaining = maxAttempts - 1
       onFailure?.invoke(result)
-      if (attemptsRemaining == 0) {
+      if (attemptsRemaining == 0 || !shouldRetry(result)) {
         result
       } else {
         val jitter = 1 + Random.nextDouble(-jitterFactor, jitterFactor.nextUp())
@@ -76,6 +102,7 @@ public tailrec suspend fun <T : Any, E : Any> retryWithExponentialBackoff(
           maxDelay = maxDelay,
           jitterFactor = jitterFactor,
           onFailure = onFailure,
+          shouldRetry = shouldRetry,
           block = block
         )
       }

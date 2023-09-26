@@ -16,6 +16,7 @@
 package com.slack.eithernet
 
 import com.google.common.truth.Truth.assertThat
+import java.io.IOException
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.test.currentTime
 import kotlinx.coroutines.test.runTest
@@ -122,5 +123,23 @@ class RetriesTest {
     }
     // Check that all delays are the same, which would indicate that jitter was not applied
     assertThat(delays.distinct().size).isEqualTo(1)
+  }
+
+  @Test
+  fun `does not retry on matching condition`() = runTest {
+    var attempts = 0
+    retryWithExponentialBackoff(
+      maxAttempts = 5,
+      shouldRetry = { it !is ApiResult.Failure.UnknownFailure }
+    ) {
+      attempts++
+      if (attempts > 2) {
+        ApiResult.unknownFailure(RuntimeException("error"))
+      } else {
+        ApiResult.networkFailure(IOException("error"))
+      }
+    }
+    // Check that we only attempted until an unknown failure happened
+    assertThat(attempts).isEqualTo(3)
   }
 }
