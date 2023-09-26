@@ -8,7 +8,6 @@ _2023-09-26_
 
 - **Enhancement**: Add `shouldRetry` parameter to `retryWithExponentialBackoff()` to allow conditional short-circuiting of retries.
 
-
 1.5.0
 -----
 
