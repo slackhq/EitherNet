@@ -130,10 +130,7 @@ class RetriesTest {
     var attempts = 0
     retryWithExponentialBackoff(
       maxAttempts = 5,
-      shouldRetry = {
-        println("Should retry? Attempts are $attempts")
-        it !is ApiResult.Failure.UnknownFailure
-      }
+      shouldRetry = { it !is ApiResult.Failure.UnknownFailure }
     ) {
       attempts++
       if (attempts > 2) {
