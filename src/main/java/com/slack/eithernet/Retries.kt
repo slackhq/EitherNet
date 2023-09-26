@@ -23,8 +23,8 @@ import kotlin.time.Duration.Companion.seconds
 import kotlin.time.times
 import kotlinx.coroutines.delay
 
-/** @see [retryWithExponentialBackoff] for full doc. */
 @Suppress("LongParameterList")
+@Deprecated("Left for ABI compatibility", level = DeprecationLevel.HIDDEN)
 public suspend fun <T : Any, E : Any> retryWithExponentialBackoff(
   maxAttempts: Int = 3,
   initialDelay: Duration = 500.milliseconds,
