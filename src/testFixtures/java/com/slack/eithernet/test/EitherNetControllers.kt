@@ -64,8 +64,7 @@ private val KFunction<*>.isApplicable: Boolean
         !Modifier.isStatic(method.modifiers) &&
         !method.isSynthetic &&
         !method.isBridge
-    }
-      ?: false
+    } ?: false
   }
 
 @OptIn(ExperimentalStdlibApi::class, ExperimentalEitherNetApi::class)

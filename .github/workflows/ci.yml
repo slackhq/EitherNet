@@ -8,7 +8,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Validate Gradle Wrapper
         uses: gradle/wrapper-validation-action@v1
@@ -16,7 +16,7 @@ jobs:
       - name: Generate cache key
         run: ./.github/workflows/checksum.sh checksum.txt
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ matrix.java-version }}-${{ hashFiles('checksum.txt') }}
@@ -24,13 +24,13 @@ jobs:
             ${{ runner.os }}-gradle-${{ matrix.java-version }}-
 
       - name: Configure JDK
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
           java-version: '20'
 
       - name: Test
-        run: ./gradlew build check
+        run: ./gradlew check
 
       - name: Publish (default branch only)
         if: github.repository == 'slackhq/EitherNet' && github.ref == 'refs/heads/main'
