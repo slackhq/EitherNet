@@ -16,7 +16,7 @@ jobs:
       - name: Generate cache key
         run: ./.github/workflows/checksum.sh checksum.txt
 
-      - uses: actions/cache@v4
+      - uses: actions/cache@v3
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ matrix.java-version }}-${{ hashFiles('checksum.txt') }}
