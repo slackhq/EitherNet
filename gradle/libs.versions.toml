@@ -1,6 +1,6 @@
 [versions]
 coroutines = "1.7.2"
-kotlin = "1.9.20-Beta"
+kotlin = "1.9.20"
 jdk = "20"
 jvmTarget = "11"
 ksp = "1.9.20-Beta-1.0.13"
@@ -12,11 +12,11 @@ retrofit = "2.9.0"
 [plugins]
 binaryCompatibilityValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.13.2" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version = "1.23.0" }
-dokka = { id = "org.jetbrains.dokka", version = "1.9.0" }
+dokka = { id = "org.jetbrains.dokka", version = "1.9.10" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.25.3" }
-spotless = { id = "com.diffplug.spotless", version = "6.21.0" }
+spotless = { id = "com.diffplug.spotless", version = "6.22.0" }
 
 [libraries]
 androidProcessingApi =  "com.google.android:android:4.1.1.4"
