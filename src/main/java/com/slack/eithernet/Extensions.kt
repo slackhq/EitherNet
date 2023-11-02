@@ -36,7 +36,7 @@ public inline fun <T : Any, E : Any> ApiResult<T, E>.successOrElse(
 
 /**
  * If [ApiResult.Success], returns the underlying [T] value. Otherwise, calls [body] with the
- * failure.
+ * failure, which can either throw an exception or return early (since this function is inline).
  */
 public inline fun <T : Any, E : Any> ApiResult<T, E>.successOrNothing(
   body: (ApiResult.Failure<E>) -> Nothing
