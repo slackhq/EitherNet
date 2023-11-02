@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.7.0
+-----
+
+_2023-11-02_
+
+- **Enhancement**: Add new `ApiResult<*, *>.successOrNothing()` and `ApiResult.Failure<*>.exceptionOrNull()` functional extension APIs.
+- Update to Kotlin `1.9.20`.
+
 1.6.0
 -----
 
