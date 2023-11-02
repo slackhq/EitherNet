@@ -39,7 +39,7 @@ public inline fun <T : Any, E : Any> ApiResult<T, E>.successOrElse(
  * failure.
  */
 public inline fun <T : Any, E : Any> ApiResult<T, E>.successOrNothing(
-  body: (ApiResult.Failure<E>) -> T
+  body: (ApiResult.Failure<E>) -> Nothing
 ): T =
   when (this) {
     is ApiResult.Success -> value
