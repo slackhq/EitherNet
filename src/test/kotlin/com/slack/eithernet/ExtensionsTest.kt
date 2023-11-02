@@ -16,6 +16,7 @@
 package com.slack.eithernet
 
 import com.google.common.truth.Truth.assertThat
+import kotlin.test.fail
 import okio.IOException
 import org.junit.Test
 
@@ -128,5 +129,54 @@ class ExtensionsTest {
         onHttpFailure = { throw AssertionError() },
       )
     assertThat(folded).isEqualTo("Failure")
+  }
+
+  @Test
+  fun successOrNothingShouldEscape() {
+    val result: ApiResult<*, *> = ApiResult.networkFailure(IOException())
+    result.successOrNothing {
+      return
+    }
+    fail("Should not reach here")
+  }
+
+  @Test
+  fun exceptionOrNull_with_networkFailure() {
+    val exception = IOException()
+    val result = ApiResult.networkFailure(exception)
+    assertThat(result.exceptionOrNull()).isSameInstanceAs(exception)
+  }
+
+  @Test
+  fun exceptionOrNull_with_unknownFailure() {
+    val exception = IOException()
+    val result = ApiResult.unknownFailure(exception)
+    assertThat(result.exceptionOrNull()).isSameInstanceAs(exception)
+  }
+
+  @Test
+  fun exceptionOrNull_with_throwableApiFailure() {
+    val exception = IOException()
+    val result = ApiResult.apiFailure(exception)
+    assertThat(result.exceptionOrNull()).isSameInstanceAs(exception)
+  }
+
+  @Test
+  fun exceptionOrNull_with_throwableHttpFailure() {
+    val exception = IOException()
+    val result = ApiResult.httpFailure(404, exception)
+    assertThat(result.exceptionOrNull()).isSameInstanceAs(exception)
+  }
+
+  @Test
+  fun exceptionOrNull_with_nonThrowableApiFailure() {
+    val result = ApiResult.apiFailure("nope")
+    assertThat(result.exceptionOrNull()).isNull()
+  }
+
+  @Test
+  fun exceptionOrNull_with_nonThrowableHttpFailure() {
+    val result = ApiResult.httpFailure(404, "nope")
+    assertThat(result.exceptionOrNull()).isNull()
   }
 }

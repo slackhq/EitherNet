@@ -34,6 +34,34 @@ public inline fun <T : Any, E : Any> ApiResult<T, E>.successOrElse(
     is ApiResult.Failure -> defaultValue(this)
   }
 
+/**
+ * If [ApiResult.Success], returns the underlying [T] value. Otherwise, calls [body] with the
+ * failure, which can either throw an exception or return early (since this function is inline).
+ */
+public inline fun <T : Any, E : Any> ApiResult<T, E>.successOrNothing(
+  body: (ApiResult.Failure<E>) -> Nothing
+): T =
+  when (this) {
+    is ApiResult.Success -> value
+    is ApiResult.Failure -> body(this)
+  }
+
+/**
+ * Returns the encapsulated [Throwable] exception of this failure type if one is available or null
+ * if none are available.
+ *
+ * Note that if this is [ApiResult.Failure.HttpFailure] or [ApiResult.Failure.ApiFailure], the
+ * `error` property will be returned IFF it's a [Throwable].
+ */
+public fun <E : Any> ApiResult.Failure<E>.exceptionOrNull(): Throwable? {
+  return when (this) {
+    is ApiResult.Failure.NetworkFailure -> error
+    is ApiResult.Failure.UnknownFailure -> error
+    is ApiResult.Failure.HttpFailure -> error as? Throwable?
+    is ApiResult.Failure.ApiFailure -> error as? Throwable?
+  }
+}
+
 /** Transforms an [ApiResult] into a [C] value. */
 public fun <T : Any, E : Any, C> ApiResult<T, E>.fold(
   onSuccess: (ApiResult.Success<T>) -> C,
