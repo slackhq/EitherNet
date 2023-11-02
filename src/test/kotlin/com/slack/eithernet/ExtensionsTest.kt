@@ -16,9 +16,9 @@
 package com.slack.eithernet
 
 import com.google.common.truth.Truth.assertThat
+import kotlin.test.fail
 import okio.IOException
 import org.junit.Test
-import kotlin.test.fail
 
 @Suppress("ThrowsCount")
 class ExtensionsTest {
