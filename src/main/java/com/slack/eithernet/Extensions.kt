@@ -77,7 +77,7 @@ public fun <E : Any> ApiResult.Failure<E>.exceptionOrNull(): Throwable? {
 }
 
 /** Transforms an [ApiResult] into a [C] value. */
-@Suppress("NOTHING_TO_INLINE") // Inline to allow
+@Suppress("NOTHING_TO_INLINE") // Inline to allow contextual actions
 public inline fun <T : Any, E : Any, C> ApiResult<T, E>.fold(
   noinline onSuccess: (ApiResult.Success<T>) -> C,
   noinline onFailure: (ApiResult.Failure<E>) -> C,
@@ -118,4 +118,76 @@ public inline fun <T : Any, E : Any, C> ApiResult<T, E>.fold(
     is ApiResult.Failure.NetworkFailure -> onNetworkFailure(this)
     is ApiResult.Failure.UnknownFailure -> onUnknownFailure(this)
   }
+}
+
+/**
+ * Performs the given [action] on the encapsulated [ApiResult.Failure] if this instance represents [failure][ApiResult.Failure].
+ * Returns the original `ApiResult` unchanged.
+ */
+public inline fun <T : Any, E : Any> ApiResult<T, E>.onFailure(action: (failure: ApiResult.Failure<E>) -> Unit): ApiResult<T, E> {
+  contract {
+    callsInPlace(action, InvocationKind.AT_MOST_ONCE)
+  }
+  if (this is ApiResult.Failure) action(this)
+  return this
+}
+
+/**
+ * Performs the given [action] on the encapsulated [ApiResult.Failure.HttpFailure] if this instance represents [failure][ApiResult.Failure.HttpFailure].
+ * Returns the original `ApiResult` unchanged.
+ */
+public inline fun <T : Any, E : Any> ApiResult<T, E>.onHttpFailure(action: (failure: ApiResult.Failure.HttpFailure<E>) -> Unit): ApiResult<T, E> {
+  contract {
+    callsInPlace(action, InvocationKind.AT_MOST_ONCE)
+  }
+  if (this is ApiResult.Failure.HttpFailure) action(this)
+  return this
+}
+
+/**
+ * Performs the given [action] on the encapsulated [ApiResult.Failure.ApiFailure] if this instance represents [failure][ApiResult.Failure.ApiFailure].
+ * Returns the original `ApiResult` unchanged.
+ */
+public inline fun <T : Any, E : Any> ApiResult<T, E>.onApiFailure(action: (failure: ApiResult.Failure.ApiFailure<E>) -> Unit): ApiResult<T, E> {
+  contract {
+    callsInPlace(action, InvocationKind.AT_MOST_ONCE)
+  }
+  if (this is ApiResult.Failure.ApiFailure) action(this)
+  return this
+}
+
+/**
+ * Performs the given [action] on the encapsulated [ApiResult.Failure.NetworkFailure] if this instance represents [failure][ApiResult.Failure.NetworkFailure].
+ * Returns the original `ApiResult` unchanged.
+ */
+public inline fun <T : Any, E : Any> ApiResult<T, E>.onNetworkFailure(action: (failure: ApiResult.Failure.NetworkFailure) -> Unit): ApiResult<T, E> {
+  contract {
+    callsInPlace(action, InvocationKind.AT_MOST_ONCE)
+  }
+  if (this is ApiResult.Failure.NetworkFailure) action(this)
+  return this
+}
+
+/**
+ * Performs the given [action] on the encapsulated [ApiResult.Failure.UnknownFailure] if this instance represents [failure][ApiResult.Failure.UnknownFailure].
+ * Returns the original `ApiResult` unchanged.
+ */
+public inline fun <T : Any, E : Any> ApiResult<T, E>.onUnknownFailure(action: (failure: ApiResult.Failure.UnknownFailure) -> Unit): ApiResult<T, E> {
+  contract {
+    callsInPlace(action, InvocationKind.AT_MOST_ONCE)
+  }
+  if (this is ApiResult.Failure.UnknownFailure) action(this)
+  return this
+}
+
+/**
+ * Performs the given [action] on the encapsulated value if this instance represents [success][ApiResult.Success].
+ * Returns the original `ApiResult` unchanged.
+ */
+public inline fun <T : Any, E : Any> ApiResult<T, E>.onSuccess(action: (value: T) -> Unit): ApiResult<T, E> {
+  contract {
+    callsInPlace(action, InvocationKind.AT_MOST_ONCE)
+  }
+  if (this is ApiResult.Success) action(value)
+  return this
 }
