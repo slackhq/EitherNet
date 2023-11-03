@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 @file:OptIn(ExperimentalContracts::class)
+@file:Suppress("TooManyFunctions")
 
 package com.slack.eithernet
 
