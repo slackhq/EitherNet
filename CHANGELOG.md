@@ -1,6 +1,16 @@
 Changelog
 =========
 
+1.8.0
+-----
+
+_2023-11-03_
+
+- **Fix**: Deprecate old `fold()` functions and introduce new ones that use the underlying value rather than `Success`. This was an oversight in the previous implementation. Binary compatibility is preserved.
+- **Enhancement:** Mark functions `inline` where possible to allow carried over context (i.e. in suspend functions, etc)
+- **Enhancement:** Use contracts to inform the compiler about possible calls to lambdas.
+- **New:** Add fluent `onSuccess` and `onFailure*` functional extension APIs to `ApiResult`.
+
 1.7.0
 -----
 
