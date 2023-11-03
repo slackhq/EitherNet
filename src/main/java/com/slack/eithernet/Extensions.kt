@@ -74,8 +74,9 @@ public fun <E : Any> ApiResult.Failure<E>.exceptionOrNull(): Throwable? {
 
 /** Transforms an [ApiResult] into a [C] value. */
 @Suppress("NOTHING_TO_INLINE") // Inline to allow contextual actions
+@JvmName("foldWithValue")
 public inline fun <T : Any, E : Any, C> ApiResult<T, E>.fold(
-  noinline onSuccess: (ApiResult.Success<T>) -> C,
+  noinline onSuccess: (T) -> C,
   noinline onFailure: (ApiResult.Failure<E>) -> C,
 ): C {
   contract {
@@ -93,8 +94,9 @@ public inline fun <T : Any, E : Any, C> ApiResult<T, E>.fold(
 }
 
 /** Transforms an [ApiResult] into a [C] value. */
+@JvmName("foldWithValue")
 public inline fun <T : Any, E : Any, C> ApiResult<T, E>.fold(
-  onSuccess: (ApiResult.Success<T>) -> C,
+  onSuccess: (T) -> C,
   onNetworkFailure: (ApiResult.Failure.NetworkFailure) -> C,
   onUnknownFailure: (ApiResult.Failure.UnknownFailure) -> C,
   onHttpFailure: (ApiResult.Failure.HttpFailure<E>) -> C,
@@ -108,7 +110,7 @@ public inline fun <T : Any, E : Any, C> ApiResult<T, E>.fold(
     callsInPlace(onApiFailure, InvocationKind.AT_MOST_ONCE)
   }
   return when (this) {
-    is ApiResult.Success -> onSuccess(this)
+    is ApiResult.Success -> onSuccess(value)
     is ApiResult.Failure.ApiFailure -> onApiFailure(this)
     is ApiResult.Failure.HttpFailure -> onHttpFailure(this)
     is ApiResult.Failure.NetworkFailure -> onNetworkFailure(this)
@@ -188,4 +190,52 @@ public inline fun <T : Any, E : Any> ApiResult<T, E>.onSuccess(
   contract { callsInPlace(action, InvocationKind.AT_MOST_ONCE) }
   if (this is ApiResult.Success) action(value)
   return this
+}
+
+// Deprecated functions
+
+@Deprecated("Use fold instead", level = DeprecationLevel.HIDDEN)
+@JvmName("fold")
+@Suppress("NOTHING_TO_INLINE") // Inline to allow contextual actions
+public inline fun <T : Any, E : Any, C> ApiResult<T, E>.foldOld(
+  noinline onSuccess: (ApiResult.Success<T>) -> C,
+  noinline onFailure: (ApiResult.Failure<E>) -> C,
+): C {
+  contract {
+    callsInPlace(onSuccess, InvocationKind.AT_MOST_ONCE)
+    callsInPlace(onFailure, InvocationKind.AT_MOST_ONCE)
+  }
+  @Suppress("UNCHECKED_CAST")
+  return foldOld(
+    onSuccess,
+    onFailure as (ApiResult.Failure.NetworkFailure) -> C,
+    onFailure as (ApiResult.Failure.UnknownFailure) -> C,
+    onFailure,
+    onFailure,
+  )
+}
+
+@Deprecated("Use fold instead", level = DeprecationLevel.HIDDEN)
+@JvmName("fold")
+public inline fun <T : Any, E : Any, C> ApiResult<T, E>.foldOld(
+  onSuccess: (ApiResult.Success<T>) -> C,
+  onNetworkFailure: (ApiResult.Failure.NetworkFailure) -> C,
+  onUnknownFailure: (ApiResult.Failure.UnknownFailure) -> C,
+  onHttpFailure: (ApiResult.Failure.HttpFailure<E>) -> C,
+  onApiFailure: (ApiResult.Failure.ApiFailure<E>) -> C,
+): C {
+  contract {
+    callsInPlace(onSuccess, InvocationKind.AT_MOST_ONCE)
+    callsInPlace(onNetworkFailure, InvocationKind.AT_MOST_ONCE)
+    callsInPlace(onUnknownFailure, InvocationKind.AT_MOST_ONCE)
+    callsInPlace(onHttpFailure, InvocationKind.AT_MOST_ONCE)
+    callsInPlace(onApiFailure, InvocationKind.AT_MOST_ONCE)
+  }
+  return when (this) {
+    is ApiResult.Success -> onSuccess(this)
+    is ApiResult.Failure.ApiFailure -> onApiFailure(this)
+    is ApiResult.Failure.HttpFailure -> onHttpFailure(this)
+    is ApiResult.Failure.NetworkFailure -> onNetworkFailure(this)
+    is ApiResult.Failure.UnknownFailure -> onUnknownFailure(this)
+  }
 }
