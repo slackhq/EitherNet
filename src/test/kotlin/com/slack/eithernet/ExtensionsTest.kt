@@ -64,7 +64,7 @@ class ExtensionsTest {
   @Test
   fun foldSuccess() {
     val result = ApiResult.success("Hello")
-    val folded = result.fold({ it.value }, { "Failure" })
+    val folded = result.fold({ it }, { "Failure" })
     assertThat(folded).isEqualTo("Hello")
   }
 
