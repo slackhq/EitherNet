@@ -33,7 +33,7 @@ public fun <T : Any, E : Any> ApiResult<T, E>.successOrNull(): T? =
  * [defaultValue] function.
  */
 public inline fun <T : Any, E : Any> ApiResult<T, E>.successOrElse(
-  defaultValue: (ApiResult.Failure<E>) -> T
+  defaultValue: (failure: ApiResult.Failure<E>) -> T
 ): T {
   contract { callsInPlace(defaultValue, InvocationKind.AT_MOST_ONCE) }
   return when (this) {
@@ -47,7 +47,7 @@ public inline fun <T : Any, E : Any> ApiResult<T, E>.successOrElse(
  * failure, which can either throw an exception or return early (since this function is inline).
  */
 public inline fun <T : Any, E : Any> ApiResult<T, E>.successOrNothing(
-  body: (ApiResult.Failure<E>) -> Nothing
+  body: (failure: ApiResult.Failure<E>) -> Nothing
 ): T {
   contract { callsInPlace(body, InvocationKind.AT_MOST_ONCE) }
   return when (this) {
@@ -76,8 +76,8 @@ public fun <E : Any> ApiResult.Failure<E>.exceptionOrNull(): Throwable? {
 @Suppress("NOTHING_TO_INLINE") // Inline to allow contextual actions
 @JvmName("foldWithValue")
 public inline fun <T : Any, E : Any, C> ApiResult<T, E>.fold(
-  noinline onSuccess: (T) -> C,
-  noinline onFailure: (ApiResult.Failure<E>) -> C,
+  noinline onSuccess: (value: T) -> C,
+  noinline onFailure: (failure: ApiResult.Failure<E>) -> C,
 ): C {
   contract {
     callsInPlace(onSuccess, InvocationKind.AT_MOST_ONCE)
@@ -96,11 +96,11 @@ public inline fun <T : Any, E : Any, C> ApiResult<T, E>.fold(
 /** Transforms an [ApiResult] into a [C] value. */
 @JvmName("foldWithValue")
 public inline fun <T : Any, E : Any, C> ApiResult<T, E>.fold(
-  onSuccess: (T) -> C,
-  onNetworkFailure: (ApiResult.Failure.NetworkFailure) -> C,
-  onUnknownFailure: (ApiResult.Failure.UnknownFailure) -> C,
-  onHttpFailure: (ApiResult.Failure.HttpFailure<E>) -> C,
-  onApiFailure: (ApiResult.Failure.ApiFailure<E>) -> C,
+  onSuccess: (value: T) -> C,
+  onNetworkFailure: (failure: ApiResult.Failure.NetworkFailure) -> C,
+  onUnknownFailure: (failure: ApiResult.Failure.UnknownFailure) -> C,
+  onHttpFailure: (failure: ApiResult.Failure.HttpFailure<E>) -> C,
+  onApiFailure: (failure: ApiResult.Failure.ApiFailure<E>) -> C,
 ): C {
   contract {
     callsInPlace(onSuccess, InvocationKind.AT_MOST_ONCE)
