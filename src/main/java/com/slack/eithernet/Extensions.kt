@@ -13,7 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:OptIn(ExperimentalContracts::class)
+
 package com.slack.eithernet
+
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
 /** If [ApiResult.Success], returns the underlying [T] value. Otherwise, returns null. */
 public fun <T : Any, E : Any> ApiResult<T, E>.successOrNull(): T? =
@@ -28,11 +34,15 @@ public fun <T : Any, E : Any> ApiResult<T, E>.successOrNull(): T? =
  */
 public inline fun <T : Any, E : Any> ApiResult<T, E>.successOrElse(
   defaultValue: (ApiResult.Failure<E>) -> T
-): T =
-  when (this) {
+): T {
+  contract {
+    callsInPlace(defaultValue, InvocationKind.AT_MOST_ONCE)
+  }
+  return when (this) {
     is ApiResult.Success -> value
     is ApiResult.Failure -> defaultValue(this)
   }
+}
 
 /**
  * If [ApiResult.Success], returns the underlying [T] value. Otherwise, calls [body] with the
@@ -40,11 +50,15 @@ public inline fun <T : Any, E : Any> ApiResult<T, E>.successOrElse(
  */
 public inline fun <T : Any, E : Any> ApiResult<T, E>.successOrNothing(
   body: (ApiResult.Failure<E>) -> Nothing
-): T =
-  when (this) {
+): T {
+  contract {
+    callsInPlace(body, InvocationKind.AT_MOST_ONCE)
+  }
+  return when (this) {
     is ApiResult.Success -> value
     is ApiResult.Failure -> body(this)
   }
+}
 
 /**
  * Returns the encapsulated [Throwable] exception of this failure type if one is available or null
@@ -63,10 +77,15 @@ public fun <E : Any> ApiResult.Failure<E>.exceptionOrNull(): Throwable? {
 }
 
 /** Transforms an [ApiResult] into a [C] value. */
-public fun <T : Any, E : Any, C> ApiResult<T, E>.fold(
-  onSuccess: (ApiResult.Success<T>) -> C,
-  onFailure: (ApiResult.Failure<E>) -> C,
+@Suppress("NOTHING_TO_INLINE") // Inline to allow
+public inline fun <T : Any, E : Any, C> ApiResult<T, E>.fold(
+  noinline onSuccess: (ApiResult.Success<T>) -> C,
+  noinline onFailure: (ApiResult.Failure<E>) -> C,
 ): C {
+  contract {
+    callsInPlace(onSuccess, InvocationKind.AT_MOST_ONCE)
+    callsInPlace(onFailure, InvocationKind.AT_MOST_ONCE)
+  }
   @Suppress("UNCHECKED_CAST")
   return fold(
     onSuccess,
@@ -78,13 +97,20 @@ public fun <T : Any, E : Any, C> ApiResult<T, E>.fold(
 }
 
 /** Transforms an [ApiResult] into a [C] value. */
-public fun <T : Any, E : Any, C> ApiResult<T, E>.fold(
+public inline fun <T : Any, E : Any, C> ApiResult<T, E>.fold(
   onSuccess: (ApiResult.Success<T>) -> C,
   onNetworkFailure: (ApiResult.Failure.NetworkFailure) -> C,
   onUnknownFailure: (ApiResult.Failure.UnknownFailure) -> C,
   onHttpFailure: (ApiResult.Failure.HttpFailure<E>) -> C,
   onApiFailure: (ApiResult.Failure.ApiFailure<E>) -> C,
 ): C {
+  contract {
+    callsInPlace(onSuccess, InvocationKind.AT_MOST_ONCE)
+    callsInPlace(onNetworkFailure, InvocationKind.AT_MOST_ONCE)
+    callsInPlace(onUnknownFailure, InvocationKind.AT_MOST_ONCE)
+    callsInPlace(onHttpFailure, InvocationKind.AT_MOST_ONCE)
+    callsInPlace(onApiFailure, InvocationKind.AT_MOST_ONCE)
+  }
   return when (this) {
     is ApiResult.Success -> onSuccess(this)
     is ApiResult.Failure.ApiFailure -> onApiFailure(this)
