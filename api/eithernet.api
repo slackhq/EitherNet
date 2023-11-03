@@ -72,8 +72,16 @@ public abstract interface annotation class com/slack/eithernet/ExperimentalEithe
 
 public final class com/slack/eithernet/ExtensionsKt {
 	public static final fun exceptionOrNull (Lcom/slack/eithernet/ApiResult$Failure;)Ljava/lang/Throwable;
-	public static final fun fold (Lcom/slack/eithernet/ApiResult;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
-	public static final fun fold (Lcom/slack/eithernet/ApiResult;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
+	public static final synthetic fun fold (Lcom/slack/eithernet/ApiResult;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
+	public static final synthetic fun fold (Lcom/slack/eithernet/ApiResult;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
+	public static final fun foldWithValue (Lcom/slack/eithernet/ApiResult;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
+	public static final fun foldWithValue (Lcom/slack/eithernet/ApiResult;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
+	public static final fun onApiFailure (Lcom/slack/eithernet/ApiResult;Lkotlin/jvm/functions/Function1;)Lcom/slack/eithernet/ApiResult;
+	public static final fun onFailure (Lcom/slack/eithernet/ApiResult;Lkotlin/jvm/functions/Function1;)Lcom/slack/eithernet/ApiResult;
+	public static final fun onHttpFailure (Lcom/slack/eithernet/ApiResult;Lkotlin/jvm/functions/Function1;)Lcom/slack/eithernet/ApiResult;
+	public static final fun onNetworkFailure (Lcom/slack/eithernet/ApiResult;Lkotlin/jvm/functions/Function1;)Lcom/slack/eithernet/ApiResult;
+	public static final fun onSuccess (Lcom/slack/eithernet/ApiResult;Lkotlin/jvm/functions/Function1;)Lcom/slack/eithernet/ApiResult;
+	public static final fun onUnknownFailure (Lcom/slack/eithernet/ApiResult;Lkotlin/jvm/functions/Function1;)Lcom/slack/eithernet/ApiResult;
 	public static final fun successOrElse (Lcom/slack/eithernet/ApiResult;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
 	public static final fun successOrNothing (Lcom/slack/eithernet/ApiResult;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
 	public static final fun successOrNull (Lcom/slack/eithernet/ApiResult;)Ljava/lang/Object;
