@@ -194,19 +194,14 @@ public inline fun <T : Any, E : Any> ApiResult<T, E>.onSuccess(
 
 // Deprecated functions
 
-@Deprecated("Use fold instead", level = DeprecationLevel.HIDDEN)
+@Deprecated("Use fold instead, left for ABI compatibility", level = DeprecationLevel.HIDDEN)
 @JvmName("fold")
-@Suppress("NOTHING_TO_INLINE") // Inline to allow contextual actions
-public inline fun <T : Any, E : Any, C> ApiResult<T, E>.foldOld(
-  noinline onSuccess: (ApiResult.Success<T>) -> C,
-  noinline onFailure: (ApiResult.Failure<E>) -> C,
+public fun <T : Any, E : Any, C> ApiResult<T, E>.foldOld(
+  onSuccess: (ApiResult.Success<T>) -> C,
+  onFailure: (ApiResult.Failure<E>) -> C,
 ): C {
-  contract {
-    callsInPlace(onSuccess, InvocationKind.AT_MOST_ONCE)
-    callsInPlace(onFailure, InvocationKind.AT_MOST_ONCE)
-  }
   @Suppress("UNCHECKED_CAST")
-  return foldOld(
+  return foldOldInternal(
     onSuccess,
     onFailure as (ApiResult.Failure.NetworkFailure) -> C,
     onFailure as (ApiResult.Failure.UnknownFailure) -> C,
@@ -215,22 +210,32 @@ public inline fun <T : Any, E : Any, C> ApiResult<T, E>.foldOld(
   )
 }
 
-@Deprecated("Use fold instead", level = DeprecationLevel.HIDDEN)
+@Deprecated("Use fold instead, left for ABI compatibility", level = DeprecationLevel.HIDDEN)
 @JvmName("fold")
-public inline fun <T : Any, E : Any, C> ApiResult<T, E>.foldOld(
+public fun <T : Any, E : Any, C> ApiResult<T, E>.foldOld(
   onSuccess: (ApiResult.Success<T>) -> C,
   onNetworkFailure: (ApiResult.Failure.NetworkFailure) -> C,
   onUnknownFailure: (ApiResult.Failure.UnknownFailure) -> C,
   onHttpFailure: (ApiResult.Failure.HttpFailure<E>) -> C,
   onApiFailure: (ApiResult.Failure.ApiFailure<E>) -> C,
 ): C {
-  contract {
-    callsInPlace(onSuccess, InvocationKind.AT_MOST_ONCE)
-    callsInPlace(onNetworkFailure, InvocationKind.AT_MOST_ONCE)
-    callsInPlace(onUnknownFailure, InvocationKind.AT_MOST_ONCE)
-    callsInPlace(onHttpFailure, InvocationKind.AT_MOST_ONCE)
-    callsInPlace(onApiFailure, InvocationKind.AT_MOST_ONCE)
-  }
+  return foldOldInternal(
+    onSuccess,
+    onNetworkFailure,
+    onUnknownFailure,
+    onHttpFailure,
+    onApiFailure,
+  )
+}
+
+// Separate so we can call it from the two old deprecated versions above
+private fun <T : Any, E : Any, C> ApiResult<T, E>.foldOldInternal(
+  onSuccess: (ApiResult.Success<T>) -> C,
+  onNetworkFailure: (ApiResult.Failure.NetworkFailure) -> C,
+  onUnknownFailure: (ApiResult.Failure.UnknownFailure) -> C,
+  onHttpFailure: (ApiResult.Failure.HttpFailure<E>) -> C,
+  onApiFailure: (ApiResult.Failure.ApiFailure<E>) -> C,
+): C {
   return when (this) {
     is ApiResult.Success -> onSuccess(this)
     is ApiResult.Failure.ApiFailure -> onApiFailure(this)
