@@ -76,8 +76,12 @@ tasks.withType<KspTaskJvm>().configureEach { compilerOptions(kotlinCompilerOptio
 tasks.withType<Detekt>().configureEach { jvmTarget = tomlJvmTarget }
 
 tasks.named<DokkaTask>("dokkaHtml") {
-  outputDirectory.set(rootDir.resolve("docs/0.x"))
+  outputDirectory.set(layout.projectDirectory.dir("docs/1.x"))
   dokkaSourceSets.configureEach {
+    if (name == "testFixtures") {
+      suppress.set(false)
+    }
+
     skipDeprecated.set(true)
     externalDocumentationLink {
       url.set(URI("https://square.github.io/retrofit/2.x/retrofit/").toURL())
