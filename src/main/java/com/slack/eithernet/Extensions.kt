@@ -220,13 +220,7 @@ public fun <T : Any, E : Any, C> ApiResult<T, E>.foldOld(
   onHttpFailure: (ApiResult.Failure.HttpFailure<E>) -> C,
   onApiFailure: (ApiResult.Failure.ApiFailure<E>) -> C,
 ): C {
-  return foldOldInternal(
-    onSuccess,
-    onNetworkFailure,
-    onUnknownFailure,
-    onHttpFailure,
-    onApiFailure,
-  )
+  return foldOldInternal(onSuccess, onNetworkFailure, onUnknownFailure, onHttpFailure, onApiFailure)
 }
 
 // Separate so we can call it from the two old deprecated versions above

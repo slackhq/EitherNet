@@ -50,14 +50,14 @@ interface EitherNetController<T : Any> {
   @InternalEitherNetApi
   fun <S : Any, E : Any> unsafeEnqueue(
     key: EndpointKey,
-    resultBody: suspend (args: Array<Any>) -> ApiResult<S, E>
+    resultBody: suspend (args: Array<Any>) -> ApiResult<S, E>,
   )
 }
 
 /** Enqueues a suspended [resultBody]. */
 inline fun <reified T : Any, reified S : Any, reified E : Any> EitherNetController<T>.enqueue(
   ref: KFunction<ApiResult<S, E>>,
-  noinline resultBody: suspend (args: Array<Any>) -> ApiResult<S, E>
+  noinline resultBody: suspend (args: Array<Any>) -> ApiResult<S, E>,
 ) {
   ref.validateTypes()
   val apiClass = T::class.java
@@ -71,5 +71,5 @@ inline fun <reified T : Any, reified S : Any, reified E : Any> EitherNetControll
 /** Enqueues a scalar [result] instance. */
 inline fun <reified T : Any, reified S : Any, reified E : Any> EitherNetController<T>.enqueue(
   ref: KFunction<ApiResult<S, E>>,
-  result: ApiResult<S, E>
+  result: ApiResult<S, E>,
 ) = enqueue(ref) { result }

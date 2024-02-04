@@ -129,10 +129,10 @@ internal fun <T> newProxy(service: Class<T>, orchestrator: EitherNetTestOrchestr
           CoroutineTransformer.transform(
             argsArray,
             body,
-            continuation as Continuation<ApiResult<*, *>>
+            continuation as Continuation<ApiResult<*, *>>,
           )
         }
       }
-    }
+    },
   ) as T
 }

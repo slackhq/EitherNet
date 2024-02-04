@@ -30,5 +30,5 @@ public annotation class ResultType(
   val typeArgs: Array<ResultType> = [],
   val ownerType: KClass<*> = Nothing::class,
   // If it's an array, the rawType is used as the component type
-  val isArray: Boolean
+  val isArray: Boolean,
 )
