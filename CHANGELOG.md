@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.8.1
+-----
+
+_2024-02-11_
+
+- **Fix**: (hopefully) fix kdocs publishing for test fixtures.
+- Update to Kotlin `1.9.22`.
+
 1.8.0
 -----
 
