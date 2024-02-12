@@ -166,10 +166,7 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
 
     /** Returns a new [HttpFailure] with given [code] and optional [error]. */
     @JvmOverloads
-    public fun <E : Any> httpFailure(
-      code: Int,
-      error: E? = null,
-    ): HttpFailure<E> {
+    public fun <E : Any> httpFailure(code: Int, error: E? = null): HttpFailure<E> {
       checkHttpFailureCode(code)
       return HttpFailure(code, error, emptyMap())
     }
@@ -223,9 +220,8 @@ public object ApiResultConverterFactory : Converter.Factory() {
     return ApiResultConverter(delegateConverter)
   }
 
-  private class ApiResultConverter(
-    private val delegate: Converter<ResponseBody, Any>,
-  ) : Converter<ResponseBody, ApiResult<*, *>> {
+  private class ApiResultConverter(private val delegate: Converter<ResponseBody, Any>) :
+    Converter<ResponseBody, ApiResult<*, *>> {
     override fun convert(value: ResponseBody): ApiResult<*, *>? {
       return delegate.convert(value)?.let(ApiResult.Companion::success)
     }
@@ -281,23 +277,23 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                       call,
                       Response.success(
                         ApiFailure(error = t.error, tags = mapOf(Request::class to call.request()))
-                      )
+                      ),
                     )
                   }
                   is IOException -> {
                     callback.onResponse(
                       call,
                       Response.success(
-                        NetworkFailure(error = t, tags = mapOf(Request::class to call.request())),
-                      )
+                        NetworkFailure(error = t, tags = mapOf(Request::class to call.request()))
+                      ),
                     )
                   }
                   else -> {
                     callback.onResponse(
                       call,
                       Response.success(
-                        UnknownFailure(error = t, tags = mapOf(Request::class to call.request())),
-                      )
+                        UnknownFailure(error = t, tags = mapOf(Request::class to call.request()))
+                      ),
                     )
                   }
                 }
@@ -352,9 +348,9 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                             Response.success(
                               UnknownFailure(
                                 error = e,
-                                tags = mapOf(okhttp3.Response::class to response.raw())
+                                tags = mapOf(okhttp3.Response::class to response.raw()),
                               )
-                            )
+                            ),
                           )
                           return
                         }
@@ -367,9 +363,9 @@ public object ApiResultCallAdapterFactory : CallAdapter.Factory() {
                       HttpFailure(
                         code = response.code(),
                         error = errorBody,
-                        tags = mapOf(okhttp3.Response::class to response.raw())
+                        tags = mapOf(okhttp3.Response::class to response.raw()),
                       )
-                    )
+                    ),
                   )
                 }
               }

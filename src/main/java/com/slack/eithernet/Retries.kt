@@ -32,7 +32,7 @@ public suspend fun <T : Any, E : Any> retryWithExponentialBackoff(
   maxDelay: Duration = 10.seconds,
   jitterFactor: Double = 0.25,
   onFailure: ((failure: ApiResult.Failure<E>) -> Unit)? = null,
-  block: suspend () -> ApiResult<T, E>
+  block: suspend () -> ApiResult<T, E>,
 ): ApiResult<T, E> {
   return retryWithExponentialBackoff(
     maxAttempts = maxAttempts,
@@ -42,7 +42,7 @@ public suspend fun <T : Any, E : Any> retryWithExponentialBackoff(
     jitterFactor = jitterFactor,
     onFailure = onFailure,
     shouldRetry = { true },
-    block = block
+    block = block,
   )
 }
 
@@ -80,7 +80,7 @@ public tailrec suspend fun <T : Any, E : Any> retryWithExponentialBackoff(
   jitterFactor: Double = 0.25,
   onFailure: ((failure: ApiResult.Failure<E>) -> Unit)? = null,
   shouldRetry: suspend ((failure: ApiResult.Failure<E>) -> Boolean) = { true },
-  block: suspend () -> ApiResult<T, E>
+  block: suspend () -> ApiResult<T, E>,
 ): ApiResult<T, E> {
   require(maxAttempts > 0) { "maxAttempts must be greater than 0" }
 
@@ -103,7 +103,7 @@ public tailrec suspend fun <T : Any, E : Any> retryWithExponentialBackoff(
           jitterFactor = jitterFactor,
           onFailure = onFailure,
           shouldRetry = shouldRetry,
-          block = block
+          block = block,
         )
       }
     }

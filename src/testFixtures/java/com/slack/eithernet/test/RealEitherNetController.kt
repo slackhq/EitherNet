@@ -27,7 +27,7 @@ internal class RealEitherNetController<T : Any>(
   @InternalEitherNetApi
   override fun <S : Any, E : Any> unsafeEnqueue(
     key: EndpointKey,
-    resultBody: suspend (args: Array<Any>) -> ApiResult<S, E>
+    resultBody: suspend (args: Array<Any>) -> ApiResult<S, E>,
   ) {
     orchestrator.endpoints.getValue(key).add(resultBody)
   }

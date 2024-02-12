@@ -114,12 +114,12 @@ public fun ResultType.toType(): Type {
         Types.newParameterizedTypeWithOwner(
           ownerType.javaObjectType,
           rawType.javaObjectType,
-          *typeArgs.map(ResultType::toType).toTypedArray()
+          *typeArgs.map(ResultType::toType).toTypedArray(),
         )
       } else {
         Types.newParameterizedType(
           rawType.javaObjectType,
-          *typeArgs.map(ResultType::toType).toTypedArray()
+          *typeArgs.map(ResultType::toType).toTypedArray(),
         )
       }
     }
@@ -160,7 +160,7 @@ internal fun createResultType(type: Type): ResultType {
     canonicalize(ownerType) as Class<*>,
     canonicalize(rawType) as Class<*>,
     typeArgs,
-    isArray
+    isArray,
   )
 }
 
@@ -168,11 +168,11 @@ private fun createResultType(
   ownerType: Class<*>,
   rawType: Class<*>,
   typeArgs: Array<ResultType>,
-  isArray: Boolean
+  isArray: Boolean,
 ): ResultType =
   ResultType(
     rawType = rawType.kotlin,
     typeArgs = typeArgs,
     ownerType = ownerType.kotlin,
-    isArray = isArray
+    isArray = isArray,
   )

@@ -60,10 +60,7 @@ kotlin {
 
 tasks.compileTestKotlin {
   compilerOptions {
-    optIn.addAll(
-      "kotlin.ExperimentalStdlibApi",
-      "kotlinx.coroutines.ExperimentalCoroutinesApi",
-    )
+    optIn.addAll("kotlin.ExperimentalStdlibApi", "kotlinx.coroutines.ExperimentalCoroutinesApi")
     // Enable new jvmdefault behavior
     // https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/
     freeCompilerArgs.add("-Xjvm-default=all")
@@ -107,7 +104,7 @@ spotless {
     endWithNewline()
     licenseHeaderFile(
       "spotless/spotless.kt",
-      "(import|plugins|buildscript|dependencies|pluginManagement|rootProject)"
+      "(import|plugins|buildscript|dependencies|pluginManagement|rootProject)",
     )
   }
 }

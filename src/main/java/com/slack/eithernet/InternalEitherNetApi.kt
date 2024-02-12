@@ -33,6 +33,6 @@ import kotlin.annotation.AnnotationTarget.TYPEALIAS
   level = ERROR,
   message =
     "This is an internal EitherNet API that " +
-      "should not be used from outside of EitherNet. No compatibility guarantees are provided."
+      "should not be used from outside of EitherNet. No compatibility guarantees are provided.",
 )
 public annotation class InternalEitherNetApi
