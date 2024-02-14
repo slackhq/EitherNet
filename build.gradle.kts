@@ -60,10 +60,7 @@ kotlin {
 
 tasks.compileTestKotlin {
   compilerOptions {
-    optIn.addAll(
-      "kotlin.ExperimentalStdlibApi",
-      "kotlinx.coroutines.ExperimentalCoroutinesApi",
-    )
+    optIn.addAll("kotlin.ExperimentalStdlibApi", "kotlinx.coroutines.ExperimentalCoroutinesApi")
     // Enable new jvmdefault behavior
     // https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/
     freeCompilerArgs.add("-Xjvm-default=all")
@@ -76,8 +73,12 @@ tasks.withType<KspTaskJvm>().configureEach { compilerOptions(kotlinCompilerOptio
 tasks.withType<Detekt>().configureEach { jvmTarget = tomlJvmTarget }
 
 tasks.named<DokkaTask>("dokkaHtml") {
-  outputDirectory.set(rootDir.resolve("docs/0.x"))
+  outputDirectory.set(layout.projectDirectory.dir("docs/1.x"))
   dokkaSourceSets.configureEach {
+    if (name == "testFixtures") {
+      suppress.set(false)
+    }
+
     skipDeprecated.set(true)
     externalDocumentationLink {
       url.set(URI("https://square.github.io/retrofit/2.x/retrofit/").toURL())
@@ -107,7 +108,7 @@ spotless {
     endWithNewline()
     licenseHeaderFile(
       "spotless/spotless.kt",
-      "(import|plugins|buildscript|dependencies|pluginManagement|rootProject)"
+      "(import|plugins|buildscript|dependencies|pluginManagement|rootProject)",
     )
   }
 }

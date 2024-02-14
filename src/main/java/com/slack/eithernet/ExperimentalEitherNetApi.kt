@@ -27,6 +27,6 @@ import kotlin.annotation.AnnotationTarget.TYPEALIAS
 @Target(CLASS, FUNCTION, TYPEALIAS, PROPERTY)
 @RequiresOptIn(
   level = ERROR,
-  message = "Indicates that a given API is currently experimental and subject to change."
+  message = "Indicates that a given API is currently experimental and subject to change.",
 )
 public annotation class ExperimentalEitherNetApi

@@ -62,7 +62,7 @@ class RetriesTest {
     val result =
       retryWithExponentialBackoff<String, Unit>(
         maxAttempts = 3,
-        onFailure = { failure -> recordedAttempts.add(failure) }
+        onFailure = { failure -> recordedAttempts.add(failure) },
       ) {
         attempts++
         ApiResult.unknownFailure(expectedException)
@@ -130,7 +130,7 @@ class RetriesTest {
     var attempts = 0
     retryWithExponentialBackoff(
       maxAttempts = 5,
-      shouldRetry = { it !is ApiResult.Failure.UnknownFailure }
+      shouldRetry = { it !is ApiResult.Failure.UnknownFailure },
     ) {
       attempts++
       if (attempts > 2) {

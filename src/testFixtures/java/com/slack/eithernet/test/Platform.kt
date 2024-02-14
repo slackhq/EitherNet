@@ -59,7 +59,7 @@ internal open class Platform(private val hasJava8Types: Boolean) {
     method: Method,
     declaringClass: Class<*>,
     obj: Any,
-    vararg args: Any
+    vararg args: Any,
   ): Any? {
     val lookup =
       if (lookupConstructor != null) {
@@ -75,7 +75,7 @@ internal open class Platform(private val hasJava8Types: Boolean) {
       method: Method,
       declaringClass: Class<*>,
       obj: Any,
-      vararg args: Any
+      vararg args: Any,
     ): Any? {
       if (VERSION.SDK_INT < 26) {
         throw UnsupportedOperationException(
