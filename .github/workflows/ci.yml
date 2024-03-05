@@ -45,5 +45,5 @@ jobs:
         run: ./gradlew check -Pksp.useKSP2=${{ matrix.useKSP2 }}
 
       - name: Publish (default branch only)
-        if: github.repository == 'slackhq/EitherNet' && github.ref == 'refs/heads/main'
+        if: github.repository == 'slackhq/EitherNet' && github.ref == 'refs/heads/main' && matrix.useKSP2 == 'false'
         run: ./gradlew publish -PmavenCentralUsername=${{ secrets.SONATYPEUSERNAME }} -PmavenCentralPassword=${{ secrets.SONATYPEPASSWORD }}
