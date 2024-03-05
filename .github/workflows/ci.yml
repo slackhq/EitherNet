@@ -18,7 +18,12 @@ concurrency:
 
 jobs:
   build:
+    name: "Build / KSP2 = ${{ matrix.useKSP2 }}"
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        useKSP2: [true, false]
 
     steps:
       - name: Checkout
@@ -37,7 +42,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
 
       - name: Test
-        run: ./gradlew check
+        run: ./gradlew check -Pksp.useKSP2=${{ matrix.useKSP2 }}
 
       - name: Publish (default branch only)
         if: github.repository == 'slackhq/EitherNet' && github.ref == 'refs/heads/main'
