@@ -8,3 +8,4 @@ reports
 .cxx
 docs/
 out/
+.kotlin/
