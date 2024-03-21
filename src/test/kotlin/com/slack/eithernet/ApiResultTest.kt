@@ -332,7 +332,7 @@ class ApiResultTest {
   object UnitConverterFactory : Converter.Factory() {
     override fun responseBodyConverter(
       type: Type,
-      annotations: Array<out Annotation>,
+      annotations: Array<Annotation>,
       retrofit: Retrofit,
     ): Converter<ResponseBody, *>? {
       return if (getRawType(type) == Unit::class.java) {
@@ -344,8 +344,8 @@ class ApiResultTest {
 
     override fun requestBodyConverter(
       type: Type,
-      parameterAnnotations: Array<out Annotation>,
-      methodAnnotations: Array<out Annotation>,
+      parameterAnnotations: Array<Annotation>,
+      methodAnnotations: Array<Annotation>,
       retrofit: Retrofit,
     ): Converter<*, RequestBody>? {
       throw NotImplementedError("Test only")
@@ -373,7 +373,7 @@ class ApiResultTest {
     @Suppress("ReturnCount")
     override fun responseBodyConverter(
       type: Type,
-      annotations: Array<out Annotation>,
+      annotations: Array<Annotation>,
       retrofit: Retrofit,
     ): Converter<ResponseBody, *>? {
       if (annotations.any { it is BadEndpoint }) {
@@ -387,8 +387,8 @@ class ApiResultTest {
 
     override fun requestBodyConverter(
       type: Type,
-      parameterAnnotations: Array<out Annotation>,
-      methodAnnotations: Array<out Annotation>,
+      parameterAnnotations: Array<Annotation>,
+      methodAnnotations: Array<Annotation>,
       retrofit: Retrofit,
     ): Converter<*, RequestBody>? {
       throw NotImplementedError("Test only")
