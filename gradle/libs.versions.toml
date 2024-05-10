@@ -1,6 +1,6 @@
 [versions]
-coroutines = "1.7.2"
-kotlin = "2.0.0-RC2"
+coroutines = "1.8.1"
+kotlin = "2.0.0-RC3"
 jdk = "21"
 jvmTarget = "11"
 ksp = "2.0.0-RC2-1.0.20"
