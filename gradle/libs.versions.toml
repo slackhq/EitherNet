@@ -1,27 +1,27 @@
 [versions]
-coroutines = "1.7.2"
-kotlin = "1.9.22"
+coroutines = "1.8.1"
+kotlin = "2.0.0"
 jdk = "21"
 jvmTarget = "11"
-ksp = "1.9.22-1.0.17"
+ksp = "2.0.0-1.0.21"
 ktfmt = "0.47"
 moshi = "1.15.1"
 okhttp = "4.9.0"
 retrofit = "2.9.0"
 
 [plugins]
-binaryCompatibilityValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.14.0" }
+binaryCompatibilityValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.15.0-Beta.2" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version = "1.23.5" }
-dokka = { id = "org.jetbrains.dokka", version = "1.9.10" }
+dokka = { id = "org.jetbrains.dokka", version = "1.9.20" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.27.0" }
+mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.28.0" }
 spotless = { id = "com.diffplug.spotless", version = "6.25.0" }
 
 [libraries]
 androidProcessingApi =  "com.google.android:android:4.1.1.4"
-autoService-annotations =  "com.google.auto.service:auto-service-annotations:1.0"
-autoService-ksp =  "dev.zacsweers.autoservice:auto-service-ksp:1.0.0"
+autoService-annotations =  "com.google.auto.service:auto-service-annotations:1.1.1"
+autoService-ksp =  "dev.zacsweers.autoservice:auto-service-ksp:1.1.0"
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 junit =  "junit:junit:4.13.2"
@@ -34,4 +34,4 @@ okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttp-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit-converterScalars = { module = "com.squareup.retrofit2:converter-scalars", version.ref = "retrofit" }
-truth =  "com.google.truth:truth:1.4.0"
+truth =  "com.google.truth:truth:1.4.2"

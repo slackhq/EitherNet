@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import com.google.devtools.ksp.gradle.KspTaskJvm
 import io.gitlab.arturbosch.detekt.Detekt
 import java.net.URI
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 
 plugins {
   alias(libs.plugins.kotlin.jvm)
@@ -37,38 +35,28 @@ val tomlJvmTarget = libs.versions.jvmTarget.get()
 
 pluginManager.withPlugin("java") {
   configure<JavaPluginExtension> {
-    toolchain { languageVersion.set(JavaLanguageVersion.of(libs.versions.jdk.get().toInt())) }
+    toolchain { languageVersion.set(libs.versions.jdk.map(JavaLanguageVersion::of)) }
   }
 
   project.tasks.withType<JavaCompile>().configureEach { options.release.set(tomlJvmTarget.toInt()) }
 }
 
-apiValidation {
-  // https://github.com/Kotlin/binary-compatibility-validator/issues/139
-  validationDisabled = findProperty("kotlin.experimental.tryK2") == "true"
-}
-
-val kotlinCompilerOptions: KotlinJvmCompilerOptions.() -> Unit = {
-  progressiveMode.set(true)
-  jvmTarget.set(libs.versions.jvmTarget.map(JvmTarget::fromTarget))
-}
-
 kotlin {
   explicitApi()
-  compilerOptions(kotlinCompilerOptions)
+  compilerOptions {
+    progressiveMode.set(true)
+    jvmTarget.set(libs.versions.jvmTarget.map(JvmTarget::fromTarget))
+  }
 }
 
 tasks.compileTestKotlin {
   compilerOptions {
     optIn.addAll("kotlin.ExperimentalStdlibApi", "kotlinx.coroutines.ExperimentalCoroutinesApi")
-    // Enable new jvmdefault behavior
+    // Enable new JvmDefault behavior
     // https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/
     freeCompilerArgs.add("-Xjvm-default=all")
   }
 }
-
-// https://github.com/google/ksp/issues/1387
-tasks.withType<KspTaskJvm>().configureEach { compilerOptions(kotlinCompilerOptions) }
 
 tasks.withType<Detekt>().configureEach { jvmTarget = tomlJvmTarget }
 
