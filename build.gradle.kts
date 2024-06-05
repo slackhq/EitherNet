@@ -13,52 +13,87 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import io.gitlab.arturbosch.detekt.Detekt
 import java.net.URI
 import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 
 plugins {
-  alias(libs.plugins.kotlin.jvm)
-  `java-test-fixtures`
+  alias(libs.plugins.kotlin.jvm) apply false
   alias(libs.plugins.dokka)
-  alias(libs.plugins.ksp)
+  alias(libs.plugins.ksp) apply false
   alias(libs.plugins.spotless)
-  alias(libs.plugins.mavenPublish)
-  alias(libs.plugins.detekt)
-  alias(libs.plugins.binaryCompatibilityValidator)
+  alias(libs.plugins.mavenPublish) apply false
+  alias(libs.plugins.detekt) apply false
+  alias(libs.plugins.binaryCompatibilityValidator) apply false
 }
 
-repositories { mavenCentral() }
+tasks.dokkaHtmlMultiModule {
+  outputDirectory.set(rootDir.resolve("docs/api/2.x"))
+  includes.from(project.layout.projectDirectory.file("README.md"))
+}
 
 val tomlJvmTarget = libs.versions.jvmTarget.get()
 
-pluginManager.withPlugin("java") {
-  configure<JavaPluginExtension> {
-    toolchain { languageVersion.set(libs.versions.jdk.map(JavaLanguageVersion::of)) }
+subprojects {
+  pluginManager.withPlugin("java") {
+    configure<JavaPluginExtension> {
+      toolchain { languageVersion.set(libs.versions.jdk.map(JavaLanguageVersion::of)) }
+    }
+
+    project.tasks.withType<JavaCompile>().configureEach {
+      options.release.set(tomlJvmTarget.toInt())
+    }
   }
 
-  project.tasks.withType<JavaCompile>().configureEach { options.release.set(tomlJvmTarget.toInt()) }
-}
+  pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
+    configure<KotlinJvmProjectExtension> {
+      explicitApi()
+      compilerOptions {
+        progressiveMode.set(true)
+        jvmTarget.set(libs.versions.jvmTarget.map(JvmTarget::fromTarget))
+      }
+    }
+  }
 
-kotlin {
-  explicitApi()
-  compilerOptions {
-    progressiveMode.set(true)
-    jvmTarget.set(libs.versions.jvmTarget.map(JvmTarget::fromTarget))
+  apply(plugin = "io.gitlab.arturbosch.detekt")
+  tasks.withType<Detekt>().configureEach { jvmTarget = tomlJvmTarget }
+
+  pluginManager.withPlugin("com.vanniktech.maven.publish") {
+    apply(plugin = "org.jetbrains.dokka")
+    tasks.withType<DokkaTaskPartial>().configureEach {
+      outputDirectory.set(layout.buildDirectory.dir("docs/partial"))
+      dokkaSourceSets.configureEach {
+        val readMeProvider = project.layout.projectDirectory.file("README.md")
+        if (readMeProvider.asFile.exists()) {
+          includes.from(readMeProvider)
+        }
+        skipDeprecated.set(true)
+        sourceLink {
+          localDirectory.set(layout.projectDirectory.dir("src").asFile)
+          val relPath = rootProject.projectDir.toPath().relativize(projectDir.toPath())
+          remoteUrl.set(
+            providers.gradleProperty("POM_SCM_URL").map { scmUrl ->
+              URI("$scmUrl/tree/main/$relPath/src").toURL()
+            }
+          )
+          remoteLineSuffix.set("#L")
+        }
+      }
+    }
+
+    configure<MavenPublishBaseExtension> {
+      publishToMavenCentral(automaticRelease = true)
+      signAllPublications()
+    }
+    // Ref: https://github.com/slackhq/EitherNet/issues/58
+    project.group = project.property("GROUP").toString()
+    project.version = project.property("VERSION_NAME").toString()
   }
 }
-
-tasks.compileTestKotlin {
-  compilerOptions {
-    optIn.addAll("kotlin.ExperimentalStdlibApi", "kotlinx.coroutines.ExperimentalCoroutinesApi")
-    // Enable new JvmDefault behavior
-    // https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/
-    freeCompilerArgs.add("-Xjvm-default=all")
-  }
-}
-
-tasks.withType<Detekt>().configureEach { jvmTarget = tomlJvmTarget }
 
 tasks.named<DokkaTask>("dokkaHtml") {
   outputDirectory.set(layout.projectDirectory.dir("docs/1.x"))
@@ -76,62 +111,31 @@ tasks.named<DokkaTask>("dokkaHtml") {
 
 val ktfmtVersion = libs.versions.ktfmt.get()
 
-spotless {
-  format("misc") {
-    target("*.md", ".gitignore")
-    trimTrailingWhitespace()
-    endWithNewline()
+allprojects {
+  apply(plugin = "com.diffplug.spotless")
+
+  spotless {
+    format("misc") {
+      target("*.md", ".gitignore")
+      trimTrailingWhitespace()
+      endWithNewline()
+    }
+    kotlin {
+      target("**/*.kt")
+      ktfmt(ktfmtVersion).googleStyle()
+      trimTrailingWhitespace()
+      endWithNewline()
+      licenseHeaderFile(rootProject.layout.projectDirectory.file("spotless/spotless.kt"))
+      targetExclude("**/spotless.kt")
+    }
+    kotlinGradle {
+      ktfmt(ktfmtVersion).googleStyle()
+      trimTrailingWhitespace()
+      endWithNewline()
+      licenseHeaderFile(
+        rootProject.layout.projectDirectory.file("spotless/spotless.kt"),
+        "(import|plugins|buildscript|dependencies|pluginManagement|rootProject)",
+      )
+    }
   }
-  kotlin {
-    target("**/*.kt")
-    ktfmt(ktfmtVersion).googleStyle()
-    trimTrailingWhitespace()
-    endWithNewline()
-    licenseHeaderFile("spotless/spotless.kt")
-    targetExclude("**/spotless.kt")
-  }
-  kotlinGradle {
-    ktfmt(ktfmtVersion).googleStyle()
-    trimTrailingWhitespace()
-    endWithNewline()
-    licenseHeaderFile(
-      "spotless/spotless.kt",
-      "(import|plugins|buildscript|dependencies|pluginManagement|rootProject)",
-    )
-  }
-}
-
-mavenPublishing {
-  publishToMavenCentral(automaticRelease = true)
-  signAllPublications()
-}
-
-// Ref: https://github.com/slackhq/EitherNet/issues/58
-project.group = project.property("GROUP").toString()
-
-project.version = project.property("VERSION_NAME").toString()
-
-dependencies {
-  implementation(libs.retrofit)
-  implementation(libs.coroutines.core)
-
-  testImplementation(libs.coroutines.core)
-  testImplementation(libs.coroutines.test)
-  testImplementation(libs.retrofit.converterScalars)
-  testImplementation(libs.okhttp)
-  testImplementation(libs.okhttp.mockwebserver)
-  testImplementation(libs.moshi)
-  testImplementation(libs.moshi.kotlin)
-  testImplementation(libs.junit)
-  testImplementation(libs.truth)
-  testImplementation(libs.kotlin.test)
-  testImplementation(libs.autoService.annotations)
-  kspTest(libs.autoService.ksp)
-
-  // Android APIs access, gated at runtime
-  testFixturesCompileOnly(libs.androidProcessingApi)
-  testFixturesImplementation(libs.coroutines.core)
-  // For access to Types
-  testFixturesImplementation(libs.moshi)
-  testFixturesApi(libs.kotlin.reflect)
 }
