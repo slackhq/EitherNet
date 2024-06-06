@@ -43,19 +43,38 @@ private fun KTypeParameter.simpleToString(): String {
 
 private fun KClassifier.simpleToString(): String {
   return when (this) {
-    is KClass<*> -> qualifiedName ?: "<anonymous>"
+    is KClass<*> -> qualifiedNameForComparison ?: "<anonymous>"
     is KTypeParameter -> simpleToString()
     else -> error("Unknown type classifier: $this")
   }
 }
 
-internal class KTypeImpl(
+// Not every platform has KType.annotations, so we have to expect/actual this.
+// We use a "real" EitherNetKType impl below to actually share all the logic and implement
+// via class delegation on platforms.
+internal expect class KTypeImpl(
+  classifier: KClassifier?,
+  arguments: List<KTypeProjection>,
+  isMarkedNullable: Boolean,
+  annotations: List<Annotation>,
+  isPlatformType: Boolean,
+) : KType, EitherNetKType
+
+internal interface EitherNetKType {
+  val classifier: KClassifier?
+  val arguments: List<KTypeProjection>
+  val isMarkedNullable: Boolean
+  val annotations: List<Annotation>
+  val isPlatformType: Boolean
+}
+
+internal class EitherNetKTypeImpl(
   override val classifier: KClassifier?,
   override val arguments: List<KTypeProjection>,
   override val isMarkedNullable: Boolean,
   override val annotations: List<Annotation>,
-  val isPlatformType: Boolean,
-) : KType {
+  override val isPlatformType: Boolean,
+) : EitherNetKType {
 
   override fun toString(): String {
     return buildString {
@@ -81,15 +100,17 @@ internal class KTypeImpl(
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
-    if (javaClass != other?.javaClass) return false
-
-    other as KTypeImpl
+    // On the JVM we'd ideally do this too
+    // if (javaClass != other?.javaClass) return false
+    if (other !is KType) return false
 
     if (classifier != other.classifier) return false
     if (arguments != other.arguments) return false
     if (isMarkedNullable != other.isMarkedNullable) return false
-    if (annotations != other.annotations) return false
-    if (isPlatformType != other.isPlatformType) return false
+    if (other is KTypeImpl) {
+      if (annotations != other.annotations) return false
+      if (isPlatformType != other.isPlatformType) return false
+    }
 
     return true
   }
@@ -112,7 +133,6 @@ internal class KTypeParameterImpl(
 ) : KTypeParameter {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
-    if (javaClass != other?.javaClass) return false
 
     other as KTypeParameterImpl
 
@@ -162,11 +182,11 @@ internal fun KType?.isFunctionallyEqualTo(other: KType?): Boolean {
   // This isn't a supported type.
   when (val classifier = classifier) {
     is KClass<*> -> {
-      if (classifier.qualifiedName == "kotlin.Array") {
+      if (classifier.qualifiedNameForComparison == "kotlin.Array") {
         // We can't programmatically create array types that implement equals fully, as the runtime
         // versions look at the underlying jClass that we can't get here. So we just do a simple
         // check for arrays.
-        return (other.classifier as? KClass<*>?)?.qualifiedName == "kotlin.Array"
+        return (other.classifier as? KClass<*>?)?.qualifiedNameForComparison == "kotlin.Array"
       }
       return classifier == other.classifier
     }

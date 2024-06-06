@@ -15,6 +15,7 @@
  */
 package com.slack.eithernet
 
+import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.KTypeProjection
 
@@ -43,7 +44,7 @@ import kotlin.reflect.KTypeProjection
  * ```
  */
 public fun Array<out Annotation>.statusCode(): Pair<StatusCode, Array<Annotation>>? {
-  return nextAnnotations(StatusCode::class.java)
+  return nextAnnotations(StatusCode::class)
 }
 
 /**
@@ -65,11 +66,11 @@ public fun Array<out Annotation>.statusCode(): Pair<StatusCode, Array<Annotation
  * ```
  */
 public fun Array<out Annotation>.errorType(): Pair<ResultType, Array<Annotation>>? {
-  return nextAnnotations(ResultType::class.java)
+  return nextAnnotations(ResultType::class)
 }
 
 private fun <A : Any> Array<out Annotation>.nextAnnotations(
-  type: Class<A>
+  type: KClass<A>
 ): Pair<A, Array<Annotation>>? {
   var nextIndex = 0
   val theseAnnotations = this
@@ -107,7 +108,7 @@ public fun ResultType.toKType(): KType {
     )
   if (isArray) {
     return KTypeImpl(
-      classifier = Array<String>::class,
+      classifier = Array::class,
       arguments = listOf(KTypeProjection.invariant(initialValue)),
       isMarkedNullable = false,
       annotations = emptyList(),
