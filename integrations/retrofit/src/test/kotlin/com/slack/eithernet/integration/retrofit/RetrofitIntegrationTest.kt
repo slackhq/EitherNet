@@ -13,14 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.slack.eithernet
+package com.slack.eithernet.integration.retrofit
 
 import com.google.common.truth.Truth.assertThat
+import com.slack.eithernet.ApiException
+import com.slack.eithernet.ApiResult
 import com.slack.eithernet.ApiResult.Failure.ApiFailure
 import com.slack.eithernet.ApiResult.Failure.HttpFailure
 import com.slack.eithernet.ApiResult.Failure.NetworkFailure
 import com.slack.eithernet.ApiResult.Failure.UnknownFailure
 import com.slack.eithernet.ApiResult.Success
+import com.slack.eithernet.DecodeErrorBody
+import com.slack.eithernet.StatusCode
+import com.slack.eithernet.createStatusCode
+import com.slack.eithernet.errorType
+import com.slack.eithernet.toType
 import java.io.IOException
 import java.lang.reflect.Type
 import kotlin.annotation.AnnotationRetention.RUNTIME
@@ -40,7 +47,7 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.create
 import retrofit2.http.GET
 
-class ApiResultTest {
+class RetrofitIntegrationTest {
 
   @get:Rule val server = MockWebServer()
 
@@ -309,7 +316,8 @@ class ApiResultTest {
   interface TestApi {
     @GET("/") suspend fun testEndpoint(): ApiResult<String, String>
 
-    @DecodeErrorBody @GET("/") suspend fun testEndpointWithErrorBody(): ApiResult<String, String>
+    @DecodeErrorBody
+    @GET("/") suspend fun testEndpointWithErrorBody(): ApiResult<String, String>
 
     @BadEndpoint
     @DecodeErrorBody
@@ -322,7 +330,8 @@ class ApiResultTest {
 
     @GET("/") suspend fun unknownErrorTypeEndpoint(): ApiResult<String, Unit>
 
-    @BadEndpoint @GET("/") suspend fun badEndpoint(): ApiResult<String, Unit>
+    @BadEndpoint
+    @GET("/") suspend fun badEndpoint(): ApiResult<String, Unit>
   }
 
   /**

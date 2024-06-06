@@ -5,9 +5,8 @@ Changelog
 --------------
 
 - Migrate to Kotlin Multiplatform. Structurally, the core EitherNet APIs now live in `common` code and are _implemented_ by integration modules.
-- TODO move Retrofit/OkHttp integration to separate module
-- Move test fixtures to new `eithernet-test-fixtures` artifact.
-- TODO test fixtures common/jvm impls
+- Move Retrofit/OkHttp integration to separate `eithernet-integration-retrofit` artifact.
+- Move test fixtures to new `eithernet-test-fixtures` artifact. Most of its implementation is still JVM-only for now.
 - Remove deprecated APIs.
 
 1.9.0

@@ -32,7 +32,8 @@ import java.util.LinkedHashSet
  * Returns a type that is functionally equal but not necessarily equal according to
  * [[Object.equals()]][Object.equals].
  */
-internal fun Type.canonicalize(): Type {
+@InternalEitherNetApi
+public fun Type.canonicalize(): Type {
   return when (this) {
     is Class<*> -> {
       if (isArray) GenericArrayTypeImpl(this@canonicalize.componentType.canonicalize()) else this
@@ -54,7 +55,8 @@ internal fun Type.canonicalize(): Type {
 }
 
 /** If type is a "? extends X" wildcard, returns X; otherwise returns type unchanged. */
-internal fun Type.removeSubtypeWildcard(): Type {
+@InternalEitherNetApi
+public fun Type.removeSubtypeWildcard(): Type {
   if (this !is WildcardType) return this
   val lowerBounds = lowerBounds
   if (lowerBounds.isNotEmpty()) return this

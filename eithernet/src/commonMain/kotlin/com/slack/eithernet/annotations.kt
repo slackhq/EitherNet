@@ -117,7 +117,8 @@ public fun ResultType.toKType(): KType {
   return initialValue
 }
 
-internal fun createStatusCode(code: Int): StatusCode {
+@InternalEitherNetApi
+public fun createStatusCode(code: Int): StatusCode {
   ApiResult.checkHttpFailureCode(code)
   return StatusCode(code)
 }
