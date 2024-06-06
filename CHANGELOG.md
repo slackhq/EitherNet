@@ -8,6 +8,7 @@ Changelog
 - TODO move Retrofit/OkHttp integration to separate module
 - Move test fixtures to new `eithernet-test-fixtures` artifact.
 - TODO test fixtures common/jvm impls
+- Remove deprecated APIs.
 
 1.9.0
 -----

@@ -309,7 +309,8 @@ class ApiResultTest {
   interface TestApi {
     @GET("/") suspend fun testEndpoint(): ApiResult<String, String>
 
-    @DecodeErrorBody @GET("/") suspend fun testEndpointWithErrorBody(): ApiResult<String, String>
+    @DecodeErrorBody
+    @GET("/") suspend fun testEndpointWithErrorBody(): ApiResult<String, String>
 
     @BadEndpoint
     @DecodeErrorBody

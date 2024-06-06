@@ -23,8 +23,6 @@ import com.slack.eithernet.ApiResult.Failure.NetworkFailure
 import com.slack.eithernet.ApiResult.Failure.UnknownFailure
 import com.slack.eithernet.ApiResult.Success
 import kotlin.reflect.KClass
-import okhttp3.Request
-import okhttp3.Response
 
 /*
  * Common tags added automatically to different ApiResult types.
@@ -45,9 +43,3 @@ public fun <T : Any> ApiResult<*, *>.tag(klass: KClass<T>): T? {
     }
   return tags[klass] as? T
 }
-
-/** Returns the original [Response] used for this call. */
-public fun ApiResult<*, *>.response(): Response? = tag()
-
-/** Returns the original [Request] used for this call. */
-public fun ApiResult<*, *>.request(): Request? = response()?.request() ?: tag()
