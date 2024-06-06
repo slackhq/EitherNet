@@ -67,11 +67,8 @@ subprojects {
   pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
     configure<KotlinMultiplatformExtension> {
       explicitApi()
-      @OptIn(ExperimentalKotlinGradlePluginApi::class)
-      compilerOptions { progressiveMode.set(true) }
-      jvmToolchain {
-        languageVersion.set(libs.versions.jvmTarget.map(JavaLanguageVersion::of))
-      }
+      @OptIn(ExperimentalKotlinGradlePluginApi::class) compilerOptions { progressiveMode.set(true) }
+      jvmToolchain { languageVersion.set(libs.versions.jvmTarget.map(JavaLanguageVersion::of)) }
     }
     tasks.withType<KotlinCompilationTask<*>>().configureEach {
       compilerOptions {

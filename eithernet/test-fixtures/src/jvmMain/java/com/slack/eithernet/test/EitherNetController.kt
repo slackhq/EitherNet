@@ -55,7 +55,8 @@ public interface EitherNetController<T : Any> {
 }
 
 /** Enqueues a suspended [resultBody]. */
-public inline fun <reified T : Any, reified S : Any, reified E : Any> EitherNetController<T>.enqueue(
+public inline fun <reified T : Any, reified S : Any, reified E : Any> EitherNetController<T>
+  .enqueue(
   ref: KFunction<ApiResult<S, E>>,
   noinline resultBody: suspend (args: Array<Any>) -> ApiResult<S, E>,
 ) {
@@ -69,7 +70,5 @@ public inline fun <reified T : Any, reified S : Any, reified E : Any> EitherNetC
 }
 
 /** Enqueues a scalar [result] instance. */
-public inline fun <reified T : Any, reified S : Any, reified E : Any> EitherNetController<T>.enqueue(
-  ref: KFunction<ApiResult<S, E>>,
-  result: ApiResult<S, E>,
-): Unit = enqueue(ref) { result }
+public inline fun <reified T : Any, reified S : Any, reified E : Any> EitherNetController<T>
+  .enqueue(ref: KFunction<ApiResult<S, E>>, result: ApiResult<S, E>): Unit = enqueue(ref) { result }

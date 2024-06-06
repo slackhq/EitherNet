@@ -16,7 +16,6 @@
 package com.slack.eithernet.test
 
 import com.slack.eithernet.ApiResult
-import com.slack.eithernet.ExperimentalEitherNetApi
 import com.slack.eithernet.InternalEitherNetApi
 
 internal class RealEitherNetController<T : Any>(
