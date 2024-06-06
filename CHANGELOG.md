@@ -8,6 +8,7 @@ Changelog
 - Move Retrofit/OkHttp integration to separate `eithernet-integration-retrofit` artifact.
 - Move test fixtures to new `eithernet-test-fixtures` artifact. Most of its implementation is still JVM-only for now.
 - Remove deprecated APIs.
+- Update Okio to `3.9.0`.
 
 1.9.0
 -----
