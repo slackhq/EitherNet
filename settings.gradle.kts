@@ -17,9 +17,17 @@ rootProject.name = "eithernet"
 // ^^ This is important because Gradle module metadata uses this in the pom artifact id of test
 // fixtures!
 
+dependencyResolutionManagement { repositories { mavenCentral() } }
+
 pluginManagement {
   repositories {
     mavenCentral()
     gradlePluginPortal()
   }
 }
+
+include(":eithernet")
+
+include(":eithernet:test-fixtures")
+
+include(":integrations:retrofit")
