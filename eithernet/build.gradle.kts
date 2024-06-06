@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 
 plugins {
   alias(libs.plugins.kotlin.multiplatform)
@@ -24,7 +25,24 @@ plugins {
 }
 
 kotlin {
+  // region KMP Targets
   jvm()
+  iosX64()
+  iosArm64()
+  iosSimulatorArm64()
+  js(IR) {
+    moduleName = property("POM_ARTIFACT_ID").toString()
+    browser()
+  }
+  @OptIn(ExperimentalWasmDsl::class)
+  wasmJs {
+    moduleName = property("POM_ARTIFACT_ID").toString()
+    browser()
+  }
+  // endregion
+
+  applyDefaultHierarchyTemplate()
+
   @OptIn(ExperimentalKotlinGradlePluginApi::class)
   compilerOptions {
     optIn.addAll(
@@ -32,6 +50,7 @@ kotlin {
       "kotlinx.coroutines.ExperimentalCoroutinesApi",
       "com.slack.eithernet.InternalEitherNetApi",
     )
+    freeCompilerArgs.add("-Xexpect-actual-classes")
   }
   sourceSets {
     commonMain {
