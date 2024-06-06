@@ -15,13 +15,12 @@
  */
 package com.slack.eithernet.test
 
-import java.util.ServiceLoader
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 
 /**
- * A simple callback API for validating APIs in [EitherNetController]. Implementations of this can
- * be supplied via [ServiceLoader].
+ * A simple callback API for validating APIs in `EitherNetController`. Implementations of this can
+ * be supplied via `ServiceLoader` on the JVM.
  */
 public fun interface ApiValidator {
   /**
@@ -31,6 +30,3 @@ public fun interface ApiValidator {
    */
   public fun validate(apiClass: KClass<*>, function: KFunction<*>, errors: MutableList<String>)
 }
-
-internal fun loadValidators(): Set<ApiValidator> =
-  ServiceLoader.load(ApiValidator::class.java).toSet()
