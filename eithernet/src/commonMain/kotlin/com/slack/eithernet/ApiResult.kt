@@ -21,9 +21,8 @@ import com.slack.eithernet.ApiResult.Failure.HttpFailure
 import com.slack.eithernet.ApiResult.Failure.NetworkFailure
 import com.slack.eithernet.ApiResult.Failure.UnknownFailure
 import com.slack.eithernet.ApiResult.Success
-import java.io.IOException
-import java.util.Collections.unmodifiableMap
 import kotlin.reflect.KClass
+import okio.IOException
 
 /**
  * Represents a result from a traditional HTTP API. [ApiResult] has two sealed subtypes: [Success]
@@ -56,7 +55,7 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
   internal constructor(public val value: T, tags: Map<KClass<*>, Any>) : ApiResult<T, Nothing> {
 
     /** Extra metadata associated with the result such as original requests, responses, etc. */
-    internal val tags: Map<KClass<*>, Any> = unmodifiableMap(tags.toMap())
+    internal val tags: Map<KClass<*>, Any> = tags.toUnmodifiableMap()
 
     /** Returns a new copy of this with the given [tags]. */
     public fun withTags(tags: Map<KClass<*>, Any>): Success<T> {
@@ -78,11 +77,11 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
       Failure<Nothing> {
 
       /** Extra metadata associated with the result such as original requests, responses, etc. */
-      internal val tags: Map<KClass<*>, Any> = unmodifiableMap(tags.toMap())
+      internal val tags: Map<KClass<*>, Any> = tags.toUnmodifiableMap()
 
       /** Returns a new copy of this with the given [tags]. */
       public fun withTags(tags: Map<KClass<*>, Any>): NetworkFailure {
-        return NetworkFailure(error, unmodifiableMap(tags.toMap()))
+        return NetworkFailure(error, tags.toUnmodifiableMap())
       }
     }
 
@@ -97,11 +96,11 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
       Failure<Nothing> {
 
       /** Extra metadata associated with the result such as original requests, responses, etc. */
-      internal val tags: Map<KClass<*>, Any> = unmodifiableMap(tags.toMap())
+      internal val tags: Map<KClass<*>, Any> = tags.toUnmodifiableMap()
 
       /** Returns a new copy of this with the given [tags]. */
       public fun withTags(tags: Map<KClass<*>, Any>): UnknownFailure {
-        return UnknownFailure(error, unmodifiableMap(tags.toMap()))
+        return UnknownFailure(error, tags.toUnmodifiableMap())
       }
     }
 
@@ -116,11 +115,11 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
       Failure<E> {
 
       /** Extra metadata associated with the result such as original requests, responses, etc. */
-      internal val tags: Map<KClass<*>, Any> = unmodifiableMap(tags.toMap())
+      internal val tags: Map<KClass<*>, Any> = tags.toUnmodifiableMap()
 
       /** Returns a new copy of this with the given [tags]. */
       public fun withTags(tags: Map<KClass<*>, Any>): HttpFailure<E> {
-        return HttpFailure(code, error, unmodifiableMap(tags.toMap()))
+        return HttpFailure(code, error, tags.toUnmodifiableMap())
       }
     }
 
@@ -137,11 +136,11 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
     internal constructor(public val error: E?, tags: Map<KClass<*>, Any>) : Failure<E> {
 
       /** Extra metadata associated with the result such as original requests, responses, etc. */
-      internal val tags: Map<KClass<*>, Any> = unmodifiableMap(tags.toMap())
+      internal val tags: Map<KClass<*>, Any> = tags.toUnmodifiableMap()
 
       /** Returns a new copy of this with the given [tags]. */
       public fun withTags(tags: Map<KClass<*>, Any>): ApiFailure<E> {
-        return ApiFailure(error, unmodifiableMap(tags.toMap()))
+        return ApiFailure(error, tags.toUnmodifiableMap())
       }
     }
   }

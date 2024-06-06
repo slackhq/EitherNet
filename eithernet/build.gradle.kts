@@ -46,7 +46,10 @@ kotlin {
     optIn.addAll("kotlin.ExperimentalStdlibApi", "kotlinx.coroutines.ExperimentalCoroutinesApi")
   }
   sourceSets {
-    commonMain { dependencies { implementation(libs.coroutines.core) } }
+    commonMain { dependencies {
+      implementation(libs.coroutines.core)
+      implementation(libs.okio)
+    } }
     commonTest {
       dependencies {
         implementation(libs.coroutines.core)
