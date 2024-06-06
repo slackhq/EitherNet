@@ -52,11 +52,11 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
 
   /** A successful result with the data available in [response]. */
   public class Success<T : Any>
-  @InternalEitherNetApi public constructor(public val value: T, tags: Map<KClass<*>, Any>) : ApiResult<T, Nothing> {
+  @InternalEitherNetApi
+  public constructor(public val value: T, tags: Map<KClass<*>, Any>) : ApiResult<T, Nothing> {
 
     /** Extra metadata associated with the result such as original requests, responses, etc. */
-    @InternalEitherNetApi
-    public val tags: Map<KClass<*>, Any> = tags.toUnmodifiableMap()
+    @InternalEitherNetApi public val tags: Map<KClass<*>, Any> = tags.toUnmodifiableMap()
 
     /** Returns a new copy of this with the given [tags]. */
     public fun withTags(tags: Map<KClass<*>, Any>): Success<T> {
@@ -74,7 +74,8 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
      * degrade or retry.
      */
     public class NetworkFailure
-    @InternalEitherNetApi public constructor(public val error: IOException, tags: Map<KClass<*>, Any>) :
+    @InternalEitherNetApi
+    public constructor(public val error: IOException, tags: Map<KClass<*>, Any>) :
       Failure<Nothing> {
 
       /** Extra metadata associated with the result such as original requests, responses, etc. */
@@ -93,8 +94,8 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
      * gracefully degrade or retry.
      */
     public class UnknownFailure
-    @InternalEitherNetApi public constructor(public val error: Throwable, tags: Map<KClass<*>, Any>) :
-      Failure<Nothing> {
+    @InternalEitherNetApi
+    public constructor(public val error: Throwable, tags: Map<KClass<*>, Any>) : Failure<Nothing> {
 
       /** Extra metadata associated with the result such as original requests, responses, etc. */
       internal val tags: Map<KClass<*>, Any> = tags.toUnmodifiableMap()
@@ -112,7 +113,8 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
      * @property error An optional [error][E]. This would be from the error body of the response.
      */
     public class HttpFailure<E : Any>
-    @InternalEitherNetApi public constructor(public val code: Int, public val error: E?, tags: Map<KClass<*>, Any>) :
+    @InternalEitherNetApi
+    public constructor(public val code: Int, public val error: E?, tags: Map<KClass<*>, Any>) :
       Failure<E> {
 
       /** Extra metadata associated with the result such as original requests, responses, etc. */
@@ -134,7 +136,8 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
      * @property error An optional [error][E].
      */
     public class ApiFailure<E : Any>
-    @InternalEitherNetApi public constructor(public val error: E?, tags: Map<KClass<*>, Any>) : Failure<E> {
+    @InternalEitherNetApi
+    public constructor(public val error: E?, tags: Map<KClass<*>, Any>) : Failure<E> {
 
       /** Extra metadata associated with the result such as original requests, responses, etc. */
       internal val tags: Map<KClass<*>, Any> = tags.toUnmodifiableMap()

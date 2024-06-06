@@ -29,4 +29,5 @@ pluginManagement {
 include(":eithernet")
 
 include(":eithernet:test-fixtures")
+
 include(":integrations:retrofit")

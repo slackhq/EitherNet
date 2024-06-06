@@ -316,8 +316,7 @@ class RetrofitIntegrationTest {
   interface TestApi {
     @GET("/") suspend fun testEndpoint(): ApiResult<String, String>
 
-    @DecodeErrorBody
-    @GET("/") suspend fun testEndpointWithErrorBody(): ApiResult<String, String>
+    @DecodeErrorBody @GET("/") suspend fun testEndpointWithErrorBody(): ApiResult<String, String>
 
     @BadEndpoint
     @DecodeErrorBody
@@ -330,8 +329,7 @@ class RetrofitIntegrationTest {
 
     @GET("/") suspend fun unknownErrorTypeEndpoint(): ApiResult<String, Unit>
 
-    @BadEndpoint
-    @GET("/") suspend fun badEndpoint(): ApiResult<String, Unit>
+    @BadEndpoint @GET("/") suspend fun badEndpoint(): ApiResult<String, Unit>
   }
 
   /**
