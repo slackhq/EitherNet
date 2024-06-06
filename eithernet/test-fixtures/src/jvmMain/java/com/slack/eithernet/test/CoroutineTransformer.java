@@ -15,7 +15,7 @@ enum CoroutineTransformer {
       Object[] args, Object body, Continuation<? super ApiResult<?, ?>> continuation) {
     try {
       //noinspection unchecked
-      return UtilKt.awaitResponse(
+      return JvmUtilKt.awaitResponse(
           (Function2<
                   ? super Object[],
                   ? super Continuation<? super ApiResult<?, ?>>,
@@ -24,7 +24,7 @@ enum CoroutineTransformer {
           args,
           continuation);
     } catch (Exception e) {
-      return UtilKt.suspendAndThrow(e, continuation);
+      return JvmUtilKt.suspendAndThrow(e, continuation);
     }
   }
 }

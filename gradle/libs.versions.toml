@@ -36,4 +36,5 @@ okhttp-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.
 okio = "com.squareup.okio:okio:3.9.0"
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit-converterScalars = { module = "com.squareup.retrofit2:converter-scalars", version.ref = "retrofit" }
+statelyCollections = "co.touchlab:stately-concurrent-collections:2.0.7"
 truth =  "com.google.truth:truth:1.4.2"

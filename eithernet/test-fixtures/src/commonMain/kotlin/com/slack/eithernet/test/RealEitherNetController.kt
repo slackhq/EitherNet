@@ -27,6 +27,10 @@ internal class RealEitherNetController<T : Any>(
     key: EndpointKey,
     resultBody: suspend (args: Array<Any>) -> ApiResult<S, E>,
   ) {
+    val result = orchestrator.endpoints[key]
+    checkNotNull(result) {
+      "EndpointKey $key (hashCode ${key.hashCode()} not found in orchestrator.endpoints: ${orchestrator.endpoints.keys} (${orchestrator.endpoints.keys.map { it.hashCode() }})"
+    }
     orchestrator.endpoints.getValue(key).add(resultBody)
   }
 

@@ -25,10 +25,6 @@ import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 import kotlinx.coroutines.Dispatchers
 
-internal typealias SuspendedResult = suspend (args: Array<Any>) -> ApiResult<*, *>
-
-internal suspend fun SuspendedResult.awaitResponse(args: Array<Any>): ApiResult<*, *> = invoke(args)
-
 /**
  * Force the calling coroutine to suspend before throwing [this].
  *
@@ -53,7 +49,6 @@ internal suspend fun Exception.suspendAndThrow(): Nothing {
  * checking from the IDE, which appears to throw type checking out the window due to [ApiResult]'s
  * use of covariant (i.e. `out`) types.
  */
-@OptIn(ExperimentalStdlibApi::class)
 @PublishedApi
 internal inline fun <reified S : Any, reified E : Any> KFunction<ApiResult<S, E>>.validateTypes() {
   // Note that we don't use Moshi's nicer canonicalize APIs because it would lose the Kotlin type
@@ -82,3 +77,5 @@ internal infix fun KType.isEqualTo(other: KType): Boolean {
     arguments == other.arguments &&
     isMarkedNullable == other.isMarkedNullable
 }
+
+internal suspend fun SuspendedResult.awaitResponse(args: Array<Any>): ApiResult<*, *> = invoke(args)

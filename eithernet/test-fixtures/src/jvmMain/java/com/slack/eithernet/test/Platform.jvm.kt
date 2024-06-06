@@ -17,10 +17,69 @@ package com.slack.eithernet.test
 
 import android.annotation.SuppressLint
 import android.os.Build.VERSION
+import com.slack.eithernet.ApiResult
 import java.lang.invoke.MethodHandles
 import java.lang.invoke.MethodHandles.Lookup
 import java.lang.reflect.Constructor
 import java.lang.reflect.Method
+import java.lang.reflect.Modifier
+import java.util.ServiceLoader
+import java.util.concurrent.ConcurrentHashMap
+import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
+import kotlin.reflect.full.functions
+import kotlin.reflect.jvm.javaMethod
+
+private fun loadValidators(): Set<ApiValidator> =
+  ServiceLoader.load(ApiValidator::class.java).toSet()
+
+internal actual fun KClass<*>.validateApi() {
+  val validators = loadValidators()
+  val errors = mutableListOf<String>()
+  for (function in getFunctions()) {
+    if (!function.isApplicable) {
+      continue
+    }
+    if (!function.isSuspend) {
+      errors += "- Function ${function.name} must be a suspend function for EitherNet to work."
+    }
+    if (function.returnType.classifier != ApiResult::class) {
+      errors += "- Function ${function.name} must return ApiResult for EitherNet to work."
+    }
+    for (validator in validators) {
+      validator.validate(this, function, errors)
+    }
+  }
+
+  if (errors.isNotEmpty()) {
+    error("Service errors found for $simpleName\n${errors.joinToString("\n")}")
+  }
+}
+
+internal actual val KFunction<*>.isApplicable: Boolean
+  get() {
+    // Default, static, synthetic, and bridge methods are not applicable
+    return javaMethod?.let { method ->
+      method.declaringClass != Object::class.java &&
+        !method.isDefault &&
+        !Modifier.isStatic(method.modifiers) &&
+        !method.isSynthetic &&
+        !method.isBridge
+    } ?: false
+  }
+
+internal actual fun KClass<*>.getFunctions(): Collection<KFunction<*>> {
+  return functions
+}
+
+internal actual fun <K, V> newConcurrentMap(): MutableMap<K, V> = ConcurrentHashMap()
+
+internal actual fun KFunction<*>.toEndpointKey(): EndpointKey = EndpointKey.create(javaMethod!!)
+
+internal actual fun <T : Any> newServiceInstance(
+  klass: KClass<T>,
+  orchestrator: EitherNetTestOrchestrator,
+) = newProxy(klass.java, orchestrator)
 
 /**
  * Simple indirection for platform-specific implementations for Android and JVM. Adapted from

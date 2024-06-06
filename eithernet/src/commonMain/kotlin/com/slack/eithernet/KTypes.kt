@@ -57,15 +57,25 @@ internal expect class KTypeImpl(
   arguments: List<KTypeProjection>,
   isMarkedNullable: Boolean,
   annotations: List<Annotation>,
-  isPlatformType: Boolean,
 ) : KType, EitherNetKType
+
+public fun KType.canonicalize(): KType {
+  return when (this) {
+    is KTypeImpl -> this
+    else -> KTypeImpl(
+      classifier = classifier,
+      arguments = arguments.map { it.copy(type = it.type?.canonicalize()) },
+      isMarkedNullable = isMarkedNullable,
+      annotations = emptyList(),
+    )
+  }
+}
 
 internal interface EitherNetKType {
   val classifier: KClassifier?
   val arguments: List<KTypeProjection>
   val isMarkedNullable: Boolean
   val annotations: List<Annotation>
-  val isPlatformType: Boolean
 }
 
 internal class EitherNetKTypeImpl(
@@ -73,7 +83,6 @@ internal class EitherNetKTypeImpl(
   override val arguments: List<KTypeProjection>,
   override val isMarkedNullable: Boolean,
   override val annotations: List<Annotation>,
-  override val isPlatformType: Boolean,
 ) : EitherNetKType {
 
   override fun toString(): String {
@@ -89,11 +98,7 @@ internal class EitherNetKTypeImpl(
         append(">")
       }
       if (isMarkedNullable) {
-        if (isPlatformType) {
-          append("!")
-        } else {
-          append("?")
-        }
+        append("?")
       }
     }
   }
@@ -109,7 +114,6 @@ internal class EitherNetKTypeImpl(
     if (isMarkedNullable != other.isMarkedNullable) return false
     if (other is KTypeImpl) {
       if (annotations != other.annotations) return false
-      if (isPlatformType != other.isPlatformType) return false
     }
 
     return true
@@ -120,7 +124,6 @@ internal class EitherNetKTypeImpl(
     result = 31 * result + arguments.hashCode()
     result = 31 * result + isMarkedNullable.hashCode()
     result = 31 * result + annotations.hashCode()
-    result = 31 * result + isPlatformType.hashCode()
     return result
   }
 }
@@ -167,7 +170,8 @@ internal inline fun <T> markNotNull(value: T?) {
 }
 
 /** Returns true if [this] and [other] are equal. */
-internal fun KType?.isFunctionallyEqualTo(other: KType?): Boolean {
+@InternalEitherNetApi
+public fun KType?.isFunctionallyEqualTo(other: KType?): Boolean {
   if (this === other) {
     return true // Also handles (a == null && b == null).
   }

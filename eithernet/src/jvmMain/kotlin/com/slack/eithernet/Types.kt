@@ -42,14 +42,13 @@ public fun Type.toKType(
 ): KType {
   return when (this) {
     is Class<*> ->
-      KTypeImpl(kotlin, emptyList(), isMarkedNullable, annotations, isPlatformType = true)
+      KTypeImpl(kotlin, emptyList(), isMarkedNullable, annotations)
     is ParameterizedType ->
       KTypeImpl(
         classifier = (rawType as Class<*>).kotlin,
         arguments = actualTypeArguments.map { it.toKTypeProjection() },
         isMarkedNullable = isMarkedNullable,
         annotations = annotations,
-        isPlatformType = true,
       )
     is GenericArrayType -> {
       KTypeImpl(
@@ -57,7 +56,6 @@ public fun Type.toKType(
         arguments = listOf(genericComponentType.toKTypeProjection()),
         isMarkedNullable = isMarkedNullable,
         annotations = annotations,
-        isPlatformType = true,
       )
     }
     is WildcardType -> removeSubtypeWildcard().toKType(isMarkedNullable, annotations)
@@ -67,7 +65,6 @@ public fun Type.toKType(
         arguments = emptyList(),
         isMarkedNullable = isMarkedNullable,
         annotations = annotations,
-        isPlatformType = true,
       )
     else -> throw IllegalArgumentException("Unsupported type: $this")
   }

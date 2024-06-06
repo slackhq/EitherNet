@@ -15,7 +15,10 @@
  */
 package com.slack.eithernet.test
 
-import java.util.ServiceLoader
-
-internal fun loadValidators(): Set<ApiValidator> =
-  ServiceLoader.load(ApiValidator::class.java).toSet()
+/**
+ * Simple orchestration holder class to allow [endpoints] access between proxied APIs and
+ * [EitherNetController] instances.
+ */
+internal class EitherNetTestOrchestrator(
+  val endpoints: Map<EndpointKey, ArrayDeque<SuspendedResult>>
+)

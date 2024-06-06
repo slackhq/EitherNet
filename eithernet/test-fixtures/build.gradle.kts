@@ -52,6 +52,7 @@ kotlin {
         api(project(":eithernet"))
         api(libs.kotlin.reflect)
         implementation(libs.coroutines.core)
+        implementation(libs.statelyCollections)
       }
     }
     jvmMain {

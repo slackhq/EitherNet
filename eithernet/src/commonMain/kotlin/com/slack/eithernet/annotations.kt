@@ -104,7 +104,6 @@ public fun ResultType.toKType(): KType {
       arguments = typeArgs.map { KTypeProjection.invariant(it.toKType()) },
       isMarkedNullable = false,
       annotations = emptyList(),
-      isPlatformType = false,
     )
   if (isArray) {
     return KTypeImpl(
@@ -112,7 +111,6 @@ public fun ResultType.toKType(): KType {
       arguments = listOf(KTypeProjection.invariant(initialValue)),
       isMarkedNullable = false,
       annotations = emptyList(),
-      isPlatformType = false,
     )
   }
   return initialValue

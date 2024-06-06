@@ -16,11 +16,17 @@ internal actual class KTypeImpl actual constructor(
   override val arguments: List<KTypeProjection>,
   override val isMarkedNullable: Boolean,
   override val annotations: List<Annotation>,
-  override val isPlatformType: Boolean
-) : KType, EitherNetKType by EitherNetKTypeImpl(
-  classifier,
-  arguments,
-  isMarkedNullable,
-  annotations,
-  isPlatformType
-)
+) : KType, EitherNetKType {
+  private val impl = EitherNetKTypeImpl(
+    classifier,
+    arguments,
+    isMarkedNullable,
+    annotations,
+  )
+
+  override fun equals(other: Any?) = impl == other
+
+  override fun hashCode() = impl.hashCode()
+
+  override fun toString() = impl.toString()
+}
