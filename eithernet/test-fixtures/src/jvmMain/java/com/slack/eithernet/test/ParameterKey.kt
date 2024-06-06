@@ -22,11 +22,6 @@ import kotlin.reflect.KType
 public data class ParameterKey internal constructor(val type: KType)
 
 internal fun createParameterKey(parameterType: KType): ParameterKey? {
-  if (parameterType.rawType == Continuation::class) return null
-  return ParameterKey(
-    // Borrow an internal API from Moshi because it has nicer and more consistent Type
-    // implementations that use safer equality checks. This matches how Moshi internally keys
-    // cached adapters.
-    parameterType.canonicalize()
-  )
+  if (parameterType.classifier == Continuation::class) return null
+  return ParameterKey(parameterType)
 }

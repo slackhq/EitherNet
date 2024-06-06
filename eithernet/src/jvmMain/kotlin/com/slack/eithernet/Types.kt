@@ -20,6 +20,9 @@ import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import java.lang.reflect.TypeVariable
 import java.lang.reflect.WildcardType
+import kotlin.reflect.KType
+import kotlin.reflect.KTypeProjection
+import kotlin.reflect.KVariance.INVARIANT
 
 /** Returns the raw [Class] type of this type. */
 internal val Type.rawType: Class<*>
@@ -27,6 +30,69 @@ internal val Type.rawType: Class<*>
 
 /** Returns a [GenericArrayType] with [this] as its [GenericArrayType.getGenericComponentType]. */
 internal fun Type.asArrayType(): GenericArrayType = Types.arrayOf(this)
+
+/**
+ * Creates a new [KType] representation of this [Type] for use with Moshi serialization. Note that
+ * [wildcards][WildcardType] are stripped away in [type projections][KTypeProjection] as they are
+ * not relevant for serialization and are also not standalone [KType] subtypes in Kotlin.
+ */
+public fun Type.toKType(
+  isMarkedNullable: Boolean = true,
+  annotations: List<Annotation> = emptyList()
+): KType {
+  return when (this) {
+    is Class<*> -> KTypeImpl(kotlin, emptyList(), isMarkedNullable, annotations, isPlatformType = true)
+    is ParameterizedType -> KTypeImpl(
+      classifier = (rawType as Class<*>).kotlin,
+      arguments = actualTypeArguments.map { it.toKTypeProjection() },
+      isMarkedNullable = isMarkedNullable,
+      annotations = annotations,
+      isPlatformType = true
+    )
+    is GenericArrayType -> {
+      KTypeImpl(
+        classifier = rawType.kotlin,
+        arguments = listOf(genericComponentType.toKTypeProjection()),
+        isMarkedNullable = isMarkedNullable,
+        annotations = annotations,
+        isPlatformType = true
+      )
+    }
+    is WildcardType -> removeSubtypeWildcard().toKType(isMarkedNullable, annotations)
+    is TypeVariable<*> -> KTypeImpl(
+      classifier = KTypeParameterImpl(false, name, bounds.map { it.toKType() }, INVARIANT),
+      arguments = emptyList(),
+      isMarkedNullable = isMarkedNullable,
+      annotations = annotations,
+      isPlatformType = true
+    )
+    else -> throw IllegalArgumentException("Unsupported type: $this")
+  }
+}
+
+/**
+ * Creates a new [KTypeProjection] representation of this [Type] for use in [KType.arguments].
+ */
+public fun Type.toKTypeProjection(): KTypeProjection {
+  return when (this) {
+    is Class<*>, is ParameterizedType, is TypeVariable<*> -> KTypeProjection.invariant(toKType())
+    is WildcardType -> {
+      val lowerBounds = lowerBounds
+      val upperBounds = upperBounds
+      if (lowerBounds.isEmpty() && upperBounds.isEmpty()) {
+        return KTypeProjection.STAR
+      }
+      return if (lowerBounds.isNotEmpty()) {
+        KTypeProjection.contravariant(lowerBounds[0].toKType())
+      } else {
+        KTypeProjection.invariant(upperBounds[0].toKType())
+      }
+    }
+    else -> {
+      throw NotImplementedError("Unsupported type: $this")
+    }
+  }
+}
 
 /** Factory methods for types. */
 public object Types {

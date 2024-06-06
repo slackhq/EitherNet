@@ -15,10 +15,12 @@
  */
 package com.slack.eithernet
 
-import com.google.common.truth.Truth.assertThat
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
+import kotlin.test.assertSame
 import kotlin.test.fail
 import okio.IOException
-import org.junit.Test
 
 @Suppress("ThrowsCount")
 class ExtensionsTest {
@@ -26,53 +28,53 @@ class ExtensionsTest {
   @Test
   fun successOrNullWithSuccess() {
     val result = ApiResult.success("Hello")
-    assertThat(result.successOrNull()).isEqualTo("Hello")
+    assertEquals("Hello", result.successOrNull())
   }
 
   @Test
   fun successOrNullWithFailure() {
     val result: ApiResult<*, *> = ApiResult.unknownFailure(Throwable())
-    assertThat(result.successOrNull()).isNull()
+    assertNull(result.successOrNull())
   }
 
   @Test
   fun successOrElseWithSuccess() {
     val result = ApiResult.success("Hello")
-    assertThat(result.successOrElse { error("") }).isEqualTo("Hello")
+    assertEquals("Hello", result.successOrElse { error("") })
   }
 
   @Test
   fun successOrElseWithFailure() {
     val result = ApiResult.unknownFailure(Throwable())
-    assertThat(result.successOrElse { "Hello" }).isEqualTo("Hello")
+    assertEquals("Hello", result.successOrElse { "Hello" })
   }
 
   @Test
   fun successOrElseWithCustomFailure() {
     val result = ApiResult.unknownFailure(Throwable())
-    assertThat(
-        result.successOrElse { failure ->
-          when (failure) {
-            is ApiResult.Failure.UnknownFailure -> "Hello"
-            else -> throw AssertionError()
-          }
+    assertEquals(
+      "Hello",
+      result.successOrElse { failure ->
+        when (failure) {
+          is ApiResult.Failure.UnknownFailure -> "Hello"
+          else -> throw AssertionError()
         }
-      )
-      .isEqualTo("Hello")
+      },
+    )
   }
 
   @Test
   fun foldSuccess() {
     val result = ApiResult.success("Hello")
     val folded = result.fold({ it }, { "Failure" })
-    assertThat(folded).isEqualTo("Hello")
+    assertEquals("Hello", folded)
   }
 
   @Test
   fun foldFailure() {
     val result = ApiResult.apiFailure("Hello")
     val folded = result.fold({ throw AssertionError() }, { "Failure" })
-    assertThat(folded).isEqualTo("Failure")
+    assertEquals("Failure", folded)
   }
 
   @Test
@@ -86,7 +88,7 @@ class ExtensionsTest {
         onNetworkFailure = { throw AssertionError() },
         onUnknownFailure = { throw AssertionError() },
       )
-    assertThat(folded).isEqualTo("Failure")
+    assertEquals("Failure", folded)
   }
 
   @Test
@@ -100,7 +102,7 @@ class ExtensionsTest {
         onNetworkFailure = { throw AssertionError() },
         onUnknownFailure = { throw AssertionError() },
       )
-    assertThat(folded).isEqualTo("Failure")
+    assertEquals("Failure", folded)
   }
 
   @Test
@@ -114,7 +116,7 @@ class ExtensionsTest {
         onNetworkFailure = { throw AssertionError() },
         onHttpFailure = { throw AssertionError() },
       )
-    assertThat(folded).isEqualTo("Failure")
+    assertEquals("Failure", folded)
   }
 
   @Test
@@ -128,7 +130,7 @@ class ExtensionsTest {
         onUnknownFailure = { throw AssertionError() },
         onHttpFailure = { throw AssertionError() },
       )
-    assertThat(folded).isEqualTo("Failure")
+    assertEquals("Failure", folded)
   }
 
   @Test
@@ -144,39 +146,39 @@ class ExtensionsTest {
   fun exceptionOrNull_with_networkFailure() {
     val exception = IOException()
     val result = ApiResult.networkFailure(exception)
-    assertThat(result.exceptionOrNull()).isSameInstanceAs(exception)
+    assertSame(exception, result.exceptionOrNull())
   }
 
   @Test
   fun exceptionOrNull_with_unknownFailure() {
     val exception = IOException()
     val result = ApiResult.unknownFailure(exception)
-    assertThat(result.exceptionOrNull()).isSameInstanceAs(exception)
+    assertSame(exception, result.exceptionOrNull())
   }
 
   @Test
   fun exceptionOrNull_with_throwableApiFailure() {
     val exception = IOException()
     val result = ApiResult.apiFailure(exception)
-    assertThat(result.exceptionOrNull()).isSameInstanceAs(exception)
+    assertSame(exception, result.exceptionOrNull())
   }
 
   @Test
   fun exceptionOrNull_with_throwableHttpFailure() {
     val exception = IOException()
     val result = ApiResult.httpFailure(404, exception)
-    assertThat(result.exceptionOrNull()).isSameInstanceAs(exception)
+    assertSame(exception, result.exceptionOrNull())
   }
 
   @Test
   fun exceptionOrNull_with_nonThrowableApiFailure() {
     val result = ApiResult.apiFailure("nope")
-    assertThat(result.exceptionOrNull()).isNull()
+    assertNull(result.exceptionOrNull())
   }
 
   @Test
   fun exceptionOrNull_with_nonThrowableHttpFailure() {
     val result = ApiResult.httpFailure(404, "nope")
-    assertThat(result.exceptionOrNull()).isNull()
+    assertNull(result.exceptionOrNull())
   }
 }

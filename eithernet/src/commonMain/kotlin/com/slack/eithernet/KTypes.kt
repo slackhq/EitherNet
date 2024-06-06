@@ -15,6 +15,8 @@
  */
 package com.slack.eithernet
 
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 import kotlin.reflect.KClass
 import kotlin.reflect.KClassifier
 import kotlin.reflect.KType
@@ -133,4 +135,65 @@ internal class KTypeParameterImpl(
   override fun toString(): String {
     return simpleToString()
   }
+}
+
+// Sneaky backdoor way of marking a value as non-null to the compiler and skip the null-check
+// intrinsic.
+// Safe to use (unstable) contracts since they're gone in the final bytecode
+@OptIn(ExperimentalContracts::class)
+@Suppress("NOTHING_TO_INLINE")
+internal inline fun <T> markNotNull(value: T?) {
+  contract { returns() implies (value != null) }
+}
+
+/** Returns true if [this] and [other] are equal. */
+internal fun KType?.isFunctionallyEqualTo(other: KType?): Boolean {
+  if (this === other) {
+    return true // Also handles (a == null && b == null).
+  }
+
+  markNotNull(this)
+  markNotNull(other)
+
+  if (isMarkedNullable != other.isMarkedNullable) return false
+  if (!arguments.contentEquals(other.arguments) { a, b -> a.type.isFunctionallyEqualTo(b.type) })
+    return false
+
+  // This isn't a supported type.
+  when (val classifier = classifier) {
+    is KClass<*> -> {
+      if (classifier.qualifiedName == "kotlin.Array") {
+        // We can't programmatically create array types that implement equals fully, as the runtime
+        // versions look at the underlying jClass that we can't get here. So we just do a simple
+        // check for arrays.
+        return (other.classifier as? KClass<*>?)?.qualifiedName == "kotlin.Array"
+      }
+      return classifier == other.classifier
+    }
+    is KTypeParameter -> {
+      val otherClassifier = other.classifier
+      if (otherClassifier !is KTypeParameter) return false
+      // TODO Use a plain KTypeParameter.equals again once
+      // https://youtrack.jetbrains.com/issue/KT-39661 is fixed
+      return (classifier.upperBounds.contentEquals(
+        otherClassifier.upperBounds,
+        KType::isFunctionallyEqualTo,
+      ) && (classifier.name == otherClassifier.name))
+    }
+    else -> return false // This isn't a supported type.
+  }
+}
+
+private fun <T> List<T>.contentEquals(
+  other: List<T>,
+  comparator: (a: T, b: T) -> Boolean,
+): Boolean {
+  if (size != other.size) return false
+  for (i in indices) {
+    val arg = get(i)
+    val otherArg = other[i]
+    // TODO do we care about variance?
+    if (!comparator(arg, otherArg)) return false
+  }
+  return true
 }

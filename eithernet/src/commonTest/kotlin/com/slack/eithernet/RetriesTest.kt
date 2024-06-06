@@ -15,12 +15,13 @@
  */
 package com.slack.eithernet
 
-import com.google.common.truth.Truth.assertThat
-import java.io.IOException
+import okio.IOException
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.test.currentTime
 import kotlinx.coroutines.test.runTest
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class RetriesTest {
 
@@ -36,8 +37,8 @@ class RetriesTest {
         expectedResult
       }
     }
-    assertThat(result).isEqualTo(expectedResult)
-    assertThat(attempts).isEqualTo(3)
+    assertEquals(expectedResult, result)
+    assertEquals(3, attempts)
   }
 
   @Test
@@ -50,8 +51,8 @@ class RetriesTest {
         ApiResult.unknownFailure(expectedException)
       }
     check(result is ApiResult.Failure.UnknownFailure)
-    assertThat(result.error).isEqualTo(expectedException)
-    assertThat(attempts).isEqualTo(3)
+    assertEquals(expectedException, result.error)
+    assertEquals(3, attempts)
   }
 
   @Test
@@ -68,9 +69,9 @@ class RetriesTest {
         ApiResult.unknownFailure(expectedException)
       }
     check(result is ApiResult.Failure.UnknownFailure)
-    assertThat(result.error).isEqualTo(expectedException)
-    assertThat(attempts).isEqualTo(3)
-    assertThat(recordedAttempts).hasSize(3)
+    assertEquals(expectedException, result.error)
+    assertEquals(3, attempts)
+    assertTrue(recordedAttempts.size == 3)
   }
 
   @Test
@@ -81,8 +82,8 @@ class RetriesTest {
       attempts++
       if (attempts > 1) {
         val delay = currentTime - lastAttemptTime
-        assertThat(delay >= 100).isTrue()
-        assertThat(delay <= 500).isTrue()
+        assertTrue(delay >= 100)
+        assertTrue(delay <= 500)
       }
       lastAttemptTime = currentTime
       ApiResult.unknownFailure(RuntimeException("error"))
@@ -104,7 +105,7 @@ class RetriesTest {
       ApiResult.unknownFailure(RuntimeException("error"))
     }
     // Check that delays are not all the same, which would indicate that jitter was not applied
-    assertThat(delays.distinct().size).isEqualTo(delays.size)
+    assertEquals(delays.size, delays.distinct().size)
   }
 
   @Test
@@ -122,7 +123,7 @@ class RetriesTest {
       ApiResult.unknownFailure(RuntimeException("error"))
     }
     // Check that all delays are the same, which would indicate that jitter was not applied
-    assertThat(delays.distinct().size).isEqualTo(1)
+    assertEquals(1, delays.distinct().size)
   }
 
   @Test
@@ -140,6 +141,6 @@ class RetriesTest {
       }
     }
     // Check that we only attempted until an unknown failure happened
-    assertThat(attempts).isEqualTo(3)
+    assertEquals(3, attempts)
   }
 }

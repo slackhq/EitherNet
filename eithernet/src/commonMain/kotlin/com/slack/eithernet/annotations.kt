@@ -97,13 +97,24 @@ private fun <A : Any> Array<out Annotation>.nextAnnotations(
 /** Returns a new [KType] representation of this [ResultType]. */
 @Suppress("SpreadOperator") // This is _the worst_ detekt check
 public fun ResultType.toKType(): KType {
-  return KTypeImpl(
-    classifier = rawType,
-    arguments = typeArgs.map { KTypeProjection.invariant(it.toKType()) },
-    isMarkedNullable = false,
-    annotations = emptyList(),
-    isPlatformType = false,
-  )
+  val initialValue =
+    KTypeImpl(
+      classifier = rawType,
+      arguments = typeArgs.map { KTypeProjection.invariant(it.toKType()) },
+      isMarkedNullable = false,
+      annotations = emptyList(),
+      isPlatformType = false,
+    )
+  if (isArray) {
+    return KTypeImpl(
+      classifier = Array<String>::class,
+      arguments = listOf(KTypeProjection.invariant(initialValue)),
+      isMarkedNullable = false,
+      annotations = emptyList(),
+      isPlatformType = false,
+    )
+  }
+  return initialValue
 }
 
 internal fun createStatusCode(code: Int): StatusCode {

@@ -15,83 +15,71 @@
  */
 package com.slack.eithernet
 
-import com.google.common.truth.Truth.assertThat
-import java.lang.reflect.Type
+import kotlin.annotation.AnnotationRetention.RUNTIME
 import kotlin.reflect.KType
 import kotlin.reflect.javaType
 import kotlin.reflect.typeOf
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
+import kotlin.test.assertSame
+import kotlin.test.assertTrue
+
+@Retention(RUNTIME) annotation class SampleAnnotation
 
 @SampleAnnotation
-class ResultTypeTest {
+class ResultTypeTestJvm {
 
   @Test fun classType() = testType<String>()
 
   @Test fun parameterizedType() = testType<List<String>>()
-
-  @Test
-  fun parameterizedTypeWithOwner() {
-    val typeWithOwner =
-      Types.newParameterizedTypeWithOwner(ResultTypeTest::class.java, A::class.java, B::class.java)
-    val annotation = createResultType(typeWithOwner)
-    val created = annotation.toType()
-    created.assertEqualTo(typeWithOwner)
-  }
 
   @Test fun enumType() = testType<TestEnum>()
 
   @Test fun array() = testType<Array<String>>()
 
   @Test
-  fun wildcard() {
-    val wildcard = Types.subtypeOf(String::class.java)
-    val annotation = createResultType(wildcard)
-    val created = annotation.toType()
-    wildcard.removeSubtypeWildcard().assertEqualTo(created)
-  }
-
-  @Test
   fun errorType_present() {
     val annotations =
       Array<Annotation>(4) {
-        ResultTypeTest::class.java.getAnnotation(SampleAnnotation::class.java)
+        ResultTypeTestJvm::class.java.getAnnotation(SampleAnnotation::class.java)
       }
     val resultTypeAnnotation = createResultType(String::class.java)
     annotations[0] = resultTypeAnnotation
     val (resultType, nextAnnotations) = annotations.errorType() ?: error("No annotation found")
-    assertThat(nextAnnotations.size).isEqualTo(3)
-    assertThat(resultType).isSameInstanceAs(resultTypeAnnotation)
+    assertEquals(3, nextAnnotations.size)
+    assertSame(resultTypeAnnotation, resultType)
   }
 
   @Test
   fun errorType_absent() {
     val annotations =
       Array<Annotation>(4) {
-        ResultTypeTest::class.java.getAnnotation(SampleAnnotation::class.java)
+        ResultTypeTestJvm::class.java.getAnnotation(SampleAnnotation::class.java)
       }
-    assertThat(annotations.errorType()).isNull()
+    assertNull(annotations.errorType())
   }
 
   @Test
   fun statusCode_present() {
     val annotations =
       Array<Annotation>(4) {
-        ResultTypeTest::class.java.getAnnotation(SampleAnnotation::class.java)
+        ResultTypeTestJvm::class.java.getAnnotation(SampleAnnotation::class.java)
       }
     val statusCodeAnnotation = createStatusCode(404)
     annotations[0] = statusCodeAnnotation
     val (statusCode, nextAnnotations) = annotations.statusCode() ?: error("No annotation found")
-    assertThat(nextAnnotations.size).isEqualTo(3)
-    assertThat(statusCode).isSameInstanceAs(statusCodeAnnotation)
+    assertEquals(3, nextAnnotations.size)
+    assertSame(statusCodeAnnotation, statusCode)
   }
 
   @Test
   fun statusCode_absent() {
     val annotations =
       Array<Annotation>(4) {
-        ResultTypeTest::class.java.getAnnotation(SampleAnnotation::class.java)
+        ResultTypeTestJvm::class.java.getAnnotation(SampleAnnotation::class.java)
       }
-    assertThat(annotations.statusCode()).isNull()
+    assertNull(annotations.statusCode())
   }
 
   private class A
@@ -100,17 +88,13 @@ class ResultTypeTest {
 
   enum class TestEnum
 
-  private fun Type.assertEqualTo(other: Type) {
-    assertThat(Types.equals(this, other)).isTrue()
-  }
-
   private inline fun <reified T> testType() {
     testType(typeOf<T>())
   }
 
   private fun testType(type: KType) {
     val annotation = createResultType(type.javaType)
-    val created = annotation.toType()
-    type.javaType.assertEqualTo(created)
+    val created = annotation.toKType()
+    assertTrue(type.isFunctionallyEqualTo(created))
   }
 }
