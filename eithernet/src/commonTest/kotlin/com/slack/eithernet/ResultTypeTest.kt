@@ -84,10 +84,7 @@ class ResultTypeTest {
   private fun KType.toResultType(): ResultType {
     val klass = classifier as KClass<*>
     if (klass.qualifiedNameForComparison?.endsWith("Array") == true) {
-      return ResultType(
-        rawType = arguments.first().type!!.classifier as KClass<*>,
-        isArray = true,
-      )
+      return ResultType(rawType = arguments.first().type!!.classifier as KClass<*>, isArray = true)
     }
     return ResultType(
       rawType = klass,

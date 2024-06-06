@@ -79,6 +79,14 @@ kotlin {
   }
 }
 
+// KMP can never get configuration cache/task dependencies right
+tasks
+  .named { it == "jsBrowserTest" || it == "wasmJsBrowserTest" }
+  .configureEach {
+    dependsOn("jsTestTestDevelopmentExecutableCompileSync")
+    dependsOn("wasmJsTestTestDevelopmentExecutableCompileSync")
+  }
+
 dependencies {
   "kspJvmTest"(libs.autoService.ksp)
   testFixturesApi(project(":eithernet:test-fixtures"))

@@ -32,7 +32,11 @@ class ResultTypeTestJvm {
   @Test
   fun parameterizedTypeWithOwner() {
     val typeWithOwner =
-      Types.newParameterizedTypeWithOwner(ResultTypeTestJvm::class.java, A::class.java, B::class.java)
+      Types.newParameterizedTypeWithOwner(
+        ResultTypeTestJvm::class.java,
+        A::class.java,
+        B::class.java,
+      )
     val annotation = createResultType(typeWithOwner)
     val created = annotation.toType()
     created.assertEqualTo(typeWithOwner)

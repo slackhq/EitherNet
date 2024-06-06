@@ -26,7 +26,7 @@ import okio.IOException
 class RetriesTest {
 
   @Test
-  fun `retry until success`() = runTest {
+  fun retryUntilSuccess() = runTest {
     var attempts = 0
     val expectedResult = ApiResult.success("result")
     val result = retryWithExponentialBackoff {
@@ -42,7 +42,7 @@ class RetriesTest {
   }
 
   @Test
-  fun `reach max attempts`() = runTest {
+  fun reachMaxAttempts() = runTest {
     var attempts = 0
     val expectedException = RuntimeException("error")
     val result =
@@ -56,7 +56,7 @@ class RetriesTest {
   }
 
   @Test
-  fun `log failed attempts`() = runTest {
+  fun logFailedAttempts() = runTest {
     var attempts = 0
     val recordedAttempts = mutableListOf<ApiResult.Failure<Unit>>()
     val expectedException = RuntimeException("error")
@@ -75,7 +75,7 @@ class RetriesTest {
   }
 
   @Test
-  fun `does not exceed max delay`() = runTest {
+  fun doesNotExceedMaxDelay() = runTest {
     var attempts = 0
     var lastAttemptTime = currentTime
     retryWithExponentialBackoff(initialDelay = 100.milliseconds, maxDelay = 500.milliseconds) {
@@ -91,7 +91,7 @@ class RetriesTest {
   }
 
   @Test
-  fun `applies jitter results in different delays`() = runTest {
+  fun appliesJitterResultsInDifferentDelays() = runTest {
     var attempts = 0
     val delays = mutableListOf<Long>()
     var lastAttemptTime = currentTime
@@ -109,7 +109,7 @@ class RetriesTest {
   }
 
   @Test
-  fun `does not apply jitter when jitter factor is 0`() = runTest {
+  fun doesNotApplyJitterWhenJitterFactorIs0() = runTest {
     var attempts = 0
     val delays = mutableListOf<Long>()
     var lastAttemptTime = currentTime
@@ -127,7 +127,7 @@ class RetriesTest {
   }
 
   @Test
-  fun `does not retry on matching condition`() = runTest {
+  fun doesNotRetryOnMatchingCondition() = runTest {
     var attempts = 0
     retryWithExponentialBackoff(
       maxAttempts = 5,

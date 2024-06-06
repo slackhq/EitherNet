@@ -6,6 +6,7 @@ public final class com/slack/eithernet/AnnotationsKt {
 }
 
 public final class com/slack/eithernet/Annotations_jvmKt {
+	public static final fun createResultType (Ljava/lang/reflect/Type;)Lcom/slack/eithernet/ResultType;
 	public static final fun toType (Lcom/slack/eithernet/ResultType;)Ljava/lang/reflect/Type;
 }
 
