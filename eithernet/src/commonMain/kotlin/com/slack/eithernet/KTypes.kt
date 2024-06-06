@@ -56,7 +56,7 @@ internal expect class KTypeImpl(
   classifier: KClassifier?,
   arguments: List<KTypeProjection>,
   isMarkedNullable: Boolean,
-  annotations: List<Annotation>
+  annotations: List<Annotation>,
 ) : KType, EitherNetKType {
   override val classifier: KClassifier?
   override val arguments: List<KTypeProjection>
