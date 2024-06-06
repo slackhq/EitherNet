@@ -13,14 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:JvmName("JavaEitherNetControllers")
+
 package com.slack.eithernet.test
 
-import java.lang.reflect.Method
+import com.slack.eithernet.ApiResult
+import com.slack.eithernet.InternalEitherNetApi
 
-/** A simple key for a given endpoint. */
-data class EndpointKey internal constructor(val name: String, val parameters: List<ParameterKey>)
-
-@PublishedApi
-internal fun createEndpointKey(method: Method): EndpointKey {
-  return EndpointKey(method.name, method.parameterTypes.mapNotNull(::createParameterKey))
+/** Enqueues a suspended [resultBody]. Note that this is not safe and only available for Java. */
+public fun <T : Any, S : Any, E : Any> EitherNetController<T>.enqueueFromJava(
+  clazz: Class<T>,
+  methodName: String,
+  resultBody: ApiResult<S, E>,
+) {
+  val method = clazz.declaredMethods.first { it.name == methodName }
+  val key = createEndpointKey(method)
+  @OptIn(InternalEitherNetApi::class) unsafeEnqueue(key) { resultBody }
 }

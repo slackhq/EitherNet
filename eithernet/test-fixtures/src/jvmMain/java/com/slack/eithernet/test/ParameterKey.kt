@@ -21,7 +21,7 @@ import java.lang.reflect.Type
 import kotlin.coroutines.Continuation
 
 /** A simple parameter endpoint key for use with [EndpointKey]. */
-data class ParameterKey internal constructor(val type: Type)
+public data class ParameterKey internal constructor(val type: Type)
 
 internal fun createParameterKey(parameterType: Type): ParameterKey? {
   if (parameterType.rawType == Continuation::class.java) return null

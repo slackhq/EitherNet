@@ -19,7 +19,6 @@ import com.slack.eithernet.ApiResult
 import com.slack.eithernet.ExperimentalEitherNetApi
 import com.slack.eithernet.InternalEitherNetApi
 
-@OptIn(ExperimentalEitherNetApi::class)
 internal class RealEitherNetController<T : Any>(
   private val orchestrator: EitherNetTestOrchestrator,
   override val api: T,

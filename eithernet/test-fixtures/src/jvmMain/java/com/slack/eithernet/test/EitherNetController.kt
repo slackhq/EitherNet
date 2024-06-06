@@ -40,22 +40,22 @@ import kotlin.reflect.jvm.javaMethod
  *
  * For Java interop, there is a limited API available at [enqueueFromJava].
  */
-interface EitherNetController<T : Any> {
+public interface EitherNetController<T : Any> {
   /** The underlying API implementation that should be passed into the thing being tested. */
-  val api: T
+  public val api: T
 
   /** Asserts that there are no more remaining results in the queue. */
-  fun assertNoMoreQueuedResults()
+  public fun assertNoMoreQueuedResults()
 
   @InternalEitherNetApi
-  fun <S : Any, E : Any> unsafeEnqueue(
+  public fun <S : Any, E : Any> unsafeEnqueue(
     key: EndpointKey,
     resultBody: suspend (args: Array<Any>) -> ApiResult<S, E>,
   )
 }
 
 /** Enqueues a suspended [resultBody]. */
-inline fun <reified T : Any, reified S : Any, reified E : Any> EitherNetController<T>.enqueue(
+public inline fun <reified T : Any, reified S : Any, reified E : Any> EitherNetController<T>.enqueue(
   ref: KFunction<ApiResult<S, E>>,
   noinline resultBody: suspend (args: Array<Any>) -> ApiResult<S, E>,
 ) {
@@ -69,7 +69,7 @@ inline fun <reified T : Any, reified S : Any, reified E : Any> EitherNetControll
 }
 
 /** Enqueues a scalar [result] instance. */
-inline fun <reified T : Any, reified S : Any, reified E : Any> EitherNetController<T>.enqueue(
+public inline fun <reified T : Any, reified S : Any, reified E : Any> EitherNetController<T>.enqueue(
   ref: KFunction<ApiResult<S, E>>,
   result: ApiResult<S, E>,
-) = enqueue(ref) { result }
+): Unit = enqueue(ref) { result }

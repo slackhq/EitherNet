@@ -29,3 +29,4 @@ pluginManagement {
 }
 
 include(":eithernet")
+include(":eithernet:test-fixtures")
