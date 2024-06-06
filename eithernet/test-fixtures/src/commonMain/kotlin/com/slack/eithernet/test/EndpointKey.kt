@@ -15,17 +15,6 @@
  */
 package com.slack.eithernet.test
 
-import com.slack.eithernet.toKType
-import java.lang.reflect.Method
-
 /** A simple key for a given endpoint. */
 public data class EndpointKey
 internal constructor(val name: String, val parameters: List<ParameterKey>)
-
-@PublishedApi
-internal fun createEndpointKey(method: Method): EndpointKey {
-  return EndpointKey(
-    method.name,
-    method.parameterTypes.mapNotNull { createParameterKey(it.toKType()) },
-  )
-}
