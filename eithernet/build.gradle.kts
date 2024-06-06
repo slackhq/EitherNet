@@ -40,7 +40,7 @@ plugins {
 }
 
 kotlin {
-  jvm { withJava() }
+  jvm()
   @OptIn(ExperimentalKotlinGradlePluginApi::class)
   compilerOptions {
     optIn.addAll("kotlin.ExperimentalStdlibApi", "kotlinx.coroutines.ExperimentalCoroutinesApi")
