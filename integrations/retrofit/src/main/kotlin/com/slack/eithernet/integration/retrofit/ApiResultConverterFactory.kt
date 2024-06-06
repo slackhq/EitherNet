@@ -18,6 +18,7 @@ package com.slack.eithernet.integration.retrofit
 import com.slack.eithernet.ApiException
 import com.slack.eithernet.ApiResult
 import com.slack.eithernet.ResultType
+import com.slack.eithernet.createResultType
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import okhttp3.ResponseBody

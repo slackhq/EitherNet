@@ -49,7 +49,8 @@ public fun ResultType.toType(): Type {
   }
 }
 
-internal fun createResultType(type: Type): ResultType {
+@InternalEitherNetApi
+public fun createResultType(type: Type): ResultType {
   var ownerType: Type = Nothing::class.java
   val rawType: Class<*>
   val typeArgs: Array<ResultType>
@@ -74,23 +75,10 @@ internal fun createResultType(type: Type): ResultType {
     else -> error("Unrecognized type: $type")
   }
 
-  return createResultType(
-    ownerType.canonicalize() as Class<*>,
-    rawType.canonicalize() as Class<*>,
-    typeArgs,
-    isArray,
-  )
-}
-
-private fun createResultType(
-  ownerType: Class<*>,
-  rawType: Class<*>,
-  typeArgs: Array<ResultType>,
-  isArray: Boolean,
-): ResultType =
-  ResultType(
-    rawType = rawType.kotlin,
+  return ResultType(
+    ownerType = (ownerType.canonicalize() as Class<*>).kotlin,
+    rawType = (rawType.canonicalize() as Class<*>).kotlin,
     typeArgs = typeArgs,
-    ownerType = ownerType.kotlin,
     isArray = isArray,
   )
+}

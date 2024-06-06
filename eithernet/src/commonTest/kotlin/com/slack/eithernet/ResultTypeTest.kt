@@ -17,7 +17,6 @@ package com.slack.eithernet
 
 import kotlin.annotation.AnnotationRetention.RUNTIME
 import kotlin.reflect.KType
-import kotlin.reflect.javaType
 import kotlin.reflect.typeOf
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -93,7 +92,7 @@ class ResultTypeTestJvm {
   }
 
   private fun testType(type: KType) {
-    val annotation = createResultType(type.javaType)
+    val annotation = createResultType(type)
     val created = annotation.toKType()
     assertTrue(type.isFunctionallyEqualTo(created))
   }
