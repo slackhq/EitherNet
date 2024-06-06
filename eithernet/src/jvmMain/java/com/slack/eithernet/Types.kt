@@ -13,163 +13,168 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.slack.eithernet;
+package com.slack.eithernet
 
-import com.slack.eithernet.Util.GenericArrayTypeImpl;
-import com.slack.eithernet.Util.ParameterizedTypeImpl;
-import com.slack.eithernet.Util.WildcardTypeImpl;
-import java.lang.reflect.Array;
-import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.lang.reflect.WildcardType;
-import java.util.Arrays;
-import org.jetbrains.annotations.Nullable;
+import java.lang.reflect.GenericArrayType
+import java.lang.reflect.ParameterizedType
+import java.lang.reflect.Type
+import java.lang.reflect.TypeVariable
+import java.lang.reflect.WildcardType
 
-import static com.slack.eithernet.Util.EMPTY_TYPE_ARRAY;
+/** Returns the raw [Class] type of this type. */
+internal val Type.rawType: Class<*>
+  get() = Types.getRawType(this)
+
+/** Returns a [GenericArrayType] with [this] as its [GenericArrayType.getGenericComponentType]. */
+internal fun Type.asArrayType(): GenericArrayType = Types.arrayOf(this)
 
 /** Factory methods for types. */
-final class Types {
-  private Types() {}
-
+public object Types {
   /**
-   * Returns a new parameterized type, applying {@code typeArguments} to {@code rawType}. Use this
-   * method if {@code rawType} is not enclosed in another type.
+   * Returns a new parameterized type, applying `typeArguments` to `rawType`. Use this method if
+   * `rawType` is not enclosed in another type.
    */
-  public static ParameterizedType newParameterizedType(Type rawType, Type... typeArguments) {
-    if (typeArguments.length == 0) {
-      throw new IllegalArgumentException("Missing type arguments for " + rawType);
-    }
-    return new ParameterizedTypeImpl(null, rawType, typeArguments);
+  @JvmStatic
+  public fun newParameterizedType(rawType: Type, vararg typeArguments: Type): ParameterizedType {
+    require(typeArguments.isNotEmpty()) { "Missing type arguments for $rawType" }
+    return ParameterizedTypeImpl(null, rawType, *typeArguments)
   }
 
   /**
-   * Returns a new parameterized type, applying {@code typeArguments} to {@code rawType}. Use this
-   * method if {@code rawType} is enclosed in {@code ownerType}.
+   * Returns a new parameterized type, applying `typeArguments` to `rawType`. Use this method if
+   * `rawType` is enclosed in `ownerType`.
    */
-  public static ParameterizedType newParameterizedTypeWithOwner(Type ownerType,
-      Type rawType,
-      Type... typeArguments) {
-    if (typeArguments.length == 0) {
-      throw new IllegalArgumentException("Missing type arguments for " + rawType);
-    }
-    return new ParameterizedTypeImpl(ownerType, rawType, typeArguments);
+  @JvmStatic
+  public fun newParameterizedTypeWithOwner(
+    ownerType: Type?,
+    rawType: Type,
+    vararg typeArguments: Type,
+  ): ParameterizedType {
+    require(typeArguments.isNotEmpty()) { "Missing type arguments for $rawType" }
+    return ParameterizedTypeImpl(ownerType, rawType, *typeArguments)
   }
 
-  /** Returns an array type whose elements are all instances of {@code componentType}. */
-  public static GenericArrayType arrayOf(Type componentType) {
-    return new GenericArrayTypeImpl(componentType);
+  /** Returns an array type whose elements are all instances of `componentType`. */
+  @JvmStatic
+  public fun arrayOf(componentType: Type): GenericArrayType {
+    return GenericArrayTypeImpl(componentType)
   }
 
   /**
-   * Returns a type that represents an unknown type that extends {@code bound}. For example, if
-   * {@code bound} is {@code CharSequence.class}, this returns {@code ? extends CharSequence}. If
-   * {@code bound} is {@code Object.class}, this returns {@code ?}, which is shorthand for {@code ?
-   * extends Object}.
+   * Returns a type that represents an unknown type that extends `bound`. For example, if `bound` is
+   * `CharSequence.class`, this returns `? extends CharSequence`. If `bound` is `Object.class`, this
+   * returns `?`, which is shorthand for `? extends Object`.
    */
-  public static WildcardType subtypeOf(Type bound) {
-    Type[] upperBounds;
-    if (bound instanceof WildcardType) {
-      upperBounds = ((WildcardType) bound).getUpperBounds();
-    } else {
-      upperBounds = new Type[] { bound };
-    }
-    return new WildcardTypeImpl(upperBounds, EMPTY_TYPE_ARRAY);
-  }
-
-  /**
-   * Returns a type that represents an unknown supertype of {@code bound}. For example, if {@code
-   * bound} is {@code String.class}, this returns {@code ? super String}.
-   */
-  public static WildcardType supertypeOf(Type bound) {
-    Type[] lowerBounds;
-    if (bound instanceof WildcardType) {
-      lowerBounds = ((WildcardType) bound).getLowerBounds();
-    } else {
-      lowerBounds = new Type[] { bound };
-    }
-    return new WildcardTypeImpl(new Type[] { Object.class }, lowerBounds);
-  }
-
-  public static Class<?> getRawType(Type type) {
-    if (type instanceof Class<?>) {
-      // type is a normal class.
-      return (Class<?>) type;
-    } else if (type instanceof ParameterizedType) {
-      ParameterizedType parameterizedType = (ParameterizedType) type;
-
-      // I'm not exactly sure why getRawType() returns Type instead of Class. Neal isn't either but
-      // suspects some pathological case related to nested classes exists.
-      Type rawType = parameterizedType.getRawType();
-      return (Class<?>) rawType;
-    } else if (type instanceof GenericArrayType) {
-      Type componentType = ((GenericArrayType) type).getGenericComponentType();
-      return Array.newInstance(getRawType(componentType), 0)
-          .getClass();
-    } else if (type instanceof TypeVariable) {
-      // We could use the variable's bounds, but that won't work if there are multiple. having a raw
-      // type that's more general than necessary is okay.
-      return Object.class;
-    } else if (type instanceof WildcardType) {
-      return getRawType(((WildcardType) type).getUpperBounds()[0]);
-    } else {
-      String className = type == null ? "null" : type.getClass()
-          .getName();
-      throw new IllegalArgumentException("Expected a Class, ParameterizedType, or "
-          + "GenericArrayType, but <"
-          + type
-          + "> is of type "
-          + className);
-    }
-  }
-
-  /** Returns true if {@code a} and {@code b} are equal. */
-  public static boolean equals(@Nullable Type a, @Nullable Type b) {
-    if (a == b) {
-      return true; // Also handles (a == null && b == null).
-    } else if (a instanceof Class) {
-      if (b instanceof GenericArrayType) {
-        return equals(((Class) a).getComponentType(),
-            ((GenericArrayType) b).getGenericComponentType());
+  @JvmStatic
+  public fun subtypeOf(bound: Type): WildcardType {
+    val upperBounds =
+      if (bound is WildcardType) {
+        bound.upperBounds
+      } else {
+        arrayOf<Type>(bound)
       }
-      return a.equals(b); // Class already specifies equals().
-    } else if (a instanceof ParameterizedType) {
-      if (!(b instanceof ParameterizedType)) return false;
-      ParameterizedType pa = (ParameterizedType) a;
-      ParameterizedType pb = (ParameterizedType) b;
-      Type[] aTypeArguments =
-          pa instanceof ParameterizedTypeImpl ? ((ParameterizedTypeImpl) pa).typeArguments
-              : pa.getActualTypeArguments();
-      Type[] bTypeArguments =
-          pb instanceof ParameterizedTypeImpl ? ((ParameterizedTypeImpl) pb).typeArguments
-              : pb.getActualTypeArguments();
-      return equals(pa.getOwnerType(), pb.getOwnerType()) && pa.getRawType()
-          .equals(pb.getRawType()) && Arrays.equals(aTypeArguments, bTypeArguments);
-    } else if (a instanceof GenericArrayType) {
-      if (b instanceof Class) {
-        return equals(((Class) b).getComponentType(),
-            ((GenericArrayType) a).getGenericComponentType());
+    return WildcardTypeImpl(upperBounds, EMPTY_TYPE_ARRAY)
+  }
+
+  /**
+   * Returns a type that represents an unknown supertype of `bound`. For example, if `bound` is
+   * `String.class`, this returns `? super String`.
+   */
+  @JvmStatic
+  public fun supertypeOf(bound: Type): WildcardType {
+    val lowerBounds =
+      if (bound is WildcardType) {
+        bound.lowerBounds
+      } else {
+        arrayOf<Type>(bound)
       }
-      if (!(b instanceof GenericArrayType)) return false;
-      GenericArrayType ga = (GenericArrayType) a;
-      GenericArrayType gb = (GenericArrayType) b;
-      return equals(ga.getGenericComponentType(), gb.getGenericComponentType());
-    } else if (a instanceof WildcardType) {
-      if (!(b instanceof WildcardType)) return false;
-      WildcardType wa = (WildcardType) a;
-      WildcardType wb = (WildcardType) b;
-      return Arrays.equals(wa.getUpperBounds(), wb.getUpperBounds())
-          && Arrays.equals(wa.getLowerBounds(), wb.getLowerBounds());
-    } else if (a instanceof TypeVariable) {
-      if (!(b instanceof TypeVariable)) return false;
-      TypeVariable<?> va = (TypeVariable<?>) a;
-      TypeVariable<?> vb = (TypeVariable<?>) b;
-      return va.getGenericDeclaration() == vb.getGenericDeclaration() && va.getName()
-          .equals(vb.getName());
-    } else {
-      // This isn't a supported type.
-      return false;
+    return WildcardTypeImpl(arrayOf<Type>(Any::class.java), lowerBounds)
+  }
+
+  @JvmStatic
+  public fun getRawType(type: Type?): Class<*> {
+    return when (type) {
+      is Class<*> -> {
+        // type is a normal class.
+        type
+      }
+      is ParameterizedType -> {
+        // I'm not exactly sure why getRawType() returns Type instead of Class. Neal isn't either
+        // but
+        // suspects some pathological case related to nested classes exists.
+        val rawType = type.rawType
+        rawType as Class<*>
+      }
+      is GenericArrayType -> {
+        val componentType = type.genericComponentType
+        java.lang.reflect.Array.newInstance(getRawType(componentType), 0).javaClass
+      }
+      is TypeVariable<*> -> {
+        // We could use the variable's bounds, but that won't work if there are multiple. having a
+        // raw
+        // type that's more general than necessary is okay.
+        Any::class.java
+      }
+      is WildcardType -> getRawType(type.upperBounds[0])
+      else -> {
+        val className = type?.javaClass?.name?.toString()
+        throw IllegalArgumentException(
+          "Expected a Class, ParameterizedType, or GenericArrayType, but <$type> is of type $className"
+        )
+      }
+    }
+  }
+
+  /** Returns true if `a` and `b` are equal. */
+  @JvmStatic
+  public fun equals(a: Type?, b: Type?): Boolean {
+    if (a === b) {
+      return true // Also handles (a == null && b == null).
+    }
+    // This isn't a supported type.
+    when (a) {
+      is Class<*> -> {
+        return if (b is GenericArrayType) {
+          equals(a.componentType, b.genericComponentType)
+        } else if (b is ParameterizedType && a.rawType == b.rawType) {
+          // Class instance with generic info, from method return types
+          return a.typeParameters.flatMap { it.bounds.toList() } == b.actualTypeArguments.toList()
+        } else {
+          a == b // Class already specifies equals().
+        }
+      }
+      is ParameterizedType -> {
+        // Class instance with generic info, from method return types
+        if (b is Class<*> && a.rawType == b.rawType) {
+          return b.typeParameters.map { it.bounds }.toTypedArray().flatten() ==
+            a.actualTypeArguments.toList()
+        }
+        if (b !is ParameterizedType) return false
+        val aTypeArguments =
+          if (a is ParameterizedTypeImpl) a.typeArguments else a.actualTypeArguments
+        val bTypeArguments =
+          if (b is ParameterizedTypeImpl) b.typeArguments else b.actualTypeArguments
+        return (equals(a.ownerType, b.ownerType) &&
+          (a.rawType == b.rawType) &&
+          aTypeArguments.contentEquals(bTypeArguments))
+      }
+      is GenericArrayType -> {
+        if (b is Class<*>) {
+          return equals(b.componentType, a.genericComponentType)
+        }
+        if (b !is GenericArrayType) return false
+        return equals(a.genericComponentType, b.genericComponentType)
+      }
+      is WildcardType -> {
+        if (b !is WildcardType) return false
+        return (a.upperBounds.contentEquals(b.upperBounds) &&
+          a.lowerBounds.contentEquals(b.lowerBounds))
+      }
+      is TypeVariable<*> -> {
+        if (b !is TypeVariable<*>) return false
+        return (a.genericDeclaration === b.genericDeclaration && (a.name == b.name))
+      }
+      else -> return false // This isn't a supported type.
     }
   }
 }

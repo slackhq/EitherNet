@@ -15,7 +15,6 @@
  */
 package com.slack.eithernet
 
-import com.slack.eithernet.Util.canonicalize
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import java.lang.reflect.WildcardType
@@ -76,13 +75,13 @@ internal fun createResultType(type: Type): ResultType {
       typeArgs =
         Array(type.actualTypeArguments.size) { i -> createResultType(type.actualTypeArguments[i]) }
     }
-    is WildcardType -> return createResultType(Util.removeSubtypeWildcard(type))
+    is WildcardType -> return createResultType(type.removeSubtypeWildcard())
     else -> error("Unrecognized type: $type")
   }
 
   return createResultType(
-    canonicalize(ownerType) as Class<*>,
-    canonicalize(rawType) as Class<*>,
+    ownerType.canonicalize() as Class<*>,
+    rawType.canonicalize() as Class<*>,
     typeArgs,
     isArray,
   )
