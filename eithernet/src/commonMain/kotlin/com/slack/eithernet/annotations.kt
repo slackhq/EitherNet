@@ -94,7 +94,6 @@ private fun <A : Any> Array<out Annotation>.nextAnnotations(
   }
 }
 
-
 /** Returns a new [KType] representation of this [ResultType]. */
 @Suppress("SpreadOperator") // This is _the worst_ detekt check
 public fun ResultType.toKType(): KType {

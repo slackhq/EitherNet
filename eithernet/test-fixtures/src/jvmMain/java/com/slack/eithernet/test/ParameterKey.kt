@@ -15,7 +15,6 @@
  */
 package com.slack.eithernet.test
 
-import java.lang.reflect.Type
 import kotlin.coroutines.Continuation
 import kotlin.reflect.KType
 

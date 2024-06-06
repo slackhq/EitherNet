@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2024 Slack Technologies, LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.slack.eithernet
 
 import kotlin.reflect.KClass
@@ -9,18 +24,19 @@ import kotlin.reflect.KVariance
 
 private fun KTypeParameter.simpleToString(): String {
   return buildList {
-    if (isReified) add("reified")
-    when (variance) {
-      KVariance.IN -> add("in")
-      KVariance.OUT -> add("out")
-      KVariance.INVARIANT -> {}
+      if (isReified) add("reified")
+      when (variance) {
+        KVariance.IN -> add("in")
+        KVariance.OUT -> add("out")
+        KVariance.INVARIANT -> {}
+      }
+      if (name.isNotEmpty()) add(name)
+      if (upperBounds.isNotEmpty()) {
+        add(":")
+        addAll(upperBounds.map { it.toString() })
+      }
     }
-    if (name.isNotEmpty()) add(name)
-    if (upperBounds.isNotEmpty()) {
-      add(":")
-      addAll(upperBounds.map { it.toString() })
-    }
-  }.joinToString(" ")
+    .joinToString(" ")
 }
 
 private fun KClassifier.simpleToString(): String {
@@ -36,7 +52,7 @@ internal class KTypeImpl(
   override val arguments: List<KTypeProjection>,
   override val isMarkedNullable: Boolean,
   override val annotations: List<Annotation>,
-  val isPlatformType: Boolean
+  val isPlatformType: Boolean,
 ) : KType {
 
   override fun toString(): String {
@@ -90,7 +106,7 @@ internal class KTypeParameterImpl(
   override val isReified: Boolean,
   override val name: String,
   override val upperBounds: List<KType>,
-  override val variance: KVariance
+  override val variance: KVariance,
 ) : KTypeParameter {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
