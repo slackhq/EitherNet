@@ -41,8 +41,7 @@ public fun Type.toKType(
   annotations: List<Annotation> = emptyList(),
 ): KType {
   return when (this) {
-    is Class<*> ->
-      KTypeImpl(kotlin, emptyList(), isMarkedNullable, annotations)
+    is Class<*> -> KTypeImpl(kotlin, emptyList(), isMarkedNullable, annotations)
     is ParameterizedType ->
       KTypeImpl(
         classifier = (rawType as Class<*>).kotlin,

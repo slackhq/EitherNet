@@ -24,9 +24,7 @@ plugins {
 
 kotlin {
   // region KMP Targets
-  jvm {
-    withJava()
-  }
+  jvm { withJava() }
   iosX64()
   iosArm64()
   iosSimulatorArm64()

@@ -62,12 +62,13 @@ internal expect class KTypeImpl(
 public fun KType.canonicalize(): KType {
   return when (this) {
     is KTypeImpl -> this
-    else -> KTypeImpl(
-      classifier = classifier,
-      arguments = arguments.map { it.copy(type = it.type?.canonicalize()) },
-      isMarkedNullable = isMarkedNullable,
-      annotations = emptyList(),
-    )
+    else ->
+      KTypeImpl(
+        classifier = classifier,
+        arguments = arguments.map { it.copy(type = it.type?.canonicalize()) },
+        isMarkedNullable = isMarkedNullable,
+        annotations = emptyList(),
+      )
   }
 }
 
