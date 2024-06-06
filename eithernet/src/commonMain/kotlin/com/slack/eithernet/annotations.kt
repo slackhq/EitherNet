@@ -15,6 +15,9 @@
  */
 package com.slack.eithernet
 
+import kotlin.reflect.KType
+import kotlin.reflect.KTypeProjection
+
 /**
  * Returns a [Pair] of a [StatusCode] and subset of these annotations without that [StatusCode]
  * instance. This should be used in a custom Retrofit [retrofit2.Converter.Factory] to know what the
@@ -89,4 +92,22 @@ private fun <A : Any> Array<out Annotation>.nextAnnotations(
   } else {
     null
   }
+}
+
+
+/** Returns a new [KType] representation of this [ResultType]. */
+@Suppress("SpreadOperator") // This is _the worst_ detekt check
+public fun ResultType.toKType(): KType {
+  return KTypeImpl(
+    classifier = rawType,
+    arguments = typeArgs.map { KTypeProjection.invariant(it.toKType()) },
+    isMarkedNullable = false,
+    annotations = emptyList(),
+    isPlatformType = false,
+  )
+}
+
+internal fun createStatusCode(code: Int): StatusCode {
+  ApiResult.checkHttpFailureCode(code)
+  return StatusCode(code)
 }

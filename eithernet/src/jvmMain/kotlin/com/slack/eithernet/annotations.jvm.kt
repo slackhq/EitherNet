@@ -49,11 +49,6 @@ public fun ResultType.toType(): Type {
   }
 }
 
-internal fun createStatusCode(code: Int): StatusCode {
-  ApiResult.checkHttpFailureCode(code)
-  return StatusCode(code)
-}
-
 internal fun createResultType(type: Type): ResultType {
   var ownerType: Type = Nothing::class.java
   val rawType: Class<*>

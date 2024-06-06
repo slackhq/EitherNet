@@ -15,20 +15,19 @@
  */
 package com.slack.eithernet.test
 
-import com.squareup.moshi.internal.Util
-import com.squareup.moshi.rawType
 import java.lang.reflect.Type
 import kotlin.coroutines.Continuation
+import kotlin.reflect.KType
 
 /** A simple parameter endpoint key for use with [EndpointKey]. */
-public data class ParameterKey internal constructor(val type: Type)
+public data class ParameterKey internal constructor(val type: KType)
 
-internal fun createParameterKey(parameterType: Type): ParameterKey? {
-  if (parameterType.rawType == Continuation::class.java) return null
+internal fun createParameterKey(parameterType: KType): ParameterKey? {
+  if (parameterType.rawType == Continuation::class) return null
   return ParameterKey(
     // Borrow an internal API from Moshi because it has nicer and more consistent Type
     // implementations that use safer equality checks. This matches how Moshi internally keys
     // cached adapters.
-    Util.canonicalize(parameterType)
+    parameterType.canonicalize()
   )
 }
