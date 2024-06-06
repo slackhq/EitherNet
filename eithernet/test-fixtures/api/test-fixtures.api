@@ -9,7 +9,6 @@ public final class com/slack/eithernet/test/CreateEndpointKeyKt {
 public abstract interface class com/slack/eithernet/test/EitherNetController {
 	public abstract fun assertNoMoreQueuedResults ()V
 	public abstract fun getApi ()Ljava/lang/Object;
-	public abstract fun unsafeEnqueue (Lcom/slack/eithernet/test/EndpointKey;Lkotlin/jvm/functions/Function2;)V
 }
 
 public final class com/slack/eithernet/test/EitherNetControllersKt {

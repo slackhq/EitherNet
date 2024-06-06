@@ -10,7 +10,6 @@ abstract fun interface com.slack.eithernet.test/ApiValidator { // com.slack.eith
     abstract fun validate(kotlin.reflect/KClass<*>, kotlin.reflect/KFunction<*>, kotlin.collections/MutableList<kotlin/String>) // com.slack.eithernet.test/ApiValidator.validate|validate(kotlin.reflect.KClass<*>;kotlin.reflect.KFunction<*>;kotlin.collections.MutableList<kotlin.String>){}[0]
 }
 abstract interface <#A: kotlin/Any> com.slack.eithernet.test/EitherNetController { // com.slack.eithernet.test/EitherNetController|null[0]
-    abstract fun <#A1: kotlin/Any, #B1: kotlin/Any> unsafeEnqueue(com.slack.eithernet.test/EndpointKey, kotlin.coroutines/SuspendFunction1<kotlin/Array<kotlin/Any>, com.slack.eithernet/ApiResult<#A1, #B1>>) // com.slack.eithernet.test/EitherNetController.unsafeEnqueue|unsafeEnqueue(com.slack.eithernet.test.EndpointKey;kotlin.coroutines.SuspendFunction1<kotlin.Array<kotlin.Any>,com.slack.eithernet.ApiResult<0:0,0:1>>){0§<kotlin.Any>;1§<kotlin.Any>}[0]
     abstract fun assertNoMoreQueuedResults() // com.slack.eithernet.test/EitherNetController.assertNoMoreQueuedResults|assertNoMoreQueuedResults(){}[0]
     abstract val api // com.slack.eithernet.test/EitherNetController.api|{}api[0]
         abstract fun <get-api>(): #A // com.slack.eithernet.test/EitherNetController.api.<get-api>|<get-api>(){}[0]

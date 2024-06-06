@@ -13,13 +13,11 @@ final class com.slack.eithernet/ApiException : kotlin/Exception { // com.slack.e
 }
 final fun (com.slack.eithernet/ResultType).com.slack.eithernet/toKType(): kotlin.reflect/KType // com.slack.eithernet/toKType|toKType@com.slack.eithernet.ResultType(){}[0]
 final fun (kotlin.reflect/KType).com.slack.eithernet/canonicalize(): kotlin.reflect/KType // com.slack.eithernet/canonicalize|canonicalize@kotlin.reflect.KType(){}[0]
-final fun (kotlin.reflect/KType?).com.slack.eithernet/isFunctionallyEqualTo(kotlin.reflect/KType?): kotlin/Boolean // com.slack.eithernet/isFunctionallyEqualTo|isFunctionallyEqualTo@kotlin.reflect.KType?(kotlin.reflect.KType?){}[0]
 final fun (kotlin/Array<out kotlin/Annotation>).com.slack.eithernet/errorType(): kotlin/Pair<com.slack.eithernet/ResultType, kotlin/Array<kotlin/Annotation>>? // com.slack.eithernet/errorType|errorType@kotlin.Array<out|kotlin.Annotation>(){}[0]
 final fun (kotlin/Array<out kotlin/Annotation>).com.slack.eithernet/statusCode(): kotlin/Pair<com.slack.eithernet/StatusCode, kotlin/Array<kotlin/Annotation>>? // com.slack.eithernet/statusCode|statusCode@kotlin.Array<out|kotlin.Annotation>(){}[0]
 final fun <#A: kotlin/Any, #B: kotlin/Any> (com.slack.eithernet/ApiResult<#A, #B>).com.slack.eithernet/successOrNull(): #A? // com.slack.eithernet/successOrNull|successOrNull@com.slack.eithernet.ApiResult<0:0,0:1>(){0§<kotlin.Any>;1§<kotlin.Any>}[0]
 final fun <#A: kotlin/Any> (com.slack.eithernet/ApiResult.Failure<#A>).com.slack.eithernet/exceptionOrNull(): kotlin/Throwable? // com.slack.eithernet/exceptionOrNull|exceptionOrNull@com.slack.eithernet.ApiResult.Failure<0:0>(){0§<kotlin.Any>}[0]
 final fun <#A: kotlin/Any> (com.slack.eithernet/ApiResult<*, *>).com.slack.eithernet/tag(kotlin.reflect/KClass<#A>): #A? // com.slack.eithernet/tag|tag@com.slack.eithernet.ApiResult<*,*>(kotlin.reflect.KClass<0:0>){0§<kotlin.Any>}[0]
-final fun com.slack.eithernet/createStatusCode(kotlin/Int): com.slack.eithernet/StatusCode // com.slack.eithernet/createStatusCode|createStatusCode(kotlin.Int){}[0]
 final inline fun <#A: kotlin/Any, #B: kotlin/Any, #C: kotlin/Any?> (com.slack.eithernet/ApiResult<#A, #B>).com.slack.eithernet/fold(kotlin/Function1<#A, #C>, kotlin/Function1<com.slack.eithernet/ApiResult.Failure.NetworkFailure, #C>, kotlin/Function1<com.slack.eithernet/ApiResult.Failure.UnknownFailure, #C>, kotlin/Function1<com.slack.eithernet/ApiResult.Failure.HttpFailure<#B>, #C>, kotlin/Function1<com.slack.eithernet/ApiResult.Failure.ApiFailure<#B>, #C>): #C // com.slack.eithernet/fold|fold@com.slack.eithernet.ApiResult<0:0,0:1>(kotlin.Function1<0:0,0:2>;kotlin.Function1<com.slack.eithernet.ApiResult.Failure.NetworkFailure,0:2>;kotlin.Function1<com.slack.eithernet.ApiResult.Failure.UnknownFailure,0:2>;kotlin.Function1<com.slack.eithernet.ApiResult.Failure.HttpFailure<0:1>,0:2>;kotlin.Function1<com.slack.eithernet.ApiResult.Failure.ApiFailure<0:1>,0:2>){0§<kotlin.Any>;1§<kotlin.Any>;2§<kotlin.Any?>}[0]
 final inline fun <#A: kotlin/Any, #B: kotlin/Any, #C: kotlin/Any?> (com.slack.eithernet/ApiResult<#A, #B>).com.slack.eithernet/fold(noinline kotlin/Function1<#A, #C>, noinline kotlin/Function1<com.slack.eithernet/ApiResult.Failure<#B>, #C>): #C // com.slack.eithernet/fold|fold@com.slack.eithernet.ApiResult<0:0,0:1>(kotlin.Function1<0:0,0:2>;kotlin.Function1<com.slack.eithernet.ApiResult.Failure<0:1>,0:2>){0§<kotlin.Any>;1§<kotlin.Any>;2§<kotlin.Any?>}[0]
 final inline fun <#A: kotlin/Any, #B: kotlin/Any> (com.slack.eithernet/ApiResult<#A, #B>).com.slack.eithernet/onApiFailure(kotlin/Function1<com.slack.eithernet/ApiResult.Failure.ApiFailure<#B>, kotlin/Unit>): com.slack.eithernet/ApiResult<#A, #B> // com.slack.eithernet/onApiFailure|onApiFailure@com.slack.eithernet.ApiResult<0:0,0:1>(kotlin.Function1<com.slack.eithernet.ApiResult.Failure.ApiFailure<0:1>,kotlin.Unit>){0§<kotlin.Any>;1§<kotlin.Any>}[0]
@@ -59,10 +57,7 @@ open annotation class com.slack.eithernet/StatusCode : kotlin/Annotation { // co
 }
 sealed interface <#A: out kotlin/Any, #B: out kotlin/Any> com.slack.eithernet/ApiResult { // com.slack.eithernet/ApiResult|null[0]
     final class <#A1: kotlin/Any> Success : com.slack.eithernet/ApiResult<#A1, kotlin/Nothing> { // com.slack.eithernet/ApiResult.Success|null[0]
-        constructor <init>(#A1, kotlin.collections/Map<kotlin.reflect/KClass<*>, kotlin/Any>) // com.slack.eithernet/ApiResult.Success.<init>|<init>(1:0;kotlin.collections.Map<kotlin.reflect.KClass<*>,kotlin.Any>){}[0]
         final fun withTags(kotlin.collections/Map<kotlin.reflect/KClass<*>, kotlin/Any>): com.slack.eithernet/ApiResult.Success<#A1> // com.slack.eithernet/ApiResult.Success.withTags|withTags(kotlin.collections.Map<kotlin.reflect.KClass<*>,kotlin.Any>){}[0]
-        final val tags // com.slack.eithernet/ApiResult.Success.tags|{}tags[0]
-            final fun <get-tags>(): kotlin.collections/Map<kotlin.reflect/KClass<*>, kotlin/Any> // com.slack.eithernet/ApiResult.Success.tags.<get-tags>|<get-tags>(){}[0]
         final val value // com.slack.eithernet/ApiResult.Success.value|{}value[0]
             final fun <get-value>(): #A1 // com.slack.eithernet/ApiResult.Success.value.<get-value>|<get-value>(){}[0]
     }
@@ -77,13 +72,11 @@ sealed interface <#A: out kotlin/Any, #B: out kotlin/Any> com.slack.eithernet/Ap
     }
     sealed interface <#A1: kotlin/Any> Failure : com.slack.eithernet/ApiResult<kotlin/Nothing, #A1> { // com.slack.eithernet/ApiResult.Failure|null[0]
         final class <#A2: kotlin/Any> ApiFailure : com.slack.eithernet/ApiResult.Failure<#A2> { // com.slack.eithernet/ApiResult.Failure.ApiFailure|null[0]
-            constructor <init>(#A2?, kotlin.collections/Map<kotlin.reflect/KClass<*>, kotlin/Any>) // com.slack.eithernet/ApiResult.Failure.ApiFailure.<init>|<init>(1:0?;kotlin.collections.Map<kotlin.reflect.KClass<*>,kotlin.Any>){}[0]
             final fun withTags(kotlin.collections/Map<kotlin.reflect/KClass<*>, kotlin/Any>): com.slack.eithernet/ApiResult.Failure.ApiFailure<#A2> // com.slack.eithernet/ApiResult.Failure.ApiFailure.withTags|withTags(kotlin.collections.Map<kotlin.reflect.KClass<*>,kotlin.Any>){}[0]
             final val error // com.slack.eithernet/ApiResult.Failure.ApiFailure.error|{}error[0]
                 final fun <get-error>(): #A2? // com.slack.eithernet/ApiResult.Failure.ApiFailure.error.<get-error>|<get-error>(){}[0]
         }
         final class <#A2: kotlin/Any> HttpFailure : com.slack.eithernet/ApiResult.Failure<#A2> { // com.slack.eithernet/ApiResult.Failure.HttpFailure|null[0]
-            constructor <init>(kotlin/Int, #A2?, kotlin.collections/Map<kotlin.reflect/KClass<*>, kotlin/Any>) // com.slack.eithernet/ApiResult.Failure.HttpFailure.<init>|<init>(kotlin.Int;1:0?;kotlin.collections.Map<kotlin.reflect.KClass<*>,kotlin.Any>){}[0]
             final fun withTags(kotlin.collections/Map<kotlin.reflect/KClass<*>, kotlin/Any>): com.slack.eithernet/ApiResult.Failure.HttpFailure<#A2> // com.slack.eithernet/ApiResult.Failure.HttpFailure.withTags|withTags(kotlin.collections.Map<kotlin.reflect.KClass<*>,kotlin.Any>){}[0]
             final val code // com.slack.eithernet/ApiResult.Failure.HttpFailure.code|{}code[0]
                 final fun <get-code>(): kotlin/Int // com.slack.eithernet/ApiResult.Failure.HttpFailure.code.<get-code>|<get-code>(){}[0]
@@ -91,13 +84,11 @@ sealed interface <#A: out kotlin/Any, #B: out kotlin/Any> com.slack.eithernet/Ap
                 final fun <get-error>(): #A2? // com.slack.eithernet/ApiResult.Failure.HttpFailure.error.<get-error>|<get-error>(){}[0]
         }
         final class NetworkFailure : com.slack.eithernet/ApiResult.Failure<kotlin/Nothing> { // com.slack.eithernet/ApiResult.Failure.NetworkFailure|null[0]
-            constructor <init>(okio/IOException, kotlin.collections/Map<kotlin.reflect/KClass<*>, kotlin/Any>) // com.slack.eithernet/ApiResult.Failure.NetworkFailure.<init>|<init>(okio.IOException;kotlin.collections.Map<kotlin.reflect.KClass<*>,kotlin.Any>){}[0]
             final fun withTags(kotlin.collections/Map<kotlin.reflect/KClass<*>, kotlin/Any>): com.slack.eithernet/ApiResult.Failure.NetworkFailure // com.slack.eithernet/ApiResult.Failure.NetworkFailure.withTags|withTags(kotlin.collections.Map<kotlin.reflect.KClass<*>,kotlin.Any>){}[0]
             final val error // com.slack.eithernet/ApiResult.Failure.NetworkFailure.error|{}error[0]
                 final fun <get-error>(): okio/IOException // com.slack.eithernet/ApiResult.Failure.NetworkFailure.error.<get-error>|<get-error>(){}[0]
         }
         final class UnknownFailure : com.slack.eithernet/ApiResult.Failure<kotlin/Nothing> { // com.slack.eithernet/ApiResult.Failure.UnknownFailure|null[0]
-            constructor <init>(kotlin/Throwable, kotlin.collections/Map<kotlin.reflect/KClass<*>, kotlin/Any>) // com.slack.eithernet/ApiResult.Failure.UnknownFailure.<init>|<init>(kotlin.Throwable;kotlin.collections.Map<kotlin.reflect.KClass<*>,kotlin.Any>){}[0]
             final fun withTags(kotlin.collections/Map<kotlin.reflect/KClass<*>, kotlin/Any>): com.slack.eithernet/ApiResult.Failure.UnknownFailure // com.slack.eithernet/ApiResult.Failure.UnknownFailure.withTags|withTags(kotlin.collections.Map<kotlin.reflect.KClass<*>,kotlin.Any>){}[0]
             final val error // com.slack.eithernet/ApiResult.Failure.UnknownFailure.error|{}error[0]
                 final fun <get-error>(): kotlin/Throwable // com.slack.eithernet/ApiResult.Failure.UnknownFailure.error.<get-error>|<get-error>(){}[0]

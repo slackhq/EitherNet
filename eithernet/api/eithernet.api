@@ -1,12 +1,10 @@
 public final class com/slack/eithernet/AnnotationsKt {
-	public static final fun createStatusCode (I)Lcom/slack/eithernet/StatusCode;
 	public static final fun errorType ([Ljava/lang/annotation/Annotation;)Lkotlin/Pair;
 	public static final fun statusCode ([Ljava/lang/annotation/Annotation;)Lkotlin/Pair;
 	public static final fun toKType (Lcom/slack/eithernet/ResultType;)Lkotlin/reflect/KType;
 }
 
 public final class com/slack/eithernet/Annotations_jvmKt {
-	public static final fun createResultType (Ljava/lang/reflect/Type;)Lcom/slack/eithernet/ResultType;
 	public static final fun toType (Lcom/slack/eithernet/ResultType;)Ljava/lang/reflect/Type;
 }
 
@@ -35,33 +33,27 @@ public abstract interface class com/slack/eithernet/ApiResult$Failure : com/slac
 }
 
 public final class com/slack/eithernet/ApiResult$Failure$ApiFailure : com/slack/eithernet/ApiResult$Failure {
-	public fun <init> (Ljava/lang/Object;Ljava/util/Map;)V
 	public final fun getError ()Ljava/lang/Object;
 	public final fun withTags (Ljava/util/Map;)Lcom/slack/eithernet/ApiResult$Failure$ApiFailure;
 }
 
 public final class com/slack/eithernet/ApiResult$Failure$HttpFailure : com/slack/eithernet/ApiResult$Failure {
-	public fun <init> (ILjava/lang/Object;Ljava/util/Map;)V
 	public final fun getCode ()I
 	public final fun getError ()Ljava/lang/Object;
 	public final fun withTags (Ljava/util/Map;)Lcom/slack/eithernet/ApiResult$Failure$HttpFailure;
 }
 
 public final class com/slack/eithernet/ApiResult$Failure$NetworkFailure : com/slack/eithernet/ApiResult$Failure {
-	public fun <init> (Ljava/io/IOException;Ljava/util/Map;)V
 	public final fun getError ()Ljava/io/IOException;
 	public final fun withTags (Ljava/util/Map;)Lcom/slack/eithernet/ApiResult$Failure$NetworkFailure;
 }
 
 public final class com/slack/eithernet/ApiResult$Failure$UnknownFailure : com/slack/eithernet/ApiResult$Failure {
-	public fun <init> (Ljava/lang/Throwable;Ljava/util/Map;)V
 	public final fun getError ()Ljava/lang/Throwable;
 	public final fun withTags (Ljava/util/Map;)Lcom/slack/eithernet/ApiResult$Failure$UnknownFailure;
 }
 
 public final class com/slack/eithernet/ApiResult$Success : com/slack/eithernet/ApiResult {
-	public fun <init> (Ljava/lang/Object;Ljava/util/Map;)V
-	public final fun getTags ()Ljava/util/Map;
 	public final fun getValue ()Ljava/lang/Object;
 	public final fun withTags (Ljava/util/Map;)Lcom/slack/eithernet/ApiResult$Success;
 }
@@ -92,7 +84,6 @@ public abstract interface annotation class com/slack/eithernet/InternalEitherNet
 
 public final class com/slack/eithernet/KTypesKt {
 	public static final fun canonicalize (Lkotlin/reflect/KType;)Lkotlin/reflect/KType;
-	public static final fun isFunctionallyEqualTo (Lkotlin/reflect/KType;Lkotlin/reflect/KType;)Z
 }
 
 public abstract interface annotation class com/slack/eithernet/ResultType : java/lang/annotation/Annotation {
@@ -133,8 +124,6 @@ public final class com/slack/eithernet/TypesKt {
 }
 
 public final class com/slack/eithernet/Util {
-	public static final fun canonicalize (Ljava/lang/reflect/Type;)Ljava/lang/reflect/Type;
-	public static final fun removeSubtypeWildcard (Ljava/lang/reflect/Type;)Ljava/lang/reflect/Type;
 	public static final fun resolve (Ljava/lang/reflect/Type;Ljava/lang/reflect/Type;Ljava/lang/Class;)Ljava/lang/reflect/Type;
 }
 

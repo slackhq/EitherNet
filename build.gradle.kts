@@ -40,6 +40,7 @@ plugins {
 apiValidation {
   @OptIn(ExperimentalBCVApi::class)
   klib.enabled = true
+  nonPublicMarkers += "com.slack.eithernet.InternalEitherNetApi"
 }
 
 tasks.dokkaHtmlMultiModule {
