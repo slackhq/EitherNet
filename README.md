@@ -1,6 +1,10 @@
 # EitherNet
 
-A pluggable sealed API result type for modeling [Retrofit](https://github.com/square/retrofit) responses.
+A multiplatform, pluggable, and sealed API result type for modeling network API responses. Currently, this is
+only implemented for [Retrofit](https://github.com/square/retrofit) on the JVM, but the core API is defined in
+common code and can be implemented for other platforms.
+
+The rest of the README below focuses on the Retrofit implementation.
 
 ## Usage
 
@@ -239,6 +243,7 @@ add your own validations on top of this, you can provide implementations of `Api
 ```gradle
 dependencies {
   implementation("com.slack.eithernet:eithernet:<version>")
+  implementation("com.slack.eithernet:eithernet-integration-retrofit:<version>")
 
   // Test fixtures
   testImplementation(testFixtures("com.slack.eithernet:eithernet:<version>"))

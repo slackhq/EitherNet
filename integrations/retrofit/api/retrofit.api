@@ -1,0 +1,15 @@
+public final class com/slack/eithernet/integration/retrofit/ApiResultCallAdapterFactory : retrofit2/CallAdapter$Factory {
+	public static final field INSTANCE Lcom/slack/eithernet/integration/retrofit/ApiResultCallAdapterFactory;
+	public fun get (Ljava/lang/reflect/Type;[Ljava/lang/annotation/Annotation;Lretrofit2/Retrofit;)Lretrofit2/CallAdapter;
+}
+
+public final class com/slack/eithernet/integration/retrofit/ApiResultConverterFactory : retrofit2/Converter$Factory {
+	public static final field INSTANCE Lcom/slack/eithernet/integration/retrofit/ApiResultConverterFactory;
+	public fun responseBodyConverter (Ljava/lang/reflect/Type;[Ljava/lang/annotation/Annotation;Lretrofit2/Retrofit;)Lretrofit2/Converter;
+}
+
+public final class com/slack/eithernet/integration/retrofit/Tags_jvmKt {
+	public static final fun request (Lcom/slack/eithernet/ApiResult;)Lokhttp3/Request;
+	public static final fun response (Lcom/slack/eithernet/ApiResult;)Lokhttp3/Response;
+}
+
