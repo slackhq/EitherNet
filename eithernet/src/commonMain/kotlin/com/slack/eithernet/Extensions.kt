@@ -33,6 +33,7 @@ public fun <T : Any, E : Any> ApiResult<T, E>.successOrNull(): T? =
  * If [ApiResult.Success], returns the underlying [T] value. Otherwise, returns the result of the
  * [defaultValue] function.
  */
+@OptIn(ExperimentalContracts::class)
 public inline fun <T : Any, E : Any> ApiResult<T, E>.successOrElse(
   defaultValue: (failure: ApiResult.Failure<E>) -> T
 ): T {
@@ -47,6 +48,7 @@ public inline fun <T : Any, E : Any> ApiResult<T, E>.successOrElse(
  * If [ApiResult.Success], returns the underlying [T] value. Otherwise, calls [body] with the
  * failure, which can either throw an exception or return early (since this function is inline).
  */
+@OptIn(ExperimentalContracts::class)
 public inline fun <T : Any, E : Any> ApiResult<T, E>.successOrNothing(
   body: (failure: ApiResult.Failure<E>) -> Nothing
 ): T {
@@ -74,8 +76,8 @@ public fun <E : Any> ApiResult.Failure<E>.exceptionOrNull(): Throwable? {
 }
 
 /** Transforms an [ApiResult] into a [C] value. */
+@OptIn(ExperimentalContracts::class)
 @Suppress("NOTHING_TO_INLINE") // Inline to allow contextual actions
-@JvmName("foldWithValue")
 public inline fun <T : Any, E : Any, C> ApiResult<T, E>.fold(
   noinline onSuccess: (value: T) -> C,
   noinline onFailure: (failure: ApiResult.Failure<E>) -> C,
@@ -95,7 +97,7 @@ public inline fun <T : Any, E : Any, C> ApiResult<T, E>.fold(
 }
 
 /** Transforms an [ApiResult] into a [C] value. */
-@JvmName("foldWithValue")
+@OptIn(ExperimentalContracts::class)
 public inline fun <T : Any, E : Any, C> ApiResult<T, E>.fold(
   onSuccess: (value: T) -> C,
   onNetworkFailure: (failure: ApiResult.Failure.NetworkFailure) -> C,
@@ -123,6 +125,7 @@ public inline fun <T : Any, E : Any, C> ApiResult<T, E>.fold(
  * Performs the given [action] on the encapsulated [ApiResult.Failure] if this instance represents
  * [failure][ApiResult.Failure]. Returns the original `ApiResult` unchanged.
  */
+@OptIn(ExperimentalContracts::class)
 public inline fun <T : Any, E : Any> ApiResult<T, E>.onFailure(
   action: (failure: ApiResult.Failure<E>) -> Unit
 ): ApiResult<T, E> {
@@ -135,6 +138,7 @@ public inline fun <T : Any, E : Any> ApiResult<T, E>.onFailure(
  * Performs the given [action] on the encapsulated [ApiResult.Failure.HttpFailure] if this instance
  * represents [failure][ApiResult.Failure.HttpFailure]. Returns the original `ApiResult` unchanged.
  */
+@OptIn(ExperimentalContracts::class)
 public inline fun <T : Any, E : Any> ApiResult<T, E>.onHttpFailure(
   action: (failure: ApiResult.Failure.HttpFailure<E>) -> Unit
 ): ApiResult<T, E> {
@@ -147,6 +151,7 @@ public inline fun <T : Any, E : Any> ApiResult<T, E>.onHttpFailure(
  * Performs the given [action] on the encapsulated [ApiResult.Failure.ApiFailure] if this instance
  * represents [failure][ApiResult.Failure.ApiFailure]. Returns the original `ApiResult` unchanged.
  */
+@OptIn(ExperimentalContracts::class)
 public inline fun <T : Any, E : Any> ApiResult<T, E>.onApiFailure(
   action: (failure: ApiResult.Failure.ApiFailure<E>) -> Unit
 ): ApiResult<T, E> {
@@ -160,6 +165,7 @@ public inline fun <T : Any, E : Any> ApiResult<T, E>.onApiFailure(
  * instance represents [failure][ApiResult.Failure.NetworkFailure]. Returns the original `ApiResult`
  * unchanged.
  */
+@OptIn(ExperimentalContracts::class)
 public inline fun <T : Any, E : Any> ApiResult<T, E>.onNetworkFailure(
   action: (failure: ApiResult.Failure.NetworkFailure) -> Unit
 ): ApiResult<T, E> {
@@ -173,6 +179,7 @@ public inline fun <T : Any, E : Any> ApiResult<T, E>.onNetworkFailure(
  * instance represents [failure][ApiResult.Failure.UnknownFailure]. Returns the original `ApiResult`
  * unchanged.
  */
+@OptIn(ExperimentalContracts::class)
 public inline fun <T : Any, E : Any> ApiResult<T, E>.onUnknownFailure(
   action: (failure: ApiResult.Failure.UnknownFailure) -> Unit
 ): ApiResult<T, E> {
@@ -185,57 +192,11 @@ public inline fun <T : Any, E : Any> ApiResult<T, E>.onUnknownFailure(
  * Performs the given [action] on the encapsulated value if this instance represents
  * [success][ApiResult.Success]. Returns the original `ApiResult` unchanged.
  */
+@OptIn(ExperimentalContracts::class)
 public inline fun <T : Any, E : Any> ApiResult<T, E>.onSuccess(
   action: (value: T) -> Unit
 ): ApiResult<T, E> {
   contract { callsInPlace(action, InvocationKind.AT_MOST_ONCE) }
   if (this is ApiResult.Success) action(value)
   return this
-}
-
-// Deprecated functions
-
-@Deprecated("Use fold instead, left for ABI compatibility", level = DeprecationLevel.HIDDEN)
-@JvmName("fold")
-public fun <T : Any, E : Any, C> ApiResult<T, E>.foldOld(
-  onSuccess: (ApiResult.Success<T>) -> C,
-  onFailure: (ApiResult.Failure<E>) -> C,
-): C {
-  @Suppress("UNCHECKED_CAST")
-  return foldOldInternal(
-    onSuccess,
-    onFailure as (ApiResult.Failure.NetworkFailure) -> C,
-    onFailure as (ApiResult.Failure.UnknownFailure) -> C,
-    onFailure,
-    onFailure,
-  )
-}
-
-@Deprecated("Use fold instead, left for ABI compatibility", level = DeprecationLevel.HIDDEN)
-@JvmName("fold")
-public fun <T : Any, E : Any, C> ApiResult<T, E>.foldOld(
-  onSuccess: (ApiResult.Success<T>) -> C,
-  onNetworkFailure: (ApiResult.Failure.NetworkFailure) -> C,
-  onUnknownFailure: (ApiResult.Failure.UnknownFailure) -> C,
-  onHttpFailure: (ApiResult.Failure.HttpFailure<E>) -> C,
-  onApiFailure: (ApiResult.Failure.ApiFailure<E>) -> C,
-): C {
-  return foldOldInternal(onSuccess, onNetworkFailure, onUnknownFailure, onHttpFailure, onApiFailure)
-}
-
-// Separate so we can call it from the two old deprecated versions above
-private fun <T : Any, E : Any, C> ApiResult<T, E>.foldOldInternal(
-  onSuccess: (ApiResult.Success<T>) -> C,
-  onNetworkFailure: (ApiResult.Failure.NetworkFailure) -> C,
-  onUnknownFailure: (ApiResult.Failure.UnknownFailure) -> C,
-  onHttpFailure: (ApiResult.Failure.HttpFailure<E>) -> C,
-  onApiFailure: (ApiResult.Failure.ApiFailure<E>) -> C,
-): C {
-  return when (this) {
-    is ApiResult.Success -> onSuccess(this)
-    is ApiResult.Failure.ApiFailure -> onApiFailure(this)
-    is ApiResult.Failure.HttpFailure -> onHttpFailure(this)
-    is ApiResult.Failure.NetworkFailure -> onNetworkFailure(this)
-    is ApiResult.Failure.UnknownFailure -> onUnknownFailure(this)
-  }
 }
