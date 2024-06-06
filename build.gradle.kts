@@ -18,17 +18,22 @@ import io.gitlab.arturbosch.detekt.Detekt
 import java.net.URI
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
 plugins {
   alias(libs.plugins.kotlin.jvm) apply false
+  alias(libs.plugins.kotlin.multiplatform) apply false
   alias(libs.plugins.dokka)
   alias(libs.plugins.ksp) apply false
   alias(libs.plugins.spotless)
   alias(libs.plugins.mavenPublish) apply false
   alias(libs.plugins.detekt) apply false
-  alias(libs.plugins.binaryCompatibilityValidator) apply false
+  alias(libs.plugins.binaryCompatibilityValidator)
 }
 
 tasks.dokkaHtmlMultiModule {
@@ -55,6 +60,27 @@ subprojects {
       compilerOptions {
         progressiveMode.set(true)
         jvmTarget.set(libs.versions.jvmTarget.map(JvmTarget::fromTarget))
+      }
+    }
+  }
+
+  pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
+    configure<KotlinMultiplatformExtension> {
+      explicitApi()
+      @OptIn(ExperimentalKotlinGradlePluginApi::class)
+      compilerOptions { progressiveMode.set(true) }
+      jvmToolchain {
+        languageVersion.set(libs.versions.jvmTarget.map(JavaLanguageVersion::of))
+      }
+    }
+    tasks.withType<KotlinCompilationTask<*>>().configureEach {
+      compilerOptions {
+        if (this is KotlinJvmCompilerOptions) {
+          jvmTarget.set(libs.versions.jvmTarget.map(JvmTarget::fromTarget))
+          // Enable new JvmDefault behavior
+          // https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/
+          freeCompilerArgs.add("-Xjvm-default=all")
+        }
       }
     }
   }

@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+
 /*
  * Copyright (C) 2020 Slack Technologies, LLC
  *
@@ -13,50 +15,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import io.gitlab.arturbosch.detekt.Detekt
-import java.net.URI
-import org.jetbrains.dokka.gradle.DokkaTask
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-  alias(libs.plugins.kotlin.jvm)
+  alias(libs.plugins.kotlin.multiplatform)
   `java-test-fixtures`
   alias(libs.plugins.dokka)
   alias(libs.plugins.ksp)
   alias(libs.plugins.mavenPublish)
-  alias(libs.plugins.binaryCompatibilityValidator)
 }
 
-tasks.compileTestKotlin {
+kotlin {
+  jvm { withJava() }
+  @OptIn(ExperimentalKotlinGradlePluginApi::class)
   compilerOptions {
     optIn.addAll("kotlin.ExperimentalStdlibApi", "kotlinx.coroutines.ExperimentalCoroutinesApi")
-    // Enable new JvmDefault behavior
-    // https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/
-    freeCompilerArgs.add("-Xjvm-default=all")
+  }
+  sourceSets {
+    commonMain { dependencies { implementation(libs.coroutines.core) } }
+    commonTest {
+      dependencies {
+        implementation(libs.coroutines.core)
+        implementation(libs.coroutines.test)
+        implementation(libs.kotlin.test)
+      }
+    }
+    jvmMain { dependencies { implementation(libs.retrofit) } }
+    jvmTest {
+      dependencies {
+        implementation(libs.coroutines.core)
+        implementation(libs.coroutines.test)
+        implementation(libs.retrofit.converterScalars)
+        implementation(libs.okhttp)
+        implementation(libs.okhttp.mockwebserver)
+        implementation(libs.moshi)
+        implementation(libs.moshi.kotlin)
+        implementation(libs.junit)
+        implementation(libs.truth)
+        implementation(libs.autoService.annotations)
+        implementation(project(":eithernet:test-fixtures"))
+      }
+    }
   }
 }
 
 dependencies {
-  implementation(libs.retrofit)
-  implementation(libs.coroutines.core)
-
-  testImplementation(libs.coroutines.core)
-  testImplementation(libs.coroutines.test)
-  testImplementation(libs.retrofit.converterScalars)
-  testImplementation(libs.okhttp)
-  testImplementation(libs.okhttp.mockwebserver)
-  testImplementation(libs.moshi)
-  testImplementation(libs.moshi.kotlin)
-  testImplementation(libs.junit)
-  testImplementation(libs.truth)
-  testImplementation(libs.kotlin.test)
-  testImplementation(libs.autoService.annotations)
-  kspTest(libs.autoService.ksp)
-
-  // Android APIs access, gated at runtime
-  testFixturesCompileOnly(libs.androidProcessingApi)
-  testFixturesImplementation(libs.coroutines.core)
-  // For access to Types
-  testFixturesImplementation(libs.moshi)
-  testFixturesApi(libs.kotlin.reflect)
+  "kspJvmTest"(libs.autoService.ksp)
+  testFixturesApi(project(":eithernet:test-fixtures"))
 }

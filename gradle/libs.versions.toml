@@ -3,7 +3,7 @@ coroutines = "1.8.1"
 kotlin = "2.0.0"
 jdk = "21"
 jvmTarget = "11"
-ksp = "2.0.0-1.0.21"
+ksp = "2.0.0-1.0.22"
 ktfmt = "0.47"
 moshi = "1.15.1"
 okhttp = "4.9.0"
@@ -14,6 +14,7 @@ binaryCompatibilityValidator = { id = "org.jetbrains.kotlinx.binary-compatibilit
 detekt = { id = "io.gitlab.arturbosch.detekt", version = "1.23.5" }
 dokka = { id = "org.jetbrains.dokka", version = "1.9.20" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.28.0" }
 spotless = { id = "com.diffplug.spotless", version = "6.25.0" }

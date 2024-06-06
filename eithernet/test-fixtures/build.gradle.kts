@@ -22,20 +22,7 @@ plugins {
 }
 
 kotlin {
-  jvm {
-    withJava()
-    compilations
-      .named { it.contains("Test") }
-      .configureEach {
-        compileTaskProvider.configure {
-          compilerOptions {
-            // Enable new JvmDefault behavior
-            // https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/
-            freeCompilerArgs.add("-Xjvm-default=all")
-          }
-        }
-      }
-  }
+  jvm { withJava() }
   @OptIn(ExperimentalKotlinGradlePluginApi::class)
   compilerOptions {
     optIn.addAll("kotlin.ExperimentalStdlibApi", "kotlinx.coroutines.ExperimentalCoroutinesApi")
