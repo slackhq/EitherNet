@@ -158,14 +158,20 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
     public fun <T : Any> success(value: T): Success<T> = Success(value, emptyMap())
 
     /** Returns a new [HttpFailure] with given [code] and optional [error]. */
-    @JvmOverloads
+    public fun <E : Any> httpFailure(code: Int): HttpFailure<E> {
+      return httpFailure(code, null)
+    }
+
+    /** Returns a new [HttpFailure] with given [code] and optional [error]. */
     public fun <E : Any> httpFailure(code: Int, error: E? = null): HttpFailure<E> {
       checkHttpFailureCode(code)
       return HttpFailure(code, error, emptyMap())
     }
 
     /** Returns a new [ApiFailure] with given [error]. */
-    @JvmOverloads
+    public fun <E : Any> apiFailure(): ApiFailure<E> = apiFailure(null)
+
+    /** Returns a new [ApiFailure] with given [error]. */
     public fun <E : Any> apiFailure(error: E? = null): ApiFailure<E> = ApiFailure(error, emptyMap())
 
     /** Returns a new [NetworkFailure] with given [error]. */
