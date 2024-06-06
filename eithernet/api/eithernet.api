@@ -82,10 +82,6 @@ public final class com/slack/eithernet/ExtensionsKt {
 public abstract interface annotation class com/slack/eithernet/InternalEitherNetApi : java/lang/annotation/Annotation {
 }
 
-public final class com/slack/eithernet/KTypesKt {
-	public static final fun canonicalize (Lkotlin/reflect/KType;)Lkotlin/reflect/KType;
-}
-
 public abstract interface annotation class com/slack/eithernet/ResultType : java/lang/annotation/Annotation {
 	public abstract fun isArray ()Z
 	public abstract fun ownerType ()Ljava/lang/Class;
@@ -104,23 +100,6 @@ public abstract interface annotation class com/slack/eithernet/StatusCode : java
 
 public final class com/slack/eithernet/TagsKt {
 	public static final fun tag (Lcom/slack/eithernet/ApiResult;Lkotlin/reflect/KClass;)Ljava/lang/Object;
-}
-
-public final class com/slack/eithernet/Types {
-	public static final field INSTANCE Lcom/slack/eithernet/Types;
-	public static final fun arrayOf (Ljava/lang/reflect/Type;)Ljava/lang/reflect/GenericArrayType;
-	public static final fun equals (Ljava/lang/reflect/Type;Ljava/lang/reflect/Type;)Z
-	public static final fun getRawType (Ljava/lang/reflect/Type;)Ljava/lang/Class;
-	public static final fun newParameterizedType (Ljava/lang/reflect/Type;[Ljava/lang/reflect/Type;)Ljava/lang/reflect/ParameterizedType;
-	public static final fun newParameterizedTypeWithOwner (Ljava/lang/reflect/Type;Ljava/lang/reflect/Type;[Ljava/lang/reflect/Type;)Ljava/lang/reflect/ParameterizedType;
-	public static final fun subtypeOf (Ljava/lang/reflect/Type;)Ljava/lang/reflect/WildcardType;
-	public static final fun supertypeOf (Ljava/lang/reflect/Type;)Ljava/lang/reflect/WildcardType;
-}
-
-public final class com/slack/eithernet/TypesKt {
-	public static final fun toKType (Ljava/lang/reflect/Type;ZLjava/util/List;)Lkotlin/reflect/KType;
-	public static synthetic fun toKType$default (Ljava/lang/reflect/Type;ZLjava/util/List;ILjava/lang/Object;)Lkotlin/reflect/KType;
-	public static final fun toKTypeProjection (Ljava/lang/reflect/Type;)Lkotlin/reflect/KTypeProjection;
 }
 
 public final class com/slack/eithernet/Util {

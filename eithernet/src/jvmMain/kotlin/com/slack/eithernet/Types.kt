@@ -36,6 +36,7 @@ internal fun Type.asArrayType(): GenericArrayType = Types.arrayOf(this)
  * [wildcards][WildcardType] are stripped away in [type projections][KTypeProjection] as they are
  * not relevant for serialization and are also not standalone [KType] subtypes in Kotlin.
  */
+@InternalEitherNetApi
 public fun Type.toKType(
   isMarkedNullable: Boolean = true,
   annotations: List<Annotation> = emptyList(),
@@ -70,6 +71,7 @@ public fun Type.toKType(
 }
 
 /** Creates a new [KTypeProjection] representation of this [Type] for use in [KType.arguments]. */
+@InternalEitherNetApi
 public fun Type.toKTypeProjection(): KTypeProjection {
   return when (this) {
     is Class<*>,
@@ -94,6 +96,7 @@ public fun Type.toKTypeProjection(): KTypeProjection {
 }
 
 /** Factory methods for types. */
+@InternalEitherNetApi
 public object Types {
   /**
    * Returns a new parameterized type, applying `typeArguments` to `rawType`. Use this method if

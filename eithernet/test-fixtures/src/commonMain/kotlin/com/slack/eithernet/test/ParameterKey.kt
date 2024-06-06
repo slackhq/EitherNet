@@ -15,6 +15,7 @@
  */
 package com.slack.eithernet.test
 
+import com.slack.eithernet.InternalEitherNetApi
 import com.slack.eithernet.canonicalize
 import kotlin.coroutines.Continuation
 import kotlin.reflect.KType
@@ -22,7 +23,7 @@ import kotlin.reflect.KType
 /** A simple parameter endpoint key for use with [EndpointKey]. */
 public class ParameterKey internal constructor(type: KType) {
 
-  private val type = type.canonicalize()
+  @OptIn(InternalEitherNetApi::class) private val type = type.canonicalize()
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true

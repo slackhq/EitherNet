@@ -15,9 +15,11 @@
  */
 package com.slack.eithernet.test
 
+import com.slack.eithernet.InternalEitherNetApi
 import com.slack.eithernet.toKType
 import java.lang.reflect.Method
 
+@OptIn(InternalEitherNetApi::class)
 @PublishedApi
 internal fun EndpointKey.Companion.create(method: Method): EndpointKey {
   return EndpointKey(

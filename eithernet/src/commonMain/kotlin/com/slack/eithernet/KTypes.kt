@@ -59,6 +59,7 @@ internal expect class KTypeImpl(
   annotations: List<Annotation>,
 ) : KType, EitherNetKType
 
+@InternalEitherNetApi
 public fun KType.canonicalize(): KType {
   return when (this) {
     is KTypeImpl -> this

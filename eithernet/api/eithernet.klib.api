@@ -12,7 +12,6 @@ final class com.slack.eithernet/ApiException : kotlin/Exception { // com.slack.e
         final fun <get-error>(): kotlin/Any? // com.slack.eithernet/ApiException.error.<get-error>|<get-error>(){}[0]
 }
 final fun (com.slack.eithernet/ResultType).com.slack.eithernet/toKType(): kotlin.reflect/KType // com.slack.eithernet/toKType|toKType@com.slack.eithernet.ResultType(){}[0]
-final fun (kotlin.reflect/KType).com.slack.eithernet/canonicalize(): kotlin.reflect/KType // com.slack.eithernet/canonicalize|canonicalize@kotlin.reflect.KType(){}[0]
 final fun (kotlin/Array<out kotlin/Annotation>).com.slack.eithernet/errorType(): kotlin/Pair<com.slack.eithernet/ResultType, kotlin/Array<kotlin/Annotation>>? // com.slack.eithernet/errorType|errorType@kotlin.Array<out|kotlin.Annotation>(){}[0]
 final fun (kotlin/Array<out kotlin/Annotation>).com.slack.eithernet/statusCode(): kotlin/Pair<com.slack.eithernet/StatusCode, kotlin/Array<kotlin/Annotation>>? // com.slack.eithernet/statusCode|statusCode@kotlin.Array<out|kotlin.Annotation>(){}[0]
 final fun <#A: kotlin/Any, #B: kotlin/Any> (com.slack.eithernet/ApiResult<#A, #B>).com.slack.eithernet/successOrNull(): #A? // com.slack.eithernet/successOrNull|successOrNull@com.slack.eithernet.ApiResult<0:0,0:1>(){0§<kotlin.Any>;1§<kotlin.Any>}[0]
