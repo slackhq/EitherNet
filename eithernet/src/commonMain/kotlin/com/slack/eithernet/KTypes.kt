@@ -56,8 +56,13 @@ internal expect class KTypeImpl(
   classifier: KClassifier?,
   arguments: List<KTypeProjection>,
   isMarkedNullable: Boolean,
-  annotations: List<Annotation>,
-) : KType, EitherNetKType
+  annotations: List<Annotation>
+) : KType, EitherNetKType {
+  override val classifier: KClassifier?
+  override val arguments: List<KTypeProjection>
+  override val isMarkedNullable: Boolean
+  override val annotations: List<Annotation>
+}
 
 @InternalEitherNetApi
 public fun KType.canonicalize(): KType {

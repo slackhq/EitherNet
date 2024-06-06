@@ -38,7 +38,10 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
 
       - name: Test
-        run: ./gradlew check
+        run: |
+          # Run :eithernet:compileCommonMainKotlinMetadata to ensure metadata compilation works too, as it's
+          # not covered under the normal check command
+          ./gradlew check compileCommonMainKotlinMetadata
 
       - name: Publish (default branch only)
         if: github.repository == 'slackhq/EitherNet' && github.ref == 'refs/heads/main'
