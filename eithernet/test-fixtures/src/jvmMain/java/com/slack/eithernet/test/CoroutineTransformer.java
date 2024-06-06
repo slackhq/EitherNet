@@ -19,7 +19,7 @@ enum CoroutineTransformer {
           (Function2<
                   ? super Object[],
                   ? super Continuation<? super ApiResult<?, ?>>,
-                  ? extends Object>)
+                  ?>)
               body,
           args,
           continuation);

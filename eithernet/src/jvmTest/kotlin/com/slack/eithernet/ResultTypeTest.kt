@@ -50,7 +50,7 @@ class ResultTypeTest {
     val wildcard = Types.subtypeOf(String::class.java)
     val annotation = createResultType(wildcard)
     val created = annotation.toType()
-    Util.removeSubtypeWildcard(wildcard).assertEqualTo(created)
+    wildcard.removeSubtypeWildcard().assertEqualTo(created)
   }
 
   @Test
