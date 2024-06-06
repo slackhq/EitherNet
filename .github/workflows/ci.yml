@@ -39,7 +39,7 @@ jobs:
 
       - name: Test
         run: |
-          # Run :eithernet:compileCommonMainKotlinMetadata to ensure metadata compilation works too, as it's
+          # Run compileCommonMainKotlinMetadata to ensure metadata compilation works too, as it's
           # not covered under the normal check command
           ./gradlew check compileCommonMainKotlinMetadata
 
