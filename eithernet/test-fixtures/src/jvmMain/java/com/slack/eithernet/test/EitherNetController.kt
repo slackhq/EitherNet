@@ -65,7 +65,7 @@ public inline fun <reified T : Any, reified S : Any, reified E : Any> EitherNetC
   check(ref.javaMethod?.declaringClass?.isAssignableFrom(apiClass) == true) {
     "Given function ${ref.javaMethod?.declaringClass}.${ref.name} is not a member of target API $apiClass."
   }
-  val key = createEndpointKey(ref.javaMethod!!)
+  val key = EndpointKey.create(ref.javaMethod!!)
   @OptIn(InternalEitherNetApi::class) unsafeEnqueue(key, resultBody)
 }
 

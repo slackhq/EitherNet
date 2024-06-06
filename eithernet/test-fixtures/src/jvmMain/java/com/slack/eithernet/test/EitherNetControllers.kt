@@ -48,7 +48,7 @@ public fun <T : Any> newEitherNetController(service: KClass<T>): EitherNetContro
   val endpoints =
     service.functions
       .filter { it.isApplicable }
-      .map { createEndpointKey(it.javaMethod!!) } // We know javaMethod is present per the filter
+      .map { EndpointKey.create(it.javaMethod!!) } // We know javaMethod is present per the filter
       .associateWithTo(ConcurrentHashMap()) { ArrayDeque<SuspendedResult>() }
   val orchestrator = EitherNetTestOrchestrator(endpoints)
   val proxy = newProxy(service.java, orchestrator)
@@ -114,7 +114,7 @@ internal fun <T> newProxy(service: Class<T>, orchestrator: EitherNetTestOrchestr
         return if (Companion.INSTANCE.isDefaultMethod(method)) {
           Companion.INSTANCE.invokeDefaultMethod(method, service, proxy, finalArgs)
         } else {
-          val key = createEndpointKey(method)
+          val key = EndpointKey.create(method)
           check(finalArgs.isNotEmpty()) {
             "No arguments found on method ${key.name}, did you forget to add the 'suspend' modifier?"
           }

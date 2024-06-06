@@ -17,4 +17,7 @@ package com.slack.eithernet.test
 
 /** A simple key for a given endpoint. */
 public data class EndpointKey
-internal constructor(val name: String, val parameters: List<ParameterKey>)
+internal constructor(val name: String, val parameters: List<ParameterKey>) {
+  // Here for extension points
+  internal companion object
+}

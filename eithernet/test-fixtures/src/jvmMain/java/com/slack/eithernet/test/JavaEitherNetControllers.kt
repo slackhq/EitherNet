@@ -27,6 +27,6 @@ public fun <T : Any, S : Any, E : Any> EitherNetController<T>.enqueueFromJava(
   resultBody: ApiResult<S, E>,
 ) {
   val method = clazz.declaredMethods.first { it.name == methodName }
-  val key = createEndpointKey(method)
+  val key = EndpointKey.create(method)
   @OptIn(InternalEitherNetApi::class) unsafeEnqueue(key) { resultBody }
 }
