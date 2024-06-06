@@ -28,10 +28,10 @@ internal actual val KClass<*>.qualifiedNameForComparison: String?
 
 internal actual class KTypeImpl
 actual constructor(
-  override val classifier: KClassifier?,
-  override val arguments: List<KTypeProjection>,
-  override val isMarkedNullable: Boolean,
-  override val annotations: List<Annotation>,
+  actual override val classifier: KClassifier?,
+  actual override val arguments: List<KTypeProjection>,
+  actual override val isMarkedNullable: Boolean,
+  actual override val annotations: List<Annotation>,
 ) : KType, EitherNetKType {
   private val impl = EitherNetKTypeImpl(classifier, arguments, isMarkedNullable, annotations)
 
