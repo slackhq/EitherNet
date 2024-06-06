@@ -2,6 +2,10 @@ public abstract interface class com/slack/eithernet/test/ApiValidator {
 	public abstract fun validate (Lkotlin/reflect/KClass;Lkotlin/reflect/KFunction;Ljava/util/List;)V
 }
 
+public final class com/slack/eithernet/test/CreateEndpointKeyKt {
+	public static final fun create (Lcom/slack/eithernet/test/EndpointKey$Companion;Ljava/lang/reflect/Method;)Lcom/slack/eithernet/test/EndpointKey;
+}
+
 public abstract interface class com/slack/eithernet/test/EitherNetController {
 	public abstract fun assertNoMoreQueuedResults ()V
 	public abstract fun getApi ()Ljava/lang/Object;
@@ -9,8 +13,11 @@ public abstract interface class com/slack/eithernet/test/EitherNetController {
 }
 
 public final class com/slack/eithernet/test/EitherNetControllersKt {
-	public static final fun newEitherNetController (Ljava/lang/Class;)Lcom/slack/eithernet/test/EitherNetController;
 	public static final fun newEitherNetController (Lkotlin/reflect/KClass;)Lcom/slack/eithernet/test/EitherNetController;
+}
+
+public final class com/slack/eithernet/test/EitherNetControllers_jvmKt {
+	public static final fun newEitherNetController (Ljava/lang/Class;)Lcom/slack/eithernet/test/EitherNetController;
 	public static final fun newProxy (Ljava/lang/Class;Lcom/slack/eithernet/test/EitherNetTestOrchestrator;)Ljava/lang/Object;
 }
 
@@ -26,25 +33,17 @@ public final class com/slack/eithernet/test/EndpointKey {
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/slack/eithernet/test/EndpointKeyKt {
-	public static final fun createEndpointKey (Ljava/lang/reflect/Method;)Lcom/slack/eithernet/test/EndpointKey;
-}
-
 public final class com/slack/eithernet/test/JavaEitherNetControllers {
 	public static final fun enqueueFromJava (Lcom/slack/eithernet/test/EitherNetController;Ljava/lang/Class;Ljava/lang/String;Lcom/slack/eithernet/ApiResult;)V
 }
 
-public final class com/slack/eithernet/test/ParameterKey {
-	public final fun component1 ()Lkotlin/reflect/KType;
-	public final fun copy (Lkotlin/reflect/KType;)Lcom/slack/eithernet/test/ParameterKey;
-	public static synthetic fun copy$default (Lcom/slack/eithernet/test/ParameterKey;Lkotlin/reflect/KType;ILjava/lang/Object;)Lcom/slack/eithernet/test/ParameterKey;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getType ()Lkotlin/reflect/KType;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
+public final class com/slack/eithernet/test/JvmUtilKt {
+	public static final fun isEqualTo (Lkotlin/reflect/KType;Lkotlin/reflect/KType;)Z
 }
 
-public final class com/slack/eithernet/test/UtilKt {
-	public static final fun isEqualTo (Lkotlin/reflect/KType;Lkotlin/reflect/KType;)Z
+public final class com/slack/eithernet/test/ParameterKey {
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 

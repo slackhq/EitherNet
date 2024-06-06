@@ -73,10 +73,8 @@ public abstract interface annotation class com/slack/eithernet/ExperimentalEithe
 
 public final class com/slack/eithernet/ExtensionsKt {
 	public static final fun exceptionOrNull (Lcom/slack/eithernet/ApiResult$Failure;)Ljava/lang/Throwable;
-	public static final synthetic fun fold (Lcom/slack/eithernet/ApiResult;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
-	public static final synthetic fun fold (Lcom/slack/eithernet/ApiResult;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
-	public static final fun foldWithValue (Lcom/slack/eithernet/ApiResult;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
-	public static final fun foldWithValue (Lcom/slack/eithernet/ApiResult;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
+	public static final fun fold (Lcom/slack/eithernet/ApiResult;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
+	public static final fun fold (Lcom/slack/eithernet/ApiResult;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
 	public static final fun onApiFailure (Lcom/slack/eithernet/ApiResult;Lkotlin/jvm/functions/Function1;)Lcom/slack/eithernet/ApiResult;
 	public static final fun onFailure (Lcom/slack/eithernet/ApiResult;Lkotlin/jvm/functions/Function1;)Lcom/slack/eithernet/ApiResult;
 	public static final fun onHttpFailure (Lcom/slack/eithernet/ApiResult;Lkotlin/jvm/functions/Function1;)Lcom/slack/eithernet/ApiResult;
@@ -89,6 +87,11 @@ public final class com/slack/eithernet/ExtensionsKt {
 }
 
 public abstract interface annotation class com/slack/eithernet/InternalEitherNetApi : java/lang/annotation/Annotation {
+}
+
+public final class com/slack/eithernet/KTypesKt {
+	public static final fun canonicalize (Lkotlin/reflect/KType;)Lkotlin/reflect/KType;
+	public static final fun isFunctionallyEqualTo (Lkotlin/reflect/KType;Lkotlin/reflect/KType;)Z
 }
 
 public abstract interface annotation class com/slack/eithernet/ResultType : java/lang/annotation/Annotation {

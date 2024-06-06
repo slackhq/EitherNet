@@ -16,6 +16,7 @@
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import io.gitlab.arturbosch.detekt.Detekt
 import java.net.URI
+import kotlinx.validation.ExperimentalBCVApi
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
@@ -34,6 +35,11 @@ plugins {
   alias(libs.plugins.mavenPublish) apply false
   alias(libs.plugins.detekt) apply false
   alias(libs.plugins.binaryCompatibilityValidator)
+}
+
+apiValidation {
+  @OptIn(ExperimentalBCVApi::class)
+  klib.enabled = true
 }
 
 tasks.dokkaHtmlMultiModule {
