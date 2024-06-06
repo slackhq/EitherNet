@@ -16,6 +16,7 @@
 package com.slack.eithernet
 
 import kotlin.annotation.AnnotationRetention.RUNTIME
+import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 import kotlin.test.Test
@@ -26,8 +27,7 @@ import kotlin.test.assertTrue
 
 @Retention(RUNTIME) annotation class SampleAnnotation
 
-@SampleAnnotation
-class ResultTypeTestJvm {
+class ResultTypeTest {
 
   @Test fun classType() = testType<String>()
 
@@ -39,11 +39,8 @@ class ResultTypeTestJvm {
 
   @Test
   fun errorType_present() {
-    val annotations =
-      Array<Annotation>(4) {
-        ResultTypeTestJvm::class.java.getAnnotation(SampleAnnotation::class.java)
-      }
-    val resultTypeAnnotation = createResultType(String::class.java)
+    val annotations = Array<Annotation>(4) { SampleAnnotation() }
+    val resultTypeAnnotation = typeOf<String>().toResultType()
     annotations[0] = resultTypeAnnotation
     val (resultType, nextAnnotations) = annotations.errorType() ?: error("No annotation found")
     assertEquals(3, nextAnnotations.size)
@@ -52,19 +49,13 @@ class ResultTypeTestJvm {
 
   @Test
   fun errorType_absent() {
-    val annotations =
-      Array<Annotation>(4) {
-        ResultTypeTestJvm::class.java.getAnnotation(SampleAnnotation::class.java)
-      }
+    val annotations = Array<Annotation>(4) { SampleAnnotation() }
     assertNull(annotations.errorType())
   }
 
   @Test
   fun statusCode_present() {
-    val annotations =
-      Array<Annotation>(4) {
-        ResultTypeTestJvm::class.java.getAnnotation(SampleAnnotation::class.java)
-      }
+    val annotations = Array<Annotation>(4) { SampleAnnotation() }
     val statusCodeAnnotation = createStatusCode(404)
     annotations[0] = statusCodeAnnotation
     val (statusCode, nextAnnotations) = annotations.statusCode() ?: error("No annotation found")
@@ -74,16 +65,9 @@ class ResultTypeTestJvm {
 
   @Test
   fun statusCode_absent() {
-    val annotations =
-      Array<Annotation>(4) {
-        ResultTypeTestJvm::class.java.getAnnotation(SampleAnnotation::class.java)
-      }
+    val annotations = Array<Annotation>(4) { SampleAnnotation() }
     assertNull(annotations.statusCode())
   }
-
-  private class A
-
-  private class B
 
   enum class TestEnum
 
@@ -92,8 +76,23 @@ class ResultTypeTestJvm {
   }
 
   private fun testType(type: KType) {
-    val annotation = createResultType(type)
+    val annotation = type.toResultType()
     val created = annotation.toKType()
     assertTrue(type.isFunctionallyEqualTo(created))
+  }
+
+  private fun KType.toResultType(): ResultType {
+    val klass = classifier as KClass<*>
+    if (klass.qualifiedNameForComparison?.endsWith("Array") == true) {
+      return ResultType(
+        rawType = arguments.first().type!!.classifier as KClass<*>,
+        isArray = true,
+      )
+    }
+    return ResultType(
+      rawType = klass,
+      typeArgs = arguments.mapNotNull { it.type?.toResultType() }.toTypedArray(),
+      isArray = false,
+    )
   }
 }

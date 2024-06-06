@@ -23,7 +23,7 @@ import kotlin.reflect.typeOf
 import org.junit.Test
 
 @SampleAnnotation
-class ResultTypeTest {
+class ResultTypeTestJvm {
 
   @Test fun classType() = testType<String>()
 
@@ -32,7 +32,7 @@ class ResultTypeTest {
   @Test
   fun parameterizedTypeWithOwner() {
     val typeWithOwner =
-      Types.newParameterizedTypeWithOwner(ResultTypeTest::class.java, A::class.java, B::class.java)
+      Types.newParameterizedTypeWithOwner(ResultTypeTestJvm::class.java, A::class.java, B::class.java)
     val annotation = createResultType(typeWithOwner)
     val created = annotation.toType()
     created.assertEqualTo(typeWithOwner)
@@ -54,7 +54,7 @@ class ResultTypeTest {
   fun errorType_present() {
     val annotations =
       Array<Annotation>(4) {
-        ResultTypeTest::class.java.getAnnotation(SampleAnnotation::class.java)
+        ResultTypeTestJvm::class.java.getAnnotation(SampleAnnotation::class.java)
       }
     val resultTypeAnnotation = createResultType(String::class.java)
     annotations[0] = resultTypeAnnotation
@@ -67,7 +67,7 @@ class ResultTypeTest {
   fun errorType_absent() {
     val annotations =
       Array<Annotation>(4) {
-        ResultTypeTest::class.java.getAnnotation(SampleAnnotation::class.java)
+        ResultTypeTestJvm::class.java.getAnnotation(SampleAnnotation::class.java)
       }
     assertThat(annotations.errorType()).isNull()
   }
@@ -76,7 +76,7 @@ class ResultTypeTest {
   fun statusCode_present() {
     val annotations =
       Array<Annotation>(4) {
-        ResultTypeTest::class.java.getAnnotation(SampleAnnotation::class.java)
+        ResultTypeTestJvm::class.java.getAnnotation(SampleAnnotation::class.java)
       }
     val statusCodeAnnotation = createStatusCode(404)
     annotations[0] = statusCodeAnnotation
@@ -89,7 +89,7 @@ class ResultTypeTest {
   fun statusCode_absent() {
     val annotations =
       Array<Annotation>(4) {
-        ResultTypeTest::class.java.getAnnotation(SampleAnnotation::class.java)
+        ResultTypeTestJvm::class.java.getAnnotation(SampleAnnotation::class.java)
       }
     assertThat(annotations.statusCode()).isNull()
   }
