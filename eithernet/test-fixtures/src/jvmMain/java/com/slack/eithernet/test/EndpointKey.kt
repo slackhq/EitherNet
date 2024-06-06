@@ -24,5 +24,8 @@ internal constructor(val name: String, val parameters: List<ParameterKey>)
 
 @PublishedApi
 internal fun createEndpointKey(method: Method): EndpointKey {
-  return EndpointKey(method.name, method.parameterTypes.mapNotNull { createParameterKey(it.toKType()) })
+  return EndpointKey(
+    method.name,
+    method.parameterTypes.mapNotNull { createParameterKey(it.toKType()) },
+  )
 }

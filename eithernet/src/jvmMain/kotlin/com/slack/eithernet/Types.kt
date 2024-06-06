@@ -38,44 +38,47 @@ internal fun Type.asArrayType(): GenericArrayType = Types.arrayOf(this)
  */
 public fun Type.toKType(
   isMarkedNullable: Boolean = true,
-  annotations: List<Annotation> = emptyList()
+  annotations: List<Annotation> = emptyList(),
 ): KType {
   return when (this) {
-    is Class<*> -> KTypeImpl(kotlin, emptyList(), isMarkedNullable, annotations, isPlatformType = true)
-    is ParameterizedType -> KTypeImpl(
-      classifier = (rawType as Class<*>).kotlin,
-      arguments = actualTypeArguments.map { it.toKTypeProjection() },
-      isMarkedNullable = isMarkedNullable,
-      annotations = annotations,
-      isPlatformType = true
-    )
+    is Class<*> ->
+      KTypeImpl(kotlin, emptyList(), isMarkedNullable, annotations, isPlatformType = true)
+    is ParameterizedType ->
+      KTypeImpl(
+        classifier = (rawType as Class<*>).kotlin,
+        arguments = actualTypeArguments.map { it.toKTypeProjection() },
+        isMarkedNullable = isMarkedNullable,
+        annotations = annotations,
+        isPlatformType = true,
+      )
     is GenericArrayType -> {
       KTypeImpl(
         classifier = rawType.kotlin,
         arguments = listOf(genericComponentType.toKTypeProjection()),
         isMarkedNullable = isMarkedNullable,
         annotations = annotations,
-        isPlatformType = true
+        isPlatformType = true,
       )
     }
     is WildcardType -> removeSubtypeWildcard().toKType(isMarkedNullable, annotations)
-    is TypeVariable<*> -> KTypeImpl(
-      classifier = KTypeParameterImpl(false, name, bounds.map { it.toKType() }, INVARIANT),
-      arguments = emptyList(),
-      isMarkedNullable = isMarkedNullable,
-      annotations = annotations,
-      isPlatformType = true
-    )
+    is TypeVariable<*> ->
+      KTypeImpl(
+        classifier = KTypeParameterImpl(false, name, bounds.map { it.toKType() }, INVARIANT),
+        arguments = emptyList(),
+        isMarkedNullable = isMarkedNullable,
+        annotations = annotations,
+        isPlatformType = true,
+      )
     else -> throw IllegalArgumentException("Unsupported type: $this")
   }
 }
 
-/**
- * Creates a new [KTypeProjection] representation of this [Type] for use in [KType.arguments].
- */
+/** Creates a new [KTypeProjection] representation of this [Type] for use in [KType.arguments]. */
 public fun Type.toKTypeProjection(): KTypeProjection {
   return when (this) {
-    is Class<*>, is ParameterizedType, is TypeVariable<*> -> KTypeProjection.invariant(toKType())
+    is Class<*>,
+    is ParameterizedType,
+    is TypeVariable<*> -> KTypeProjection.invariant(toKType())
     is WildcardType -> {
       val lowerBounds = lowerBounds
       val upperBounds = upperBounds

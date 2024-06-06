@@ -15,13 +15,13 @@
  */
 package com.slack.eithernet
 
-import okio.IOException
-import kotlin.time.Duration.Companion.milliseconds
-import kotlinx.coroutines.test.currentTime
-import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.test.currentTime
+import kotlinx.coroutines.test.runTest
+import okio.IOException
 
 class RetriesTest {
 
