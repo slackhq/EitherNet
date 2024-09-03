@@ -69,7 +69,7 @@ sealed interface <#A: out kotlin/Any, #B: out kotlin/Any> com.slack.eithernet/Ap
         final fun networkFailure(okio/IOException): com.slack.eithernet/ApiResult.Failure.NetworkFailure // com.slack.eithernet/ApiResult.Companion.networkFailure|networkFailure(okio.IOException){}[0]
         final fun unknownFailure(kotlin/Throwable): com.slack.eithernet/ApiResult.Failure.UnknownFailure // com.slack.eithernet/ApiResult.Companion.unknownFailure|unknownFailure(kotlin.Throwable){}[0]
     }
-    sealed interface <#A1: kotlin/Any> Failure : com.slack.eithernet/ApiResult<kotlin/Nothing, #A1> { // com.slack.eithernet/ApiResult.Failure|null[0]
+    sealed interface <#A1: out kotlin/Any> Failure : com.slack.eithernet/ApiResult<kotlin/Nothing, #A1> { // com.slack.eithernet/ApiResult.Failure|null[0]
         final class <#A2: kotlin/Any> ApiFailure : com.slack.eithernet/ApiResult.Failure<#A2> { // com.slack.eithernet/ApiResult.Failure.ApiFailure|null[0]
             final fun withTags(kotlin.collections/Map<kotlin.reflect/KClass<*>, kotlin/Any>): com.slack.eithernet/ApiResult.Failure.ApiFailure<#A2> // com.slack.eithernet/ApiResult.Failure.ApiFailure.withTags|withTags(kotlin.collections.Map<kotlin.reflect.KClass<*>,kotlin.Any>){}[0]
             final val error // com.slack.eithernet/ApiResult.Failure.ApiFailure.error|{}error[0]
