@@ -9,27 +9,32 @@
 abstract fun interface com.slack.eithernet.test/ApiValidator { // com.slack.eithernet.test/ApiValidator|null[0]
     abstract fun validate(kotlin.reflect/KClass<*>, kotlin.reflect/KFunction<*>, kotlin.collections/MutableList<kotlin/String>) // com.slack.eithernet.test/ApiValidator.validate|validate(kotlin.reflect.KClass<*>;kotlin.reflect.KFunction<*>;kotlin.collections.MutableList<kotlin.String>){}[0]
 }
+
 abstract interface <#A: kotlin/Any> com.slack.eithernet.test/EitherNetController { // com.slack.eithernet.test/EitherNetController|null[0]
-    abstract fun assertNoMoreQueuedResults() // com.slack.eithernet.test/EitherNetController.assertNoMoreQueuedResults|assertNoMoreQueuedResults(){}[0]
     abstract val api // com.slack.eithernet.test/EitherNetController.api|{}api[0]
         abstract fun <get-api>(): #A // com.slack.eithernet.test/EitherNetController.api.<get-api>|<get-api>(){}[0]
+
+    abstract fun assertNoMoreQueuedResults() // com.slack.eithernet.test/EitherNetController.assertNoMoreQueuedResults|assertNoMoreQueuedResults(){}[0]
 }
+
 final class com.slack.eithernet.test/EndpointKey { // com.slack.eithernet.test/EndpointKey|null[0]
-    final fun component1(): kotlin/String // com.slack.eithernet.test/EndpointKey.component1|component1(){}[0]
-    final fun component2(): kotlin.collections/List<com.slack.eithernet.test/ParameterKey> // com.slack.eithernet.test/EndpointKey.component2|component2(){}[0]
-    final fun copy(kotlin/String = ..., kotlin.collections/List<com.slack.eithernet.test/ParameterKey> = ...): com.slack.eithernet.test/EndpointKey // com.slack.eithernet.test/EndpointKey.copy|copy(kotlin.String;kotlin.collections.List<com.slack.eithernet.test.ParameterKey>){}[0]
-    final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.eithernet.test/EndpointKey.equals|equals(kotlin.Any?){}[0]
-    final fun hashCode(): kotlin/Int // com.slack.eithernet.test/EndpointKey.hashCode|hashCode(){}[0]
-    final fun toString(): kotlin/String // com.slack.eithernet.test/EndpointKey.toString|toString(){}[0]
     final val name // com.slack.eithernet.test/EndpointKey.name|{}name[0]
         final fun <get-name>(): kotlin/String // com.slack.eithernet.test/EndpointKey.name.<get-name>|<get-name>(){}[0]
     final val parameters // com.slack.eithernet.test/EndpointKey.parameters|{}parameters[0]
         final fun <get-parameters>(): kotlin.collections/List<com.slack.eithernet.test/ParameterKey> // com.slack.eithernet.test/EndpointKey.parameters.<get-parameters>|<get-parameters>(){}[0]
+
+    final fun component1(): kotlin/String // com.slack.eithernet.test/EndpointKey.component1|component1(){}[0]
+    final fun component2(): kotlin.collections/List<com.slack.eithernet.test/ParameterKey> // com.slack.eithernet.test/EndpointKey.component2|component2(){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.eithernet.test/EndpointKey.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.slack.eithernet.test/EndpointKey.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.slack.eithernet.test/EndpointKey.toString|toString(){}[0]
 }
+
 final class com.slack.eithernet.test/ParameterKey { // com.slack.eithernet.test/ParameterKey|null[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.eithernet.test/ParameterKey.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.slack.eithernet.test/ParameterKey.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.slack.eithernet.test/ParameterKey.toString|toString(){}[0]
 }
+
 final fun <#A: kotlin/Any> com.slack.eithernet.test/newEitherNetController(kotlin.reflect/KClass<#A>): com.slack.eithernet.test/EitherNetController<#A> // com.slack.eithernet.test/newEitherNetController|newEitherNetController(kotlin.reflect.KClass<0:0>){0§<kotlin.Any>}[0]
 final inline fun <#A: reified kotlin/Any> com.slack.eithernet.test/newEitherNetController(): com.slack.eithernet.test/EitherNetController<#A> // com.slack.eithernet.test/newEitherNetController|newEitherNetController(){0§<kotlin.Any>}[0]

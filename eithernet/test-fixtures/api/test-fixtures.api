@@ -23,8 +23,6 @@ public final class com/slack/eithernet/test/EitherNetControllers_jvmKt {
 public final class com/slack/eithernet/test/EndpointKey {
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component2 ()Ljava/util/List;
-	public final fun copy (Ljava/lang/String;Ljava/util/List;)Lcom/slack/eithernet/test/EndpointKey;
-	public static synthetic fun copy$default (Lcom/slack/eithernet/test/EndpointKey;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lcom/slack/eithernet/test/EndpointKey;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getName ()Ljava/lang/String;
 	public final fun getParameters ()Ljava/util/List;

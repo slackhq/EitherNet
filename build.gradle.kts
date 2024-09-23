@@ -79,6 +79,11 @@ subprojects {
     }
     tasks.withType<KotlinCompilationTask<*>>().configureEach {
       compilerOptions {
+        freeCompilerArgs.addAll(
+          "-Xwhen-guards",
+          "-Xnon-local-break-continue",
+          "-Xconsistent-data-class-copy-visibility",
+        )
         if (this is KotlinJvmCompilerOptions) {
           jvmTarget.set(libs.versions.jvmTarget.map(JvmTarget::fromTarget))
           // Enable new JvmDefault behavior
