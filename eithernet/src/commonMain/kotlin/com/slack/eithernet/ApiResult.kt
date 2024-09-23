@@ -65,7 +65,7 @@ public sealed interface ApiResult<out T : Any, out E : Any> {
   }
 
   /** Represents a failure of some sort. */
-  public sealed interface Failure<E : Any> : ApiResult<Nothing, E> {
+  public sealed interface Failure<out E : Any> : ApiResult<Nothing, E> {
 
     /**
      * A network failure caused by a given [error]. This error is opaque, as the actual type could
