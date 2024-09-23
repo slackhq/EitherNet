@@ -60,7 +60,7 @@ public inline fun <T : Any, E : Any> ApiResult<T, E>.successOrNothing(
 }
 
 /**
- * Returns the encapsulated [Throwable] exception of this failure type if one is available or null
+ * Returns the encapsulated [Throwable] exception if this failure type if one is available or null
  * if none are available.
  *
  * Note that if this is [ApiResult.Failure.HttpFailure] or [ApiResult.Failure.ApiFailure], the
