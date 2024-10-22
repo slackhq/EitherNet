@@ -1,9 +1,9 @@
 [versions]
 coroutines = "1.9.0"
-kotlin = "2.1.0-Beta1"
+kotlin = "2.1.0-Beta2"
 jdk = "22"
 jvmTarget = "11"
-ksp = "2.1.0-Beta1-1.0.25"
+ksp = "2.1.0-Beta2-1.0.25"
 ktfmt = "0.47"
 moshi = "1.15.1"
 okhttp = "4.9.0"
