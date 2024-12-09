@@ -60,7 +60,7 @@ public inline fun <T : Any, E : Any> ApiResult<T, E>.successOrNothing(
 }
 
 /**
- * Returns the encapsulated [Throwable] exception of this failure type if one is available or null
+ * Returns the encapsulated [Throwable] exception if this failure type if one is available or null
  * if none are available.
  *
  * Note that if this is [ApiResult.Failure.HttpFailure] or [ApiResult.Failure.ApiFailure], the
@@ -77,7 +77,12 @@ public fun <E : Any> ApiResult.Failure<E>.exceptionOrNull(): Throwable? {
 
 /** Transforms an [ApiResult] into a [C] value. */
 @OptIn(ExperimentalContracts::class)
-@Suppress("NOTHING_TO_INLINE") // Inline to allow contextual actions
+@Suppress(
+  // Inline to allow contextual actions
+  "NOTHING_TO_INLINE",
+  // https://youtrack.jetbrains.com/issue/KT-71690
+  "WRONG_INVOCATION_KIND",
+)
 public inline fun <T : Any, E : Any, C> ApiResult<T, E>.fold(
   noinline onSuccess: (value: T) -> C,
   noinline onFailure: (failure: ApiResult.Failure<E>) -> C,

@@ -89,6 +89,9 @@ class EitherNetControllersTest {
     val testApi = newEitherNetController<PandaApi>()
 
     try {
+      // This will be an error in future kotlin versions fortunately. This test just covers that
+      // case until then
+      @Suppress("TYPE_INTERSECTION_AS_REIFIED_WARNING")
       testApi.enqueue(PandaApi::getPandas, ApiResult.success(3))
       fail()
     } catch (e: IllegalStateException) {

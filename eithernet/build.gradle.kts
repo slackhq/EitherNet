@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
   alias(libs.plugins.kotlin.multiplatform)
@@ -50,7 +50,7 @@ kotlin {
       "kotlinx.coroutines.ExperimentalCoroutinesApi",
       "com.slack.eithernet.InternalEitherNetApi",
     )
-    freeCompilerArgs.add("-Xexpect-actual-classes")
+    freeCompilerArgs.addAll("-Xexpect-actual-classes", "-Xrender-internal-diagnostic-names")
   }
   sourceSets {
     commonMain {
