@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 rootProject.name = "eithernet"
+
 // ^^ This is important because Gradle module metadata uses this in the pom artifact id of test
 // fixtures!
 
