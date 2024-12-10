@@ -2,7 +2,7 @@
 
 A multiplatform, pluggable, and sealed API result type for modeling network API responses. Currently, this is
 only implemented for [Retrofit](https://github.com/square/retrofit) on the JVM, but the core API is defined in
-common code and can be implemented for other platforms.
+common code and can be implemented for other platforms/frameworks.
 
 The rest of the README below focuses on the Retrofit implementation.
 

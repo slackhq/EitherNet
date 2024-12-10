@@ -4,11 +4,21 @@ Changelog
 **Unreleased**
 --------------
 
+2.0.0
+-----
+
+_2024-12-10_
+
 - Migrate to Kotlin Multiplatform. Structurally, the core EitherNet APIs now live in `common` code and are _implemented_ by integration modules.
 - Move Retrofit/OkHttp integration to separate `eithernet-integration-retrofit` artifact.
 - Move test fixtures to new `eithernet-test-fixtures` artifact. Most of its implementation is still JVM-only for now.
+  - **Note**: Due to limitations in KMP, we no longer ship a native test fixtures attribute and Gradle's native `java-test-fixtures` plugin does not work on KMP JVM artifacts. Please star these issues:
+    - https://youtrack.jetbrains.com/issue/KT-69482
+    - https://youtrack.jetbrains.com/issue/KT-63142
 - Remove deprecated APIs.
+- Add `out` variance to `ApiResult.Failure` generic type.
 - Update Okio to `3.9.0`.
+- Update Kotlin to `2.1.0`.
 
 1.9.0
 -----
