@@ -19,5 +19,5 @@ package com.slack.eithernet.test
 public data class EndpointKey
 internal constructor(val name: String, val parameters: List<ParameterKey>) {
   // Here for extension points
-  internal companion object
+  @PublishedApi internal companion object
 }

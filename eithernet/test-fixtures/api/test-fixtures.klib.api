@@ -28,6 +28,8 @@ final class com.slack.eithernet.test/EndpointKey { // com.slack.eithernet.test/E
     final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.eithernet.test/EndpointKey.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.slack.eithernet.test/EndpointKey.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.slack.eithernet.test/EndpointKey.toString|toString(){}[0]
+
+    final object Companion // com.slack.eithernet.test/EndpointKey.Companion|null[0]
 }
 
 final class com.slack.eithernet.test/ParameterKey { // com.slack.eithernet.test/ParameterKey|null[0]
