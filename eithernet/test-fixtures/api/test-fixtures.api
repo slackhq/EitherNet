@@ -21,6 +21,7 @@ public final class com/slack/eithernet/test/EitherNetControllers_jvmKt {
 }
 
 public final class com/slack/eithernet/test/EndpointKey {
+	public static final field Companion Lcom/slack/eithernet/test/EndpointKey$Companion;
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component2 ()Ljava/util/List;
 	public fun equals (Ljava/lang/Object;)Z
@@ -28,6 +29,9 @@ public final class com/slack/eithernet/test/EndpointKey {
 	public final fun getParameters ()Ljava/util/List;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/slack/eithernet/test/EndpointKey$Companion {
 }
 
 public final class com/slack/eithernet/test/JavaEitherNetControllers {

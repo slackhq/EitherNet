@@ -1,23 +1,23 @@
 [versions]
-coroutines = "1.9.0"
-kotlin = "2.1.0"
-jdk = "22"
+coroutines = "1.10.2"
+kotlin = "2.2.20"
+jdk = "23"
 jvmTarget = "11"
-ksp = "2.1.0-1.0.29"
-ktfmt = "0.53"
+ksp = "2.2.20-2.0.3"
+ktfmt = "0.54"
 moshi = "1.15.1"
-okhttp = "4.9.0"
+okhttp = "5.1.0"
 retrofit = "2.9.0"
 
 [plugins]
 binaryCompatibilityValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.16.3" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version = "1.23.5" }
-dokka = { id = "org.jetbrains.dokka", version = "1.9.20" }
+dokka = { id = "org.jetbrains.dokka", version = "2.1.0-Beta" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.29.0" }
-spotless = { id = "com.diffplug.spotless", version = "7.0.0.BETA4" }
+mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.34.0" }
+spotless = { id = "com.diffplug.spotless", version = "7.2.1" }
 
 [libraries]
 androidProcessingApi =  "com.google.android:android:4.1.1.4"

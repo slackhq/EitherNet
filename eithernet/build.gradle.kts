@@ -31,12 +31,12 @@ kotlin {
   iosArm64()
   iosSimulatorArm64()
   js(IR) {
-    moduleName = property("POM_ARTIFACT_ID").toString()
+    outputModuleName.set(property("POM_ARTIFACT_ID").toString())
     browser()
   }
   @OptIn(ExperimentalWasmDsl::class)
   wasmJs {
-    moduleName = property("POM_ARTIFACT_ID").toString()
+    outputModuleName.set(property("POM_ARTIFACT_ID").toString())
     browser()
   }
   // endregion
