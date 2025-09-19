@@ -33,6 +33,7 @@ kotlin {
         api(project(":eithernet"))
         api(libs.ktor.client)
         implementation(libs.coroutines.core)
+        implementation(libs.okio)
       }
     }
     commonTest {
