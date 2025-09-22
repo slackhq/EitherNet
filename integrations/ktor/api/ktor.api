@@ -1,0 +1,4 @@
+public final class com/slack/eithernet/integration/ktor/KtorEitherNetExtensionsKt {
+	public static final fun asKtorApiResult (Ljava/lang/Exception;)Lcom/slack/eithernet/ApiResult;
+}
+

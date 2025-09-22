@@ -43,6 +43,7 @@ public suspend inline fun <reified T : Any, E : Any> HttpClient.apiResultOf(
 
 @PublishedApi
 internal fun <E : Any> Exception.asKtorApiResult(): ApiResult<Nothing, E> {
+  // For some reason the smart cast here fails
   return when (this) {
     is ClientRequestException -> {
       // 4xx errors
@@ -53,13 +54,13 @@ internal fun <E : Any> Exception.asKtorApiResult(): ApiResult<Nothing, E> {
       ApiResult.httpFailure(response.status.value)
     }
     is ConnectTimeoutException -> {
-      ApiResult.networkFailure(IOException("", this))
+      ApiResult.networkFailure(IOException("", this as Throwable))
     }
     is SocketTimeoutException -> {
-      ApiResult.networkFailure(IOException("", this))
+      ApiResult.networkFailure(IOException("", this as Throwable))
     }
     is UnresolvedAddressException -> {
-      ApiResult.networkFailure(IOException("", this))
+      ApiResult.networkFailure(IOException("", this as Throwable))
     }
     else -> {
       ApiResult.unknownFailure(this)
