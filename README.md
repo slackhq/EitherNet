@@ -246,7 +246,7 @@ dependencies {
   implementation("com.slack.eithernet:eithernet-integration-retrofit:<version>")
 
   // Test fixtures
-  testImplementation(testFixtures("com.slack.eithernet:eithernet:<version>"))
+  testImplementation("com.slack.eithernet:eithernet-test-fixtures:<version>")
 }
 ```
 
