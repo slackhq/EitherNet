@@ -1,0 +1,10 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, wasmJs]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <com.slack.eithernet:ktor>
+final fun <#A: kotlin/Any> (kotlin/Exception).com.slack.eithernet.integration.ktor/asKtorApiResult(): com.slack.eithernet/ApiResult<kotlin/Nothing, #A> // com.slack.eithernet.integration.ktor/asKtorApiResult|asKtorApiResult@kotlin.Exception(){0§<kotlin.Any>}[0]
+final suspend inline fun <#A: reified kotlin/Any, #B: kotlin/Any> (io.ktor.client/HttpClient).com.slack.eithernet.integration.ktor/apiResultOf(kotlin/Function1<io.ktor.client/HttpClient, io.ktor.client.statement/HttpResponse>): com.slack.eithernet/ApiResult<#A, #B> // com.slack.eithernet.integration.ktor/apiResultOf|apiResultOf@io.ktor.client.HttpClient(kotlin.Function1<io.ktor.client.HttpClient,io.ktor.client.statement.HttpResponse>){0§<kotlin.Any>;1§<kotlin.Any>}[0]
