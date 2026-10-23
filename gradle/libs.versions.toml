@@ -1,7 +1,7 @@
 [versions]
 coroutines = "1.10.2"
 kotlin = "2.2.20"
-jdk = "25"
+jdk = "27"
 jvmTarget = "11"
 ksp = "2.2.20-2.0.3"
 ktfmt = "0.54"
